@@ -715,18 +715,21 @@
       flex-shrink: 0;
     }
     #weather-menu-btn {
-      border: none;
-      background: transparent;
-      color: #111827;
-      font-size: 22px;
+      border: 1px solid #2563eb;
+      background: #2563eb;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
       line-height: 1;
       cursor: pointer;
-      padding: 1px 4px;
+      padding: 5px 9px;
       border-radius: 6px;
-      min-width: 28px;
+      white-space: nowrap;
+      letter-spacing: .3px;
     }
     #weather-menu-btn:hover {
-      background: rgba(15,23,42,0.08);
+      background: #1d4ed8;
+      border-color: #1d4ed8;
     }
     #weather-menu {
       position: absolute;
@@ -747,7 +750,8 @@
       font-size: 12px !important;
       margin: 4px 0 3px;
     }
-    #weather-menu input {
+    #weather-menu input,
+    #weather-menu select {
       width: 100%;
       border: 1px solid #d1d5db;
       border-radius: 7px;
@@ -755,7 +759,11 @@
       font-size: 12px;
       color: #111827;
       margin-bottom: 5px;
+      background: #fff;
+      cursor: pointer;
+      box-sizing: border-box;
     }
+    #weather-menu select:disabled { opacity: .55; cursor: default; }
     #weather-add-location-btn {
       width: 100%;
       border: 1px solid #1d4ed8;
@@ -910,12 +918,16 @@
           <span class="weather-caret">▼</span>
         </button>
       </div>
-      <button id="weather-menu-btn" title="Weather options">⋯</button>
+      <button id="weather-menu-btn" title="Add location">Add location</button>
       <div id="weather-menu" hidden>
-        <label for="weather-city-input">City</label>
-        <input id="weather-city-input" type="text" placeholder="e.g. Bronx" maxlength="50">
-        <label for="weather-state-input">State</label>
-        <input id="weather-state-input" type="text" placeholder="e.g. New York" maxlength="50">
+        <label for="weather-state-select">State</label>
+        <select id="weather-state-select">
+          <option value="">— Select a state —</option>
+        </select>
+        <label for="weather-city-select">City</label>
+        <select id="weather-city-select" disabled>
+          <option value="">— Select a city —</option>
+        </select>
         <button id="weather-add-location-btn">Add location</button>
         <p id="weather-menu-status"></p>
       </div>
@@ -1588,9 +1600,85 @@ git push</pre>
       const locationBtn = document.getElementById('weather-location-btn');
       const menuBtn = document.getElementById('weather-menu-btn');
       const menuEl = document.getElementById('weather-menu');
-      const cityInputEl = document.getElementById('weather-city-input');
-      const stateInputEl = document.getElementById('weather-state-input');
+      const stateSelectEl = document.getElementById('weather-state-select');
+      const citySelectEl  = document.getElementById('weather-city-select');
       const addLocationBtn = document.getElementById('weather-add-location-btn');
+      /* ── US States + major cities ── */
+      const US_STATES_CITIES = {
+        'Alabama': ['Birmingham','Montgomery','Huntsville','Mobile','Tuscaloosa'],
+        'Alaska': ['Anchorage','Fairbanks','Juneau','Sitka','Ketchikan'],
+        'Arizona': ['Phoenix','Tucson','Mesa','Chandler','Scottsdale','Tempe','Gilbert','Glendale','Peoria'],
+        'Arkansas': ['Little Rock','Fort Smith','Fayetteville','Springdale','Jonesboro'],
+        'California': ['Los Angeles','San Diego','San Jose','San Francisco','Fresno','Sacramento','Long Beach','Oakland','Bakersfield','Anaheim','Santa Ana','Riverside','Stockton','San Bernardino','Irvine','Modesto','Fremont','Fontana','Moreno Valley','Glendale'],
+        'Colorado': ['Denver','Colorado Springs','Aurora','Fort Collins','Lakewood','Thornton','Arvada','Westminster','Pueblo','Centennial'],
+        'Connecticut': ['Bridgeport','New Haven','Stamford','Hartford','Waterbury','Norwalk','Danbury'],
+        'Delaware': ['Wilmington','Dover','Newark','Middletown','Smyrna'],
+        'Florida': ['Jacksonville','Miami','Tampa','Orlando','St. Petersburg','Hialeah','Tallahassee','Port St. Lucie','Cape Coral','Fort Lauderdale','Pembroke Pines','Hollywood','Gainesville','Miramar','Coral Springs'],
+        'Georgia': ['Atlanta','Augusta','Columbus','Macon','Savannah','Athens','Sandy Springs','Roswell','Johns Creek','Albany'],
+        'Hawaii': ['Honolulu','Pearl City','Hilo','Kailua','Waipahu'],
+        'Idaho': ['Boise','Meridian','Nampa','Idaho Falls','Pocatello'],
+        'Illinois': ['Chicago','Aurora','Joliet','Rockford','Springfield','Elgin','Peoria','Champaign','Waukegan','Cicero'],
+        'Indiana': ['Indianapolis','Fort Wayne','Evansville','South Bend','Carmel','Fishers','Bloomington','Hammond','Gary','Lafayette'],
+        'Iowa': ['Des Moines','Cedar Rapids','Davenport','Sioux City','Iowa City','Waterloo','Council Bluffs','Ames','West Des Moines'],
+        'Kansas': ['Wichita','Overland Park','Kansas City','Olathe','Topeka','Lawrence','Shawnee','Manhattan'],
+        'Kentucky': ['Louisville','Lexington','Bowling Green','Owensboro','Covington'],
+        'Louisiana': ['New Orleans','Baton Rouge','Shreveport','Lafayette','Lake Charles','Kenner','Bossier City','Monroe'],
+        'Maine': ['Portland','Lewiston','Bangor','South Portland','Auburn'],
+        'Maryland': ['Baltimore','Columbia','Germantown','Silver Spring','Waldorf','Glen Burnie','Frederick','Ellicott City','Rockville','Gaithersburg'],
+        'Massachusetts': ['Boston','Worcester','Springfield','Cambridge','Lowell','Brockton','New Bedford','Lynn','Fall River','Quincy'],
+        'Michigan': ['Detroit','Grand Rapids','Warren','Sterling Heights','Ann Arbor','Lansing','Flint','Dearborn','Livonia','Westland'],
+        'Minnesota': ['Minneapolis','Saint Paul','Rochester','Duluth','Bloomington','Brooklyn Park','Plymouth','Saint Cloud'],
+        'Mississippi': ['Jackson','Gulfport','Southaven','Hattiesburg','Biloxi'],
+        'Missouri': ['Kansas City','Saint Louis','Springfield','Columbia','Independence','Lee\'s Summit','O\'Fallon','St. Joseph','St. Charles'],
+        'Montana': ['Billings','Missoula','Great Falls','Bozeman','Butte'],
+        'Nebraska': ['Omaha','Lincoln','Bellevue','Grand Island','Kearney'],
+        'Nevada': ['Las Vegas','Henderson','Reno','North Las Vegas','Paradise','Sparks','Carson City'],
+        'New Hampshire': ['Manchester','Nashua','Concord','Derry','Dover'],
+        'New Jersey': ['Newark','Jersey City','Paterson','Elizabeth','Edison','Woodbridge','Lakewood','Toms River','Hamilton','Trenton'],
+        'New Mexico': ['Albuquerque','Las Cruces','Rio Rancho','Santa Fe','Roswell'],
+        'New York': ['New York City','Buffalo','Rochester','Yonkers','Syracuse','Albany','New Rochelle','Mount Vernon','Schenectady','Utica','The Bronx','Brooklyn','Queens','Staten Island','Manhattan'],
+        'North Carolina': ['Charlotte','Raleigh','Greensboro','Durham','Winston-Salem','Fayetteville','Cary','Wilmington','High Point','Concord'],
+        'North Dakota': ['Fargo','Bismarck','Grand Forks','Minot','West Fargo'],
+        'Ohio': ['Columbus','Cleveland','Cincinnati','Toledo','Akron','Dayton','Parma','Canton','Youngstown','Lorain'],
+        'Oklahoma': ['Oklahoma City','Tulsa','Norman','Broken Arrow','Edmond','Lawton','Moore','Midwest City'],
+        'Oregon': ['Portland','Eugene','Salem','Gresham','Hillsboro','Beaverton','Bend','Medford'],
+        'Pennsylvania': ['Philadelphia','Pittsburgh','Allentown','Erie','Reading','Scranton','Bethlehem','Lancaster','Harrisburg','York'],
+        'Rhode Island': ['Providence','Cranston','Woonsocket','Pawtucket','East Providence'],
+        'South Carolina': ['Columbia','Charleston','North Charleston','Mount Pleasant','Rock Hill','Greenville','Summerville'],
+        'South Dakota': ['Sioux Falls','Rapid City','Aberdeen','Brookings','Watertown'],
+        'Tennessee': ['Memphis','Nashville','Knoxville','Chattanooga','Clarksville','Murfreesboro','Franklin','Jackson'],
+        'Texas': ['Houston','San Antonio','Dallas','Austin','Fort Worth','El Paso','Arlington','Corpus Christi','Plano','Lubbock','Laredo','Irving','Garland','Frisco','McKinney','Amarillo','Grand Prairie','Brownsville','Pasadena','Killeen'],
+        'Utah': ['Salt Lake City','West Valley City','Provo','West Jordan','Orem','Sandy','Ogden','St. George','Layton'],
+        'Vermont': ['Burlington','South Burlington','Rutland','Barre','Montpelier'],
+        'Virginia': ['Virginia Beach','Norfolk','Chesapeake','Richmond','Newport News','Alexandria','Hampton','Roanoke','Portsmouth','Suffolk'],
+        'Washington': ['Seattle','Spokane','Tacoma','Vancouver','Bellevue','Kent','Everett','Renton','Spokane Valley','Kirkland'],
+        'West Virginia': ['Charleston','Huntington','Morgantown','Parkersburg','Wheeling'],
+        'Wisconsin': ['Milwaukee','Madison','Green Bay','Kenosha','Racine','Appleton','Waukesha','Oshkosh','Eau Claire','Janesville'],
+        'Wyoming': ['Cheyenne','Casper','Laramie','Gillette','Rock Springs']
+      };
+      /* Populate state dropdown */
+      Object.keys(US_STATES_CITIES).sort().forEach(state => {
+        const opt = document.createElement('option');
+        opt.value = state;
+        opt.textContent = state;
+        stateSelectEl.appendChild(opt);
+      });
+      /* When state changes, populate city dropdown */
+      stateSelectEl.addEventListener('change', () => {
+        const state = stateSelectEl.value;
+        citySelectEl.innerHTML = '<option value="">— Select a city —</option>';
+        if (state && US_STATES_CITIES[state]) {
+          US_STATES_CITIES[state].forEach(city => {
+            const opt = document.createElement('option');
+            opt.value = city;
+            opt.textContent = city;
+            citySelectEl.appendChild(opt);
+          });
+          citySelectEl.disabled = false;
+        } else {
+          citySelectEl.disabled = true;
+        }
+      });
       const menuStatusEl = document.getElementById('weather-menu-status');
       const mainIconEl = document.getElementById('weather-main-icon');
       const tempBigEl = document.getElementById('weather-temp-big');
@@ -1856,7 +1944,7 @@ git push</pre>
         if (savedLocation) {
           try {
             await loadWeatherByCoords(savedLocation.lat, savedLocation.lon, savedLocation.label);
-            setMenuStatus('Using saved location. Use ⋯ to update city/state.', false);
+            setMenuStatus('Using saved location. Use "Add location" to update city/state.', false);
             return;
           } catch (_) {
             // Continue with geolocation and other fallbacks.
@@ -1864,11 +1952,11 @@ git push</pre>
         }
         try {
           if (!canUseBrowserLocation()) {
-            throw new Error('Browser location is unavailable here. Add city/state in the ⋯ menu or use approximate location.');
+            throw new Error('Browser location is unavailable here. Use the "Add location" button or approximate location.');
           }
           const permissionState = await getLocationPermissionState();
           if (permissionState === 'denied') {
-            throw new Error('Location permission is blocked. Enable it in browser site settings, or add city/state from the ⋯ menu.');
+            throw new Error('Location permission is blocked. Enable it in browser site settings, or use the "Add location" button.');
           }
           const position = await geolocation();
           const latitude = Number(position.coords.latitude.toFixed(4));
@@ -1880,11 +1968,11 @@ git push</pre>
           try {
             const fallback = await ipGeolocate();
             await loadWeatherByCoords(fallback.lat, fallback.lon, fallback.label);
-            setMenuStatus('Using approximate location. Add city/state in the ⋯ menu for exact weather.', false);
+            setMenuStatus('Using approximate location. Use "Add location" for exact weather.', false);
           } catch (fallbackError) {
             try {
               await loadWeatherByCoords(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, DEFAULT_LOCATION.label);
-              setMenuStatus('Using default location. Open ⋯ to add your city/state.', false);
+              setMenuStatus('Using default location. Click "Add location" to set your city/state.', false);
             } catch (_) {
               locationNameEl.textContent = 'Location unavailable';
               mainIconEl.textContent = '⚠️';
@@ -1920,10 +2008,14 @@ git push</pre>
         }
       });
       addLocationBtn.addEventListener('click', async () => {
-        const city = cityInputEl.value.trim();
-        const stateName = stateInputEl.value.trim();
+        const city = citySelectEl.value.trim();
+        const stateName = stateSelectEl.value.trim();
+        if (!stateName) {
+          setMenuStatus('Select a state first.', true);
+          return;
+        }
         if (!city) {
-          setMenuStatus('Enter a city first.', true);
+          setMenuStatus('Select a city.', true);
           return;
         }
         addLocationBtn.disabled = true;
@@ -1937,18 +2029,6 @@ git push</pre>
           setMenuStatus(error.message || 'Could not add location.', true);
         } finally {
           addLocationBtn.disabled = false;
-        }
-      });
-      stateInputEl.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          addLocationBtn.click();
-        }
-      });
-      cityInputEl.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          addLocationBtn.click();
         }
       });
       document.addEventListener('click', (event) => {
