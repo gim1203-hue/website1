@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imran Khan's first website</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <style>
+    /* layout and component styles */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      max-width: 300px;
+      margin: 15px 0;
+    }
+    .tab {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+      background: yellow;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      margin-right: 4px;
+    }
+    .tab:hover {
+      background: #e6e600;
+    }
+    pre, code {
+      background: #f4f4f4;
+      border-radius: 6px;
+      font-family: "Courier New", monospace;
+    }
+    pre {
+      display: block;
+      white-space: pre-wrap;
+      color: green;
+      border: 1px solid #ccc;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+    code {
+      padding: 2px 6px;
+    }
+    h3 {
+      color: red;
+      background-color: black;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: 30px;
+      text-align: left;
+    }
+    .course-title {
+      font-size: 32px;
+      font-weight: 900;
+      text-align: left;
+      margin: 10px 0;
+    }
+    .left-block {
+      text-align: left;
+    }
+    .git-notes-section {
+      margin-top: 40px;
+      min-height: 900px;
+    }
+    .git-notes-tab {
+      display: inline-block;
+      font-size: 32px;
+      color: #fff;
+      background: #1f2937;
+      border: 3px solid #eab308;
+      border-radius: 12px 12px 0 0;
+      padding: 12px 28px;
+      margin: 0;
+    }
+    .git-notes-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .git-cert-thumbs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .cert-thumb-btn {
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(0,0,0,0.25);
+      border-radius: 8px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .cert-thumb {
+      width: 88px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+    }
+    .cert-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      z-index: 9999;
+    }
+    .cert-modal.is-open { display: flex; }
+    .cert-modal-inner {
+      position: relative;
+      max-width: min(96vw, 1100px);
+      width: 100%;
+    }
+    .cert-modal-image {
+      width: 100%;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      background: #111827;
+    }
+    .cert-modal-close {
+      position: absolute;
+      top: -14px;
+      right: -8px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .media-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin: 22px 0;
+    }
+    .media-card {
+      flex: 1 1 0;
+      min-width: 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 20px;
+      background: #f8fafc;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+    }
+    .quran-card {
+      flex: 1.45 1 0;
+      background: #fffdf5;
+    }
+    .quran-surahs {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .surah {
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .surah h4 { margin: 0 0 6px; color: #14532d; }
+    .arabic { font-size: 18px; line-height: 2; direction: rtl; text-align: right; }
+    .translation { font-size: 14px; color: #374151; }
+    .audio-player {
+      width: 100%;
+      height: 56px;
+      border: 0;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    .quran-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .quran-toolbar input {
+      flex: 1 1 260px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .quran-btn {
+      border: 1px solid #1d4ed8;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .quran-btn:disabled {
+      cursor: not-allowed;
+      opacity: .65;
+    }
+    .surah-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .translation-preview {
+      font-size: 13px;
+      color: #374151;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-top: 10px;
+    }
+    .surah-status {
+      font-size: 12px;
+      color: #334155;
+      margin-top: 8px;
+    }
+    .sidebar-left {
+      width: auto;
+    }
+    .content-right {
+      width: auto;
+    }
+    .repo-steps-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: auto;
+      max-width: 100%;
+      text-align: left;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: transparent;
+      padding: 10px 14px;
+      margin-top: 30px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #ff3333;
+      cursor: pointer;
+    }
+    .repo-steps-toggle .repo-steps-caret {
+      margin-left: auto;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    .repo-steps-panel[hidden] {
+      display: none;
+    }
+    .git-content {
+      display: grid;
+      grid-template-columns: minmax(250px, .55fr) minmax(0, 1.45fr);
+      gap: 28px;
+      border: 2px solid #eab308;
+      border-radius: 0 14px 14px 14px;
+      padding: 24px;
+      background: #fff;
+    }
+    @media (max-width: 900px) {
+      .media-row, .git-content { display: block; }
+      .media-card { margin-bottom: 20px; }
+      .quran-toolbar input { flex-basis: 100%; }
+    }
+    ol {
+      color: green;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px 30px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 30px 0;
+    }
+    .hero-image {
+      max-width: 280px;
+      display: block;
+      margin: 15px 0;
+      border-radius: 10px;
+    }
+    /* ── Lake wallpaper background ── */
+    html {
+      background:
+        url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&auto=format&fit=crop')
+        center center / cover no-repeat fixed;
+    }
+    /* very light dark overlay — just enough contrast */
+    html::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.18);
+      z-index: -1;
+      pointer-events: none;
+    }
+    /* base body — transparent so lake shows everywhere */
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1440px;
+      margin: 40px auto;
+      line-height: 1.6;
+      padding: 0 28px;
+      position: relative;
+      z-index: 0;
+      color: #ffffff;
+      background: transparent;
+    }
+    /* headings and loose text — bright white with shadow for legibility */
+    h1, h2, p, li, label {
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.75);
+    }
+    /* ── Glass-morphism cards — lake visible through every card ── */
+    .media-card,
+    .git-content,
+    .surah,
+    .translation-preview,
+    .quran-card {
+      background: rgba(255, 255, 255, 0.12) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255,255,255,0.30) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+    }
+    /* text inside cards */
+    .media-card *, .git-content *, .surah *, .translation-preview * {
+      color: #f0f9ff !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+    /* surah heading */
+    .surah h4 { color: #bef264 !important; }
+    /* arabic text */
+    .arabic { color: #fef9c3 !important; }
+    /* translation text */
+    .translation, .translation-preview { color: #e0f2fe !important; }
+    /* surah status label */
+    .surah-status { color: #cbd5e1 !important; }
+    /* code/pre blocks inside git notes */
+    pre, code {
+      background: rgba(0,0,0,0.35) !important;
+      color: #86efac !important;
+      border-color: rgba(255,255,255,0.15) !important;
+    }
+    /* ordered list text */
+    ol { color: #86efac !important; border-color: rgba(255,255,255,0.2) !important; }
+    /* h3 keeps its bold look but glass-friendly */
+    h3 {
+      color: #fca5a5 !important;
+      background: rgba(0,0,0,0.50) !important;
+      border-color: rgba(255,255,255,0.15) !important;
+    }
+    /* tabs */
+    .tabs {
+      background: rgba(0,0,0,0.25);
+      border-radius: 8px 8px 0 0;
+      backdrop-filter: blur(6px);
+    }
+    .tab {
+      background: rgba(234,179,8,0.70) !important;
+      color: #1a1a1a !important;
+    }
+    .tab:hover { background: rgba(234,179,8,0.95) !important; }
+    /* git notes tab */
+    .git-notes-tab {
+      background: transparent !important;
+      color: #facc15 !important;
+      border-color: #facc15 !important;
+    }
+    /* ── Remove ALL backgrounds from git notes section downward ── */
+    .git-notes-section,
+    .git-notes-section .git-content,
+    .git-notes-section .sidebar-left,
+    .git-notes-section .content-right,
+    .git-notes-section h3,
+    .git-notes-section pre,
+    .git-notes-section code,
+    .git-notes-section ol,
+    .git-notes-section ul,
+    .git-notes-section p,
+    .git-notes-section div {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border-color: rgba(255,255,255,0.20) !important;
+      box-shadow: none !important;
+    }
+    /* keep text readable on bare lake */
+    .git-notes-section * {
+      color: #ffffff !important;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.85) !important;
+      font-size: 17px !important;
+    }
+    /* headings → red, bigger */
+    .git-notes-section h2,
+    .git-notes-section h3,
+    .git-notes-section h4 {
+      color: #ff3333 !important;
+      font-size: 26px !important;
+    }
+    .git-notes-tab { font-size: 30px !important; }
+    /* steps and body content → white, bigger */
+    .git-notes-section p,
+    .git-notes-section li,
+    .git-notes-section ol,
+    .git-notes-section ul,
+    .git-notes-section span,
+    .git-notes-section td,
+    .git-notes-section label {
+      color: #ffffff !important;
+      font-size: 19px !important;
+    }
+    .git-notes-section pre { color: #ffffff !important; font-size: 21px !important; }
+    .git-notes-section code { color: #ffffff !important; font-size: 19px !important; }
+    .git-notes-section .repo-steps-toggle {
+      background: transparent !important;
+      color: #ff3333 !important;
+      border-color: rgba(255,255,255,0.55) !important;
+      display: flex !important;
+      width: 100% !important;
+      font-size: 26px !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      margin-top: 20px !important;
+    }
+    .git-notes-section .repo-steps-toggle .repo-steps-caret {
+      color: #ff3333 !important;
+    }
+    .git-notes-section .content-right .accordion-toggle {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      cursor: pointer !important;
+      border: 1px solid rgba(255,255,255,0.55) !important;
+      border-radius: 8px !important;
+      padding: 10px 14px !important;
+      margin-top: 20px !important;
+      user-select: none !important;
+    }
+    .git-notes-section .content-right .accordion-caret {
+      margin-left: auto !important;
+      font-size: 18px !important;
+      line-height: 1 !important;
+    }
+    .git-notes-section .content-right [data-accordion-item][hidden] {
+      display: none !important;
+    }
+    /* quran buttons */
+    .quran-btn {
+      background: rgba(37,99,235,0.75) !important;
+      border-color: rgba(147,197,253,0.5) !important;
+      color: #fff !important;
+      backdrop-filter: blur(4px);
+    }
+    .quran-btn:hover { background: rgba(37,99,235,0.95) !important; }
+    /* quran search input */
+    .quran-toolbar input {
+      background: rgba(255,255,255,0.15) !important;
+      border-color: rgba(255,255,255,0.35) !important;
+      color: #fff !important;
+    }
+    .quran-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
+    /* ── Floating yearly calendar (top-right) ── */
+    #cal-widget {
+      position: absolute;
+      top: 10px;
+      right: 28px;
+      width: 260px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      color: #fff;
+      z-index: 100;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.45);
+      user-select: none;
+    }
+    #cal-widget .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    #cal-widget .cal-nav button {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #cal-widget .cal-nav button:hover { background: rgba(255,255,255,0.30); }
+    #cal-widget .cal-title {
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    }
+    #cal-widget .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      text-align: center;
+    }
+    #cal-widget .cal-day-name {
+      font-size: 11px;
+      color: #93c5fd;
+      font-weight: 600;
+      padding: 2px 0 4px;
+    }
+    #cal-widget .cal-cell {
+      font-size: 13px;
+      padding: 4px 2px;
+      border-radius: 5px;
+      cursor: default;
+    }
+    #cal-widget .cal-cell.today {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 50%;
+    }
+    #cal-widget .cal-cell.other-month { color: rgba(255,255,255,0.30); }
+    #cal-widget .cal-year-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #cal-widget .cal-month-chip {
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      cursor: pointer;
+      color: #fff;
+    }
+    #cal-widget .cal-month-chip.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      font-weight: 700;
+    }
+    #cal-widget .cal-month-chip:hover { background: rgba(255,255,255,0.25); }
+    /* ── To-Do / Notes widget (left of calendar) ── */
+    #todo-widget {
+      position: absolute;
+      top: 10px;
+      right: 302px;
+      width: 240px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      color: #fff;
+      z-index: 100;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.45);
+    }
+    #todo-widget h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #facc15;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+      text-align: center;
+      letter-spacing: .5px;
+    }
+    #todo-input-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    #todo-input {
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 7px;
+      color: #fff;
+      padding: 5px 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    #todo-input::placeholder { color: rgba(255,255,255,0.45); }
+    #todo-add-btn {
+      background: #2563eb;
+      border: none;
+      border-radius: 7px;
+      color: #fff;
+      padding: 5px 10px;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #todo-add-btn:hover { background: #1d4ed8; }
+    #todo-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    #todo-list::-webkit-scrollbar { width: 4px; }
+    #todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
+    #todo-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 6px 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      font-size: 13px !important;
+      color: #f1f5f9 !important;
+      text-shadow: none !important;
+    }
+    #todo-list li:last-child { border-bottom: none; }
+    #todo-list li.done .todo-text {
+      text-decoration: line-through;
+      color: rgba(255,255,255,0.40) !important;
+    }
+    #todo-list input[type=checkbox] { margin-top: 2px; accent-color: #2563eb; cursor: pointer; flex-shrink: 0; }
+    #todo-list .todo-text { flex: 1; word-break: break-word; line-height: 1.4; }
+    #todo-list .todo-del {
+      background: none;
+      border: none;
+      color: rgba(255,100,100,0.70);
+      font-size: 15px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    #todo-list .todo-del:hover { color: #ff4444; }
+    #todo-empty {
+      font-size: 12px;
+      color: rgba(255,255,255,0.40);
+      text-align: center;
+      padding: 10px 0;
+    }
+    /* ── Weather widget (left of To-Do / Notes) ── */
+    #weather-widget {
+      position: absolute;
+      top: 10px;
+      right: 560px;
+      width: 305px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #d4d4d8;
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+      color: #111827;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(15,23,42,0.2);
+    }
+    #weather-widget * {
+      text-shadow: none !important;
+    }
+    .weather-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
+    }
+    .weather-location-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+    .weather-pin {
+      font-size: 13px;
+      color: #0f172a;
+      line-height: 1;
+    }
+    #weather-location-btn {
+      border: none;
+      background: transparent;
+      color: #111827;
+      font-size: 21px;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    #weather-location-name {
+      display: inline-block;
+      font-size: 22px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 190px;
+    }
+    .weather-caret {
+      font-size: 13px;
+      color: #1f2937;
+      transform: translateY(1px);
+      flex-shrink: 0;
+    }
+    #weather-menu-btn {
+      border: none;
+      background: transparent;
+      color: #111827;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 6px;
+      min-width: 28px;
+    }
+    #weather-menu-btn:hover {
+      background: rgba(15,23,42,0.08);
+    }
+    #weather-menu {
+      position: absolute;
+      top: 30px;
+      right: 0;
+      width: 230px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      z-index: 20;
+    }
+    #weather-menu[hidden] { display: none; }
+    #weather-menu label {
+      display: block;
+      color: #1f2937;
+      font-size: 12px !important;
+      margin: 4px 0 3px;
+    }
+    #weather-menu input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 12px;
+      color: #111827;
+      margin-bottom: 5px;
+    }
+    #weather-add-location-btn {
+      width: 100%;
+      border: 1px solid #1d4ed8;
+      border-radius: 7px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 8px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    #weather-add-location-btn:hover { background: #1d4ed8; }
+    #weather-menu-status {
+      margin: 6px 0 0;
+      font-size: 11px !important;
+      color: #475569 !important;
+      min-height: 15px;
+    }
+    .weather-main-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .weather-main-temp {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #111827;
+    }
+    #weather-main-icon {
+      font-size: 31px;
+      line-height: 1;
+    }
+    #weather-temp-big {
+      font-size: 55px;
+      font-weight: 500;
+      color: #111827;
+      line-height: 1;
+    }
+    #weather-temp-unit {
+      font-size: 32px;
+      vertical-align: top;
+      color: #111827;
+      margin-left: 1px;
+      line-height: 1;
+    }
+    #weather-forecast-toggle {
+      border: none;
+      background: transparent;
+      text-align: right;
+      cursor: pointer;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      padding: 0;
+      color: #1f2937;
+      font-size: 25px;
+    }
+    #weather-status-line {
+      font-size: 14px;
+      line-height: 1.25;
+      color: #1f2937;
+      max-width: 130px;
+      white-space: normal;
+    }
+    #weather-arrow {
+      font-size: 28px;
+      line-height: 1;
+      transition: transform .2s ease;
+      color: #111827;
+      transform-origin: 50% 50%;
+    }
+    #weather-widget.forecast-open #weather-arrow {
+      transform: rotate(90deg);
+    }
+    #weather-forecast-link {
+      border: none;
+      background: transparent;
+      color: #1d4ed8;
+      font-size: 27px;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 6px;
+      text-decoration: none;
+    }
+    #weather-forecast-link:hover { text-decoration: underline; }
+    #weather-forecast-wrap {
+      margin-top: 7px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 8px;
+    }
+    #weather-forecast-wrap[hidden] { display: none; }
+    #weather-forecast-wrap h5 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: #334155;
+      font-weight: 700;
+    }
+    #weather-forecast-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 4px;
+    }
+    #weather-forecast-list li {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      gap: 6px;
+      align-items: center;
+      font-size: 12px;
+      color: #1f2937;
+      line-height: 1.3;
+    }
+    .forecast-day {
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .forecast-condition {
+      color: #334155;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .forecast-temp {
+      color: #0f172a;
+      font-weight: 600;
+      text-align: right;
+    }
+    #weather-updated {
+      margin: 7px 0 0;
+      font-size: 11px !important;
+      color: #6b7280 !important;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- Weather widget -->
+  <div id="weather-widget" aria-live="polite">
+    <div class="weather-top">
+      <div class="weather-location-row">
+        <span class="weather-pin">📍</span>
+        <button id="weather-location-btn" title="Refresh weather">
+          <span id="weather-location-name">Detecting...</span>
+          <span class="weather-caret">▼</span>
+        </button>
+      </div>
+      <button id="weather-menu-btn" title="Weather options">⋯</button>
+      <div id="weather-menu" hidden>
+        <label for="weather-city-input">City</label>
+        <input id="weather-city-input" type="text" placeholder="e.g. Bronx" maxlength="50">
+        <label for="weather-state-input">State</label>
+        <input id="weather-state-input" type="text" placeholder="e.g. New York" maxlength="50">
+        <button id="weather-add-location-btn">Add location</button>
+        <p id="weather-menu-status"></p>
+      </div>
+    </div>
+    <div class="weather-main-row">
+      <div class="weather-main-temp">
+        <span id="weather-main-icon">☁️</span>
+        <div>
+          <span id="weather-temp-big">--</span><span id="weather-temp-unit">°F</span>
+        </div>
+      </div>
+      <button id="weather-forecast-toggle" title="Show 7-day forecast">
+        <span id="weather-status-line">Loading weather...</span>
+        <span id="weather-arrow">›</span>
+      </button>
+    </div>
+    <button id="weather-forecast-link">See full forecast</button>
+    <div id="weather-forecast-wrap" hidden>
+      <h5>7-Day Forecast</h5>
+      <ul id="weather-forecast-list">
+        <li><span class="forecast-day">Loading...</span><span class="forecast-condition">--</span><span class="forecast-temp">--</span></li>
+      </ul>
+    </div>
+    <p id="weather-updated">Updated: --</p>
+  </div>
+  <!-- To-Do / Notes widget -->
+  <div id="todo-widget">
+    <h4>📝 Notes &amp; To-Do</h4>
+    <div id="todo-input-row">
+      <input id="todo-input" type="text" placeholder="Add a note or task…" maxlength="120">
+      <button id="todo-add-btn" title="Add">+</button>
+    </div>
+    <ul id="todo-list"><li id="todo-empty">No items yet</li></ul>
+  </div>
+  <!-- Live yearly calendar widget -->
+  <div id="cal-widget" aria-label="Calendar">
+    <div class="cal-nav">
+      <button id="cal-prev" aria-label="Previous month">&#8249;</button>
+      <div class="cal-title" id="cal-title"></div>
+      <button id="cal-next" aria-label="Next month">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-year-row" id="cal-year-row"></div>
+  </div>
+  <h1 class="left-block">Imran Khan</h1>
+  <p id="today-date" class="left-block"></p>
+  <p class="course-title">Software Engineering Course</p>
+  <svg class="hero-image" width="240" height="160" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flag of Pakistan">
+    <rect width="900" height="600" fill="#01411C"/>
+    <rect width="225" height="600" fill="#ffffff"/>
+    <g transform="translate(562,300)">
+      <circle r="130" fill="#ffffff"/>
+      <circle r="130" fill="#01411C" transform="translate(35,-20)"/>
+      <g fill="#ffffff" transform="translate(150,-70) rotate(-20)">
+        <polygon points="0,-45 13,-14 45,-14 19,5 29,36 0,17 -29,36 -19,5 -45,-14 -13,-14"/>
+      </g>
+    </g>
+  </svg>
+  <h1>hello world</h1>
+  <form action="https://www.google.com/search" method="get">
+    <input type="text" name="q" placeholder="Search Google..." required>
+    <button type="submit">Search</button>
+  </form>
+  <div class="tabs">
+    <a href="https://www.yahoo.com/" class="tab">Yahoo</a>
+    <a href="https://www.google.com/" class="tab">Google</a>
+    <a href="https://www.facebook.com/" class="tab">Facebook</a>
+    <a href="https://www.tiktok.com/" class="tab">TikTok</a>
+  </div>
+  <hr>
+  <div class="media-row">
+  <section class="media-card" aria-labelledby="anthem-heading">
+    <h3 id="anthem-heading" style="margin-top:0;">Qaumi Taranah — National Anthem of Pakistan</h3>
+    <p style="font-style:italic; color:#01411C; line-height:1.9;">
+      پاک سرزمین شاد باد<br>
+      کشورِ حسین شاد باد<br>
+      تو نشانِ عزمِ عالی شان<br>
+      ارضِ پاکستان<br>
+      مرکزِ یقین شاد باد
+      <br><br>
+      پاک سرزمین کا نظام<br>
+      قوتِ اخوتِ عوام<br>
+      قوم، ملک، سلطنت<br>
+      پائندہ تابندہ باد<br>
+      شاد باد منزلِ مراد
+      <br><br>
+      پرچمِ ستارہ و ہلال<br>
+      رہبرِ ترقی و کمال<br>
+      ترجمانِ ماضی، شانِ حال<br>
+      جانِ استقبال<br>
+      سایۂ خدائے ذوالجلال
+    </p>
+    <p style="font-size:14px; color:#555;">
+      <strong>Transliteration:</strong> Pāk sarzamīn shād bād, kishwar-e-hasīn shād bād, tū nishān-e-azm-e-ālī shān, arz-e-Pākistān, markaz-e-yaqīn shād bād...
+      <br><br>
+      <strong>Meaning:</strong> Blessed be the sacred land, happy be the bounteous realm; you are the symbol of high resolve, land of Pakistan — blessed be the seat of faith. The order of this sacred land is the strength of the brotherhood of the people; may the nation, country, and dominion live forever, shining and eternal. The flag of the crescent and star leads the way to progress and perfection — interpreter of our past, glory of our present, and inspiration for our future.
+    </p>
+    <audio controls style="width:100%; margin-top:10px;">
+      <source src="https://archive.org/download/national-anthem-of-pakistan/NATIONAL%20ANTHEM%20OF%20PAKISTAN%20%5Bvocal%5D.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </section>
+  <section class="media-card quran-card" aria-labelledby="quran-heading">
+    <h3 id="quran-heading" style="margin-top:0;">Holy Quran — English Translation</h3>
+    <p>This section loads all 114 surahs with Arabic recitation and live spoken English translation inside this page. Internet is required for loading surahs.</p>
+    <div class="quran-toolbar">
+      <button id="load-surahs-btn" class="quran-btn" type="button">All Surahs ▼</button>
+      <input id="surah-search" type="text" placeholder="Search surah by number or name (example: 1, Fatiha, Mulk)">
+    </div>
+    <div id="quran-surahs" class="quran-surahs" aria-live="polite"></div>
+  </section>
+  </div>
+  <div style="max-width:500px; margin:15px 0;">
+    <h3 style="margin-top:0;">Pakistani Dhol Playing</h3>
+    <iframe width="480" height="270" src="https://www.youtube.com/embed/EjJOYrMnOOk" title="Pakistani Dhol Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <p class="left-block"><a href="#git-notes">Jump to Git notes ↓</a></p>
+  <div class="git-notes-section" id="git-notes">
+  <div class="git-notes-header">
+    <h2 class="git-notes-tab">Git Notes</h2>
+    <div class="git-cert-thumbs" aria-label="Git certificates">
+      <button type="button" class="cert-thumb-btn" data-full-src="certificate-git-github.png" data-full-alt="Starting with Git and GitHub certificate">
+        <img src="certificate-git-github.png" alt="Starting with Git and GitHub certificate thumbnail" class="cert-thumb">
+      </button>
+      <button type="button" class="cert-thumb-btn" data-full-src="certificate-ai-dev-workflow.png" data-full-alt="AI Prompting and Developer Workflow certificate">
+        <img src="certificate-ai-dev-workflow.png" alt="AI Prompting and Developer Workflow certificate thumbnail" class="cert-thumb">
+      </button>
+    </div>
+  </div>
+  <div class="git-content">
+  <div class="sidebar-left">
+  <h3 class="left-block">Covered Material</h3>
+  <pre class="left-block">creating new branches
+fetching
+pulling
+pushing
+merging
+rebasing
+branching
+switching between branches
+status
+updating
+history
+pull request = PR
+compare between branches
+perform/list/save/apply stash
+withdraw staged changes
+revert commit
+tagging
+creating new branch on terminal
+reset a file
+to go live index.html
+add a link to website</pre>
+  </div>
+  <div class="content-right">
+  <button type="button" class="repo-steps-toggle" id="repo-steps-toggle" aria-expanded="false" aria-controls="repo-steps-panel">
+    Steps to Create a New Repository and Link It to Local Project
+    <span class="repo-steps-caret" id="repo-steps-caret">▼</span>
+  </button>
+  <div class="repo-steps-panel" id="repo-steps-panel" hidden>
+    <ol>
+      <li>After creating a new folder and a file (index.html)</li>
+      <li>Press shift+1, enter — make sure to save the file in VS Code</li>
+      <li>Go to GitHub and create a new repository</li>
+      <li>Copy the repository URL and paste it into the second command below</li>
+      <li><code>git init</code></li>
+      <li><code>git remote add origin &lt;copy paste url from github&gt;</code></li>
+      <li><code>git add .</code></li>
+      <li><code>git commit -m "initial commit"</code></li>
+      <li><code>git push -u origin master</code></li>
+    </ol>
+  </div>
+  <h3>Update Latest Changes</h3>
+  <ol>
+    <li><code>git add .</code></li>
+    <li><code>git commit -m "update my html file"</code></li>
+    <li><code>git push</code></li>
+  </ol>
+  <hr>
+  <h3>Clone a Repository from GitHub to Local Machine</h3>
+  <ol>
+    <li>Copy URL from GitHub (control+c)</li>
+    <li>Open new window in VS Code</li>
+    <li>Press control+shift+p</li>
+    <li>Type "Git: Clone"</li>
+    <li>Paste URL (control+v), press enter</li>
+    <li>Select folder where you want to save the project</li>
+  </ol>
+  <p>OR</p>
+  <ol>
+    <li>Copy URL of repository from GitHub (control+c)</li>
+    <li>Open a new folder in VS Code</li>
+    <li>Type <code>git clone</code> then press control+v to paste URL in the terminal</li>
+  </ol>
+  <hr>
+  <h3>Create Branch on VS Code</h3>
+  <ol>
+    <li><code>git checkout -b newbranchname</code></li>
+    <li><code>git add .</code></li>
+    <li><code>git commit -m "branchname"</code></li>
+    <li><code>git push -u origin newbranchname</code></li>
+  </ol>
+  <h3>Delete a Branch in Terminal</h3>
+  <p>Note: you can't delete the branch you are currently on.</p>
+  <ol>
+    <li><code>git branch -d branchname</code></li>
+  </ol>
+  <hr>
+  <h3>Creating and Moving Branches in Git</h3>
+  <p>(type command <code>clear</code> in terminal to clear the terminal)</p>
+  <ol>
+    <li><code>git branch &lt;branch-name&gt;</code></li>
+    <li><code>git checkout &lt;branch-name&gt;</code></li>
+    <li><code>git push origin &lt;branch-name&gt;</code></li>
+    <li><code>git add .</code></li>
+    <li><code>git commit -m "add &lt;file name&gt;"</code></li>
+    <li><code>git push -u origin &lt;file name&gt;</code></li>
+  </ol>
+  <h3>Merge Branches to the Master</h3>
+  <ol>
+    <li><code>git branch</code> (to see which branch is active)</li>
+    <li><code>git checkout branchname</code> (to select which branch to merge to)</li>
+    <li><code>git merge branchname</code> (which branch you want merged)</li>
+    <li><code>git push</code></li>
+  </ol>
+  <h3>To Merge Branch Using Rebase</h3>
+  <ol>
+    <li><code>git branch</code> (to see which branch is active)</li>
+    <li><code>git checkout branchname</code> (to select which branch to merge to)</li>
+    <li><code>git rebase branchname</code> (which branch you want merged)</li>
+    <li><code>git push</code></li>
+  </ol>
+  <h3>To Delete a Branch</h3>
+  <ol>
+    <li><code>git branch -d &lt;branch-name&gt;</code> (to delete a branch locally)</li>
+    <li><code>git push origin --delete &lt;branch-name&gt;</code> (to delete a branch from GitHub)</li>
+    <li><code>git push origin &lt;branch-name&gt;</code> (to push the branch to GitHub)</li>
+    <li><code>git checkout -b &lt;branch-name&gt;</code> (to create and move to new branch)</li>
+    <li><code>git merge &lt;branch-name&gt;</code> (to merge the branch to main branch)</li>
+  </ol>
+  <h3>Compare Branches to See the Difference</h3>
+  <ol>
+    <li><code>git diff branch1..branch2</code></li>
+  </ol>
+  <hr>
+  <h3>Git Fetch</h3>
+  <ol>
+    <li>After creating a file and new branch in GitHub</li>
+    <li>Open Visual Studio Code</li>
+    <li><code>git fetch origin</code> (to fetch data from GitHub)</li>
+  </ol>
+  <h3>Git Pull</h3>
+  <p>(combination of fetch and merging)</p>
+  <ol>
+    <li><code>git pull origin master</code> (to pull from GitHub)</li>
+    <li><code>git checkout branchname</code></li>
+    <li><code>git merge branchname</code> (main/master)</li>
+    <li><code>git push</code></li>
+  </ol>
+  <h3>Git Push</h3>
+  <ol>
+    <li><code>git push origin &lt;branch-name&gt;</code> (to push the branch to GitHub)</li>
+  </ol>
+  <h3>To Update Latest Changes</h3>
+  <ol>
+    <li><code>git add .</code></li>
+    <li><code>git commit -m "update my html file"</code></li>
+    <li><code>git push</code></li>
+  </ol>
+  <pre>git fetch origin
+git pull
+git checkout branch name
+git merge branch name or git rebase branch name
+git add .
+git commit -m "update file name"
+git push</pre>
+  <hr>
+  <h3>Branch Status</h3>
+  <ol>
+    <li><code>git status</code></li>
+  </ol>
+  <h3>Check History</h3>
+  <ol>
+    <li><code>git log</code></li>
+  </ol>
+  <hr>
+  <h3>Creating a Pull Request</h3>
+  <ol>
+    <li>Open secondary branch, add content</li>
+    <li>Push to GitHub and open GitHub</li>
+    <li>Create a pull request from secondary to main branch on GitHub to review changes and get viewer input, verify changes</li>
+    <li>Confirm and merge</li>
+    <li>Open VS Code, pull changes from GitHub</li>
+  </ol>
+  <h3>How to Perform Stash and List/Save and Apply Stash</h3>
+  <ol>
+    <li><code>git stash save "added paragraph"</code></li>
+    <li><code>git stash save "content in file name"</code></li>
+    <li><code>git stash list</code></li>
+    <li><code>git stash apply</code></li>
+    <li><code>git stash save</code> again</li>
+    <li><code>git stash apply</code></li>
+  </ol>
+  <h3>Withdraw Staged Changes</h3>
+  <ol>
+    <li><code>git status</code></li>
+    <li><code>git add .</code> (staged, green)</li>
+    <li><code>git status</code></li>
+    <li><code>git reset</code> (unstaged, red)</li>
+    <li><code>git status</code></li>
+    <li><code>git add .</code> (staged, green)</li>
+    <li><code>git reset filename</code> (to reset only 1 file)</li>
+  </ol>
+  <h3>How to Revert Commit</h3>
+  <ol>
+    <li>Add, commit, push to GitHub</li>
+    <li>Select commit, copy hash</li>
+    <li><code>git revert &lt;paste hash&gt;</code> on VS Code</li>
+    <li>Open new window, make commit</li>
+    <li>Push to GitHub</li>
+  </ol>
+  <h3>Tagging</h3>
+  <ol>
+    <li><code>git tag -a &lt;tag-name&gt; -m "tagging message" &lt;commit_hash&gt;</code></li>
+    <li><code>git tag</code> (for name)</li>
+    <li><code>git tag -n</code> (for message of tag)</li>
+    <li><code>git push origin &lt;tag name&gt;</code></li>
+  </ol>
+  <h3>Resetting a File</h3>
+  <ol>
+    <li><code>git reset file.txt</code></li>
+  </ol>
+  <h3>Go Live</h3>
+  <ol>
+    <li>Open your HTML file</li>
+    <li>Right click</li>
+    <li>Open with Live Server</li>
+  </ol>
+  <hr>
+  <h3>Add a Link to Website</h3>
+  <ol>
+    <li><a href="https://www.example.com">Example Website</a></li>
+    <li><code>git add index.html</code></li>
+    <li><code>git commit -m "add link"</code></li>
+    <li><code>git push origin master</code></li>
+    <li>or for the whole file</li>
+    <li><code>git add index.html</code></li>
+    <li><code>git commit -m "Clean up HTML structure and formatting"</code></li>
+    <li><code>git push origin master</code></li>
+  </ol>
+  </div>
+  </div>
+  </div>
+  <div class="cert-modal" id="cert-modal" aria-hidden="true">
+    <div class="cert-modal-inner">
+      <button type="button" class="cert-modal-close" id="cert-modal-close" aria-label="Close certificate image">×</button>
+      <img id="cert-modal-image" class="cert-modal-image" src="" alt="Certificate preview">
+    </div>
+  </div>
+  <script>
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    (function() {
+      const toggleBtn = document.getElementById('repo-steps-toggle');
+      const panel = document.getElementById('repo-steps-panel');
+      const caret = document.getElementById('repo-steps-caret');
+      if (!toggleBtn || !panel || !caret) return;
+      toggleBtn.addEventListener('click', () => {
+        const willOpen = panel.hidden;
+        panel.hidden = !willOpen;
+        toggleBtn.setAttribute('aria-expanded', String(willOpen));
+        caret.textContent = willOpen ? '▲' : '▼';
+      });
+    })();
+    (function() {
+      const contentRight = document.querySelector('.git-notes-section .content-right');
+      if (!contentRight) return;
+      const headers = Array.from(contentRight.querySelectorAll('h3'));
+      headers.forEach((header, index) => {
+        header.classList.add('accordion-toggle');
+        header.setAttribute('role', 'button');
+        header.setAttribute('tabindex', '0');
+        const caret = document.createElement('span');
+        caret.className = 'accordion-caret';
+        caret.textContent = '▼';
+        header.appendChild(caret);
+        const panelId = `git-accordion-panel-${index + 1}`;
+        const panelItems = [];
+        let sibling = header.nextElementSibling;
+        while (sibling && sibling.tagName !== 'H3') {
+          panelItems.push(sibling);
+          sibling = sibling.nextElementSibling;
+        }
+        header.setAttribute('aria-controls', panelId);
+        header.setAttribute('aria-expanded', 'false');
+        panelItems.forEach((item) => {
+          item.dataset.accordionItem = panelId;
+          item.hidden = true;
+        });
+        function togglePanel() {
+          const willOpen = header.getAttribute('aria-expanded') !== 'true';
+          header.setAttribute('aria-expanded', String(willOpen));
+          caret.textContent = willOpen ? '▲' : '▼';
+          panelItems.forEach((item) => {
+            item.hidden = !willOpen;
+          });
+        }
+        header.addEventListener('click', togglePanel);
+        header.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            togglePanel();
+          }
+        });
+      });
+    })();
+    (function() {
+      const modal = document.getElementById('cert-modal');
+      const modalImage = document.getElementById('cert-modal-image');
+      const closeBtn = document.getElementById('cert-modal-close');
+      const thumbButtons = document.querySelectorAll('.cert-thumb-btn');
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        modalImage.src = '';
+      }
+      thumbButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          modalImage.src = btn.dataset.fullSrc;
+          modalImage.alt = btn.dataset.fullAlt || 'Certificate preview';
+          modal.classList.add('is-open');
+          modal.setAttribute('aria-hidden', 'false');
+        });
+      });
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+      });
+    })();
+    const quranState = {
+      catalog: [],
+      loadedSurahs: new Map(),
+      currentUtterance: null
+    };
+    const quranSurahsContainer = document.getElementById('quran-surahs');
+    const loadSurahsBtn = document.getElementById('load-surahs-btn');
+    const surahSearchInput = document.getElementById('surah-search');
+    function setSpeakingState(card, isSpeaking) {
+      const playBtn = card.querySelector('.play-translation-btn');
+      const playBothBtn = card.querySelector('.play-both-btn');
+      const stopBtn = card.querySelector('.stop-translation-btn');
+      playBtn.disabled = !card.dataset.translationReady || isSpeaking;
+      playBothBtn.disabled = !card.dataset.translationReady || isSpeaking;
+      stopBtn.disabled = !isSpeaking;
+    }
+    function stopTranslationAudio() {
+      window.speechSynthesis.cancel();
+      quranState.currentUtterance = null;
+      document.querySelectorAll('.surah-audio').forEach(audioEl => {
+        audioEl.pause();
+        audioEl.onended = null;
+      });
+      document.querySelectorAll('.surah').forEach(card => setSpeakingState(card, false));
+    }
+    function playEnglishTranslation(card, surah, statusEl) {
+      if (!('speechSynthesis' in window)) {
+        statusEl.textContent = 'Speech playback is not supported in this browser.';
+        return;
+      }
+      const cached = quranState.loadedSurahs.get(surah.number);
+      if (!cached || !cached.translationText) {
+        statusEl.textContent = 'Load this surah first to play translation audio.';
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(cached.translationText);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.95;
+      utterance.onstart = () => {
+        quranState.currentUtterance = utterance;
+        statusEl.textContent = 'Playing live English translation...';
+        setSpeakingState(card, true);
+      };
+      utterance.onend = () => {
+        quranState.currentUtterance = null;
+        statusEl.textContent = 'Finished translation playback.';
+        setSpeakingState(card, false);
+      };
+      utterance.onerror = () => {
+        quranState.currentUtterance = null;
+        statusEl.textContent = 'Translation playback stopped due to a speech error.';
+        setSpeakingState(card, false);
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+    function buildSurahCard(surah) {
+      const card = document.createElement('article');
+      card.className = 'surah';
+      card.dataset.surahNumber = String(surah.number);
+      card.dataset.translationReady = '';
+      card.innerHTML = `
+        <h4>${surah.number}. ${surah.englishName} — ${surah.englishNameTranslation}</h4>
+        <div class="surah-actions">
+          <button class="quran-btn load-surah-btn" type="button">Load audio + translation</button>
+          <button class="quran-btn play-both-btn" type="button" disabled>Play Arabic + English</button>
+          <button class="quran-btn play-translation-btn" type="button" disabled>Play English translation</button>
+          <button class="quran-btn stop-translation-btn" type="button" disabled>Stop translation</button>
+        </div>
+        <p class="arabic surah-arabic">Arabic ayahs will appear after loading this surah.</p>
+        <audio class="audio-player surah-audio" controls preload="none"></audio>
+        <div class="translation-preview">Translation preview will appear after loading this surah.</div>
+        <p class="surah-status">Ready</p>
+      `;
+      const statusEl = card.querySelector('.surah-status');
+      const arabicTextEl = card.querySelector('.surah-arabic');
+      const translationPreviewEl = card.querySelector('.translation-preview');
+      const audioEl = card.querySelector('.surah-audio');
+      const loadBtn = card.querySelector('.load-surah-btn');
+      const playBothBtn = card.querySelector('.play-both-btn');
+      const playBtn = card.querySelector('.play-translation-btn');
+      const stopBtn = card.querySelector('.stop-translation-btn');
+      loadBtn.addEventListener('click', async () => {
+        const number = surah.number;
+        if (quranState.loadedSurahs.has(number)) {
+          const cached = quranState.loadedSurahs.get(number);
+          audioEl.src = cached.arabicAudioAyahs[0] || '';
+          arabicTextEl.innerHTML = cached.arabicTextHtml || 'Arabic text unavailable.';
+          translationPreviewEl.textContent = cached.translationPreview;
+          card.dataset.translationReady = cached.translationText ? 'yes' : '';
+          setSpeakingState(card, false);
+          statusEl.textContent = 'Loaded from cache.';
+          return;
+        }
+        loadBtn.disabled = true;
+        statusEl.textContent = 'Loading surah data...';
+        try {
+          const [arabicResponse, englishResponse] = await Promise.all([
+            fetch(`https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`),
+            fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`)
+          ]);
+          if (!arabicResponse.ok || !englishResponse.ok) {
+            throw new Error('API response error');
+          }
+          const arabicJson = await arabicResponse.json();
+          const englishJson = await englishResponse.json();
+          const arabicAyahs = arabicJson?.data?.ayahs || [];
+          const arabicAudioAyahs = arabicAyahs.map(ayah => ayah.audio).filter(Boolean);
+          const arabicTextHtml = arabicAyahs.map(ayah => ayah.text).join('<br>');
+          const ayahTranslations = (englishJson?.data?.ayahs || []).map(ayah => ayah.text).join(' ');
+          const translationPreview = ayahTranslations
+            ? ayahTranslations.slice(0, 360) + (ayahTranslations.length > 360 ? '...' : '')
+            : 'No translation text available.';
+          quranState.loadedSurahs.set(number, {
+            arabicAudioAyahs,
+            arabicTextHtml,
+            translationText: ayahTranslations,
+            translationPreview
+          });
+          audioEl.src = arabicAudioAyahs[0] || '';
+          arabicTextEl.innerHTML = arabicTextHtml || 'Arabic text unavailable.';
+          translationPreviewEl.textContent = translationPreview;
+          card.dataset.translationReady = ayahTranslations ? 'yes' : '';
+          setSpeakingState(card, false);
+          statusEl.textContent = ayahTranslations && arabicAudioAyahs.length
+            ? 'Loaded. Arabic ayahs/audio and English translation are ready.'
+            : 'Loaded with partial data. Some audio or translation may be unavailable.';
+        } catch (error) {
+          statusEl.textContent = 'Failed to load surah. Check internet and try again.';
+        } finally {
+          loadBtn.disabled = false;
+        }
+      });
+      playBothBtn.addEventListener('click', () => {
+        const cached = quranState.loadedSurahs.get(surah.number);
+        if (!cached || !cached.translationText || !cached.arabicAudioAyahs.length) {
+          statusEl.textContent = 'Load this surah first to play Arabic and English audio.';
+          return;
+        }
+        stopTranslationAudio();
+        setSpeakingState(card, true);
+        statusEl.textContent = 'Playing Arabic recitation...';
+        let audioIndex = 0;
+        const playNextAyah = () => {
+          if (audioIndex >= cached.arabicAudioAyahs.length) {
+            audioEl.onended = null;
+            playEnglishTranslation(card, surah, statusEl);
+            return;
+          }
+          audioEl.src = cached.arabicAudioAyahs[audioIndex];
+          audioEl.play().then(() => {
+            audioIndex += 1;
+          }).catch(() => {
+            audioEl.onended = null;
+            statusEl.textContent = 'Unable to play Arabic recitation. Please press play on the audio player once.';
+            setSpeakingState(card, false);
+          });
+        };
+        audioEl.onended = playNextAyah;
+        playNextAyah();
+      });
+      playBtn.addEventListener('click', () => {
+        stopTranslationAudio();
+        playEnglishTranslation(card, surah, statusEl);
+      });
+      stopBtn.addEventListener('click', () => {
+        stopTranslationAudio();
+        statusEl.textContent = 'Translation playback stopped.';
+      });
+      return card;
+    }
+    function renderSurahCards(searchText = '') {
+      const normalized = searchText.trim().toLowerCase();
+      const filtered = quranState.catalog.filter(surah => {
+        if (!normalized) return true;
+        return (
+          String(surah.number).includes(normalized) ||
+          surah.englishName.toLowerCase().includes(normalized) ||
+          surah.englishNameTranslation.toLowerCase().includes(normalized)
+        );
+      });
+      quranSurahsContainer.innerHTML = '';
+      if (!filtered.length) {
+        quranSurahsContainer.innerHTML = '<p class="surah-status">No surah matched your search.</p>';
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      filtered.forEach(surah => fragment.appendChild(buildSurahCard(surah)));
+      quranSurahsContainer.appendChild(fragment);
+    }
+    loadSurahsBtn.addEventListener('click', async () => {
+      // If already loaded, just toggle visibility
+      if (quranState.catalog.length) {
+        const hidden = quranSurahsContainer.style.display === 'none';
+        quranSurahsContainer.style.display = hidden ? '' : 'none';
+        loadSurahsBtn.textContent = hidden ? 'All Surahs ▲' : 'All Surahs ▼';
+        return;
+      }
+      // First click — load from API
+      loadSurahsBtn.disabled = true;
+      loadSurahsBtn.textContent = 'Loading...';
+      quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
+      try {
+        const response = await fetch('https://api.alquran.cloud/v1/surah');
+        if (!response.ok) throw new Error('Failed to load surah list');
+        const data = await response.json();
+        quranState.catalog = data?.data || [];
+        renderSurahCards(surahSearchInput.value);
+        loadSurahsBtn.textContent = 'All Surahs ▲';
+      } catch (error) {
+        quranSurahsContainer.innerHTML = '<p class="surah-status">Could not load surahs. Check internet and try again.</p>';
+        quranState.catalog = [];
+        loadSurahsBtn.textContent = 'All Surahs ▼';
+      } finally {
+        loadSurahsBtn.disabled = false;
+      }
+    });
+    surahSearchInput.addEventListener('input', () => {
+      if (!quranState.catalog.length) {
+        return;
+      }
+      renderSurahCards(surahSearchInput.value);
+    });
+    /* ── Weather Widget ── */
+    (function() {
+      const weatherWidget = document.getElementById('weather-widget');
+      const locationNameEl = document.getElementById('weather-location-name');
+      const locationBtn = document.getElementById('weather-location-btn');
+      const menuBtn = document.getElementById('weather-menu-btn');
+      const menuEl = document.getElementById('weather-menu');
+      const cityInputEl = document.getElementById('weather-city-input');
+      const stateInputEl = document.getElementById('weather-state-input');
+      const addLocationBtn = document.getElementById('weather-add-location-btn');
+      const menuStatusEl = document.getElementById('weather-menu-status');
+      const mainIconEl = document.getElementById('weather-main-icon');
+      const tempBigEl = document.getElementById('weather-temp-big');
+      const tempUnitEl = document.getElementById('weather-temp-unit');
+      const statusLineEl = document.getElementById('weather-status-line');
+      const forecastToggleBtn = document.getElementById('weather-forecast-toggle');
+      const forecastLinkBtn = document.getElementById('weather-forecast-link');
+      const forecastWrapEl = document.getElementById('weather-forecast-wrap');
+      const forecastListEl = document.getElementById('weather-forecast-list');
+      const updatedEl = document.getElementById('weather-updated');
+      const state = {
+        lat: null,
+        lon: null,
+        locationLabel: 'Detecting...',
+        forecastOpen: false
+      };
+      const WEATHER_LOCATION_STORE = 'ik_weather_location';
+      const DEFAULT_LOCATION = { lat: 40.7128, lon: -74.0060, label: 'New York, NY' };
+      const WEATHER_CODES = {
+        0: 'Clear',
+        1: 'Mostly clear',
+        2: 'Partly cloudy',
+        3: 'Overcast',
+        45: 'Fog',
+        48: 'Freezing fog',
+        51: 'Light drizzle',
+        53: 'Drizzle',
+        55: 'Dense drizzle',
+        61: 'Light rain',
+        63: 'Rain',
+        65: 'Heavy rain',
+        66: 'Freezing rain',
+        67: 'Heavy freezing rain',
+        71: 'Light snow',
+        73: 'Snow',
+        75: 'Heavy snow',
+        80: 'Rain showers',
+        81: 'Heavy showers',
+        82: 'Violent showers',
+        95: 'Thunderstorm'
+      };
+      function weatherText(code) {
+        return WEATHER_CODES[code] || 'Unknown';
+      }
+      function weatherIcon(code) {
+        if (code === 0) return '☀️';
+        if (code === 1 || code === 2) return '🌤️';
+        if (code === 3) return '☁️';
+        if (code === 45 || code === 48) return '🌫️';
+        if ([51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return '🌧️';
+        if ([71, 73, 75].includes(code)) return '❄️';
+        if (code === 95) return '⛈️';
+        return '🌡️';
+      }
+      function persistPreferredLocation(lat, lon, label) {
+        try {
+          localStorage.setItem(WEATHER_LOCATION_STORE, JSON.stringify({
+            lat: Number(lat),
+            lon: Number(lon),
+            label: label || `${Number(lat).toFixed(3)}, ${Number(lon).toFixed(3)}`
+          }));
+        } catch (_) {
+          // Ignore storage errors so weather loading still works.
+        }
+      }
+      function readPreferredLocation() {
+        try {
+          const raw = localStorage.getItem(WEATHER_LOCATION_STORE);
+          if (!raw) {
+            return null;
+          }
+          const parsed = JSON.parse(raw);
+          const lat = Number(parsed?.lat);
+          const lon = Number(parsed?.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+            return null;
+          }
+          const label = typeof parsed?.label === 'string' && parsed.label.trim()
+            ? parsed.label.trim()
+            : `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+          return { lat, lon, label };
+        } catch (_) {
+          return null;
+        }
+      }
+      function setMenuStatus(message, isError) {
+        menuStatusEl.textContent = message || '';
+        menuStatusEl.style.color = isError ? '#dc2626' : '#475569';
+      }
+      function setMenuOpen(open) {
+        menuEl.hidden = !open;
+      }
+      function setForecastOpen(open) {
+        state.forecastOpen = open;
+        forecastWrapEl.hidden = !open;
+        weatherWidget.classList.toggle('forecast-open', open);
+      }
+      function forecastSummary(daily) {
+        if (!daily || !Array.isArray(daily.temperature_2m_min) || daily.temperature_2m_min.length < 2) {
+          return 'No trend';
+        }
+        const todayMin = Number(daily.temperature_2m_min[0]);
+        const tomorrowMin = Number(daily.temperature_2m_min[1]);
+        if (!Number.isFinite(todayMin) || !Number.isFinite(tomorrowMin)) {
+          return 'No trend';
+        }
+        if (tomorrowMin < todayMin) return 'Low temps to drop tomorrow';
+        if (tomorrowMin > todayMin) return 'Warmer low temps tomorrow';
+        return 'Similar temps tomorrow';
+      }
+      function renderForecast(daily) {
+        if (!daily || !Array.isArray(daily.time)) {
+          forecastListEl.innerHTML = '<li><span class="forecast-day">Unavailable</span><span class="forecast-condition">No data</span><span class="forecast-temp">--</span></li>';
+          return;
+        }
+        const days = daily.time.slice(0, 7).map((dateStr, i) => {
+          const dayName = new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' });
+          const code = Number(daily.weather_code?.[i]);
+          const max = Number(daily.temperature_2m_max?.[i]);
+          const min = Number(daily.temperature_2m_min?.[i]);
+          const icon = weatherIcon(code);
+          const maxText = Number.isFinite(max) ? `${Math.round(max)}°` : '--';
+          const minText = Number.isFinite(min) ? `${Math.round(min)}°` : '--';
+          return `<li><span class="forecast-day">${dayName}</span><span class="forecast-condition">${icon} ${weatherText(code)}</span><span class="forecast-temp">${maxText}/${minText}</span></li>`;
+        });
+        forecastListEl.innerHTML = days.join('');
+      }
+      function geolocation() {
+        return new Promise((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation is not available in this browser.'));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 }
+          );
+        });
+      }
+      async function getLocationPermissionState() {
+        if (!navigator.permissions || !navigator.permissions.query) {
+          return 'unknown';
+        }
+        try {
+          const result = await navigator.permissions.query({ name: 'geolocation' });
+          return result.state || 'unknown';
+        } catch (_) {
+          return 'unknown';
+        }
+      }
+      async function ipGeolocate() {
+        const services = [
+          {
+            url: 'https://ipapi.co/json/',
+            map: (payload) => ({
+              lat: Number(payload?.latitude),
+              lon: Number(payload?.longitude),
+              label: [payload?.city, payload?.region].filter(Boolean).join(', ') || 'Approximate location'
+            })
+          },
+          {
+            url: 'https://ipwho.is/',
+            map: (payload) => ({
+              lat: Number(payload?.latitude),
+              lon: Number(payload?.longitude),
+              label: [payload?.city, payload?.region].filter(Boolean).join(', ') || 'Approximate location'
+            })
+          }
+        ];
+        for (const service of services) {
+          try {
+            const payload = await fetchJson(service.url, 'IP location request failed.');
+            const mapped = service.map(payload);
+            if (Number.isFinite(mapped.lat) && Number.isFinite(mapped.lon)) {
+              return {
+                lat: Number(mapped.lat.toFixed(4)),
+                lon: Number(mapped.lon.toFixed(4)),
+                label: mapped.label
+              };
+            }
+          } catch (_) {
+            // Try the next service.
+          }
+        }
+        return {
+          lat: 40.7128,
+          lon: -74.0060,
+          label: 'New York, NY (default)'
+        };
+      }
+      async function fetchJson(url, errorMessage) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        let response;
+        try {
+          response = await fetch(url, { signal: controller.signal });
+        } finally {
+          clearTimeout(timeoutId);
+        }
+        if (!response.ok) {
+          throw new Error(errorMessage);
+        }
+        return response.json();
+      }
+      function canUseBrowserLocation() {
+        return Boolean(window.isSecureContext && navigator.geolocation);
+      }
+      async function reverseGeocode(latitude, longitude) {
+        const endpoint = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=en&format=json`;
+        const payload = await fetchJson(endpoint, 'Reverse geocoding request failed.');
+        const result = payload?.results?.[0];
+        if (!result) {
+          return `${Number(latitude).toFixed(3)}, ${Number(longitude).toFixed(3)}`;
+        }
+        const region = [result.name, result.admin1].filter(Boolean).join(', ');
+        return region || `${Number(latitude).toFixed(3)}, ${Number(longitude).toFixed(3)}`;
+      }
+      async function geocodeCityState(city, stateName) {
+        const query = [city, stateName].filter(Boolean).join(', ');
+        const endpoint = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+        const payload = await fetchJson(endpoint, 'Location search failed.');
+        const result = payload?.results?.[0];
+        if (!result) {
+          throw new Error('Location not found. Try city and state again.');
+        }
+        return {
+          lat: Number(result.latitude),
+          lon: Number(result.longitude),
+          label: [result.name, result.admin1].filter(Boolean).join(', ')
+        };
+      }
+      async function loadWeatherByCoords(latitude, longitude, label) {
+        state.lat = Number(latitude);
+        state.lon = Number(longitude);
+        state.locationLabel = label || `${Number(latitude).toFixed(3)}, ${Number(longitude).toFixed(3)}`;
+        persistPreferredLocation(state.lat, state.lon, state.locationLabel);
+        locationNameEl.textContent = state.locationLabel;
+        statusLineEl.textContent = 'Loading weather...';
+        const endpoint =
+          `https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}` +
+          '&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min' +
+          '&forecast_days=7&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto';
+        const payload = await fetchJson(endpoint, 'Weather service request failed.');
+        const current = payload?.current;
+        const currentUnits = payload?.current_units;
+        if (!current || !currentUnits) {
+          throw new Error('Weather data is unavailable right now.');
+        }
+        const statusCode = Number(current.weather_code);
+        const temperature = Number(current.temperature_2m);
+        const roundedTemp = Number.isFinite(temperature) ? `${Math.round(temperature)}` : '--';
+        mainIconEl.textContent = weatherIcon(statusCode);
+        tempBigEl.textContent = roundedTemp;
+        tempUnitEl.textContent = currentUnits.temperature_2m || '°F';
+        statusLineEl.textContent = `${weatherIcon(statusCode)} ${forecastSummary(payload.daily)}`;
+        renderForecast(payload.daily);
+        updatedEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+      }
+      async function locateAndLoad() {
+        locationNameEl.textContent = 'Detecting...';
+        const savedLocation = readPreferredLocation();
+        if (savedLocation) {
+          try {
+            await loadWeatherByCoords(savedLocation.lat, savedLocation.lon, savedLocation.label);
+            setMenuStatus('Using saved location. Use ⋯ to update city/state.', false);
+            return;
+          } catch (_) {
+            // Continue with geolocation and other fallbacks.
+          }
+        }
+        try {
+          if (!canUseBrowserLocation()) {
+            throw new Error('Browser location is unavailable here. Add city/state in the ⋯ menu or use approximate location.');
+          }
+          const permissionState = await getLocationPermissionState();
+          if (permissionState === 'denied') {
+            throw new Error('Location permission is blocked. Enable it in browser site settings, or add city/state from the ⋯ menu.');
+          }
+          const position = await geolocation();
+          const latitude = Number(position.coords.latitude.toFixed(4));
+          const longitude = Number(position.coords.longitude.toFixed(4));
+          const label = await reverseGeocode(latitude, longitude);
+          await loadWeatherByCoords(latitude, longitude, label);
+          setMenuStatus('');
+        } catch (error) {
+          try {
+            const fallback = await ipGeolocate();
+            await loadWeatherByCoords(fallback.lat, fallback.lon, fallback.label);
+            setMenuStatus('Using approximate location. Add city/state in the ⋯ menu for exact weather.', false);
+          } catch (fallbackError) {
+            try {
+              await loadWeatherByCoords(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, DEFAULT_LOCATION.label);
+              setMenuStatus('Using default location. Open ⋯ to add your city/state.', false);
+            } catch (_) {
+              locationNameEl.textContent = 'Location unavailable';
+              mainIconEl.textContent = '⚠️';
+              tempBigEl.textContent = '--';
+              tempUnitEl.textContent = '°F';
+              statusLineEl.textContent = 'Weather unavailable';
+              forecastListEl.innerHTML = '<li><span class="forecast-day">Unavailable</span><span class="forecast-condition">No data</span><span class="forecast-temp">--</span></li>';
+              updatedEl.textContent = 'Updated: failed';
+              setMenuStatus(
+                fallbackError?.message || error?.message || 'Unable to load weather. Check internet and try again.',
+                true
+              );
+            }
+          }
+        }
+      }
+      forecastToggleBtn.addEventListener('click', () => setForecastOpen(!state.forecastOpen));
+      forecastLinkBtn.addEventListener('click', () => setForecastOpen(!state.forecastOpen));
+      menuBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        setMenuOpen(menuEl.hidden);
+      });
+      locationBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        try {
+          if (state.lat !== null && state.lon !== null) {
+            await loadWeatherByCoords(state.lat, state.lon, state.locationLabel);
+            return;
+          }
+          await locateAndLoad();
+        } catch (error) {
+          setMenuStatus(error.message || 'Unable to refresh weather.', true);
+        }
+      });
+      addLocationBtn.addEventListener('click', async () => {
+        const city = cityInputEl.value.trim();
+        const stateName = stateInputEl.value.trim();
+        if (!city) {
+          setMenuStatus('Enter a city first.', true);
+          return;
+        }
+        addLocationBtn.disabled = true;
+        setMenuStatus('Searching location...', false);
+        try {
+          const location = await geocodeCityState(city, stateName);
+          await loadWeatherByCoords(location.lat, location.lon, location.label);
+          setMenuStatus('Location added.', false);
+          setMenuOpen(false);
+        } catch (error) {
+          setMenuStatus(error.message || 'Could not add location.', true);
+        } finally {
+          addLocationBtn.disabled = false;
+        }
+      });
+      stateInputEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          addLocationBtn.click();
+        }
+      });
+      cityInputEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          addLocationBtn.click();
+        }
+      });
+      document.addEventListener('click', (event) => {
+        if (!menuEl.hidden && !menuEl.contains(event.target) && event.target !== menuBtn) {
+          setMenuOpen(false);
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          setMenuOpen(false);
+        }
+      });
+      setForecastOpen(false);
+      locateAndLoad();
+      setInterval(async () => {
+        try {
+          if (state.lat !== null && state.lon !== null) {
+            await loadWeatherByCoords(state.lat, state.lon, state.locationLabel);
+            return;
+          }
+          await locateAndLoad();
+        } catch (_) {
+          // Keep interval running and avoid unhandled promise rejections.
+        }
+      }, 300000);
+    })();
+    /* ── To-Do / Notes Widget ── */
+    (function() {
+      const input   = document.getElementById('todo-input');
+      const addBtn  = document.getElementById('todo-add-btn');
+      const list    = document.getElementById('todo-list');
+      const STORE   = 'ik_todos';
+      let todos     = JSON.parse(localStorage.getItem(STORE) || '[]');
+      function save() { localStorage.setItem(STORE, JSON.stringify(todos)); }
+      function render() {
+        list.innerHTML = '';
+        if (!todos.length) {
+          list.innerHTML = '<li id="todo-empty">No items yet</li>';
+          return;
+        }
+        todos.forEach((todo, i) => {
+          const li = document.createElement('li');
+          if (todo.done) li.classList.add('done');
+          li.innerHTML = `
+            <input type="checkbox" ${todo.done ? 'checked' : ''} data-i="${i}">
+            <span class="todo-text">${todo.text}</span>
+            <button class="todo-del" data-i="${i}" title="Delete">✕</button>`;
+          list.appendChild(li);
+        });
+        list.querySelectorAll('input[type=checkbox]').forEach(cb => {
+          cb.addEventListener('change', () => {
+            todos[cb.dataset.i].done = cb.checked;
+            save(); render();
+          });
+        });
+        list.querySelectorAll('.todo-del').forEach(btn => {
+          btn.addEventListener('click', () => {
+            todos.splice(btn.dataset.i, 1);
+            save(); render();
+          });
+        });
+      }
+      function addItem() {
+        const text = input.value.trim();
+        if (!text) return;
+        todos.push({ text, done: false });
+        input.value = '';
+        save(); render();
+      }
+      addBtn.addEventListener('click', addItem);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+      render();
+    })();
+    /* ── Live Yearly Calendar ── */
+    (function() {
+      const MONTHS = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+      const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+      const today  = new Date();
+      let viewYear  = today.getFullYear();
+      let viewMonth = today.getMonth();
+      function renderCalendar() {
+        const titleEl    = document.getElementById('cal-title');
+        const gridEl     = document.getElementById('cal-grid');
+        const yearRowEl  = document.getElementById('cal-year-row');
+        titleEl.textContent = MONTHS[viewMonth] + ' ' + viewYear;
+        // day-name headers
+        gridEl.innerHTML = DAYS.map(d =>
+          `<div class="cal-day-name">${d}</div>`).join('');
+        const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        const daysInPrev  = new Date(viewYear, viewMonth, 0).getDate();
+        // prev-month fill
+        for (let i = firstDay - 1; i >= 0; i--) {
+          gridEl.innerHTML += `<div class="cal-cell other-month">${daysInPrev - i}</div>`;
+        }
+        // current month
+        for (let d = 1; d <= daysInMonth; d++) {
+          const isToday = d === today.getDate() &&
+                          viewMonth === today.getMonth() &&
+                          viewYear  === today.getFullYear();
+          gridEl.innerHTML += `<div class="cal-cell${isToday ? ' today' : ''}">${d}</div>`;
+        }
+        // next-month fill
+        const totalCells = firstDay + daysInMonth;
+        const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+        for (let d = 1; d <= remaining; d++) {
+          gridEl.innerHTML += `<div class="cal-cell other-month">${d}</div>`;
+        }
+        // month chips row (all 12 months of the year)
+        yearRowEl.innerHTML = MONTHS.map((m, i) =>
+          `<span class="cal-month-chip${i === viewMonth ? ' active' : ''}"
+                 data-m="${i}">${m.slice(0,3)}</span>`
+        ).join('');
+        yearRowEl.querySelectorAll('.cal-month-chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            viewMonth = parseInt(chip.dataset.m);
+            renderCalendar();
+          });
+        });
+      }
+      document.getElementById('cal-prev').addEventListener('click', () => {
+        viewMonth--;
+        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+        renderCalendar();
+      });
+      document.getElementById('cal-next').addEventListener('click', () => {
+        viewMonth++;
+        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+        renderCalendar();
+      });
+      renderCalendar();
+      // auto-refresh at midnight
+      const msToMidnight = new Date(today.getFullYear(), today.getMonth(),
+                                    today.getDate() + 1) - Date.now();
+      setTimeout(() => { renderCalendar(); setInterval(renderCalendar, 86400000); }, msToMidnight);
+    })();
+  </script>
+  
+</body>
+</html>
