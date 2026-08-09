@@ -9,8 +9,9 @@
     /* layout and component styles */
     .tabs {
       display: flex;
+      flex-wrap: wrap;
       border-bottom: 2px solid #ccc;
-      max-width: 300px;
+      max-width: 100%;
       margin: 15px 0;
     }
     .tab {
@@ -1009,33 +1010,28 @@
     <input type="text" name="q" placeholder="Search Google..." required>
     <button type="submit">Search</button>
   </form>
-  <div class="tabs">
-    <a href="https://www.yahoo.com/" class="tab">Yahoo</a>
-    <a href="https://www.google.com/" class="tab">Google</a>
-    <a href="https://www.facebook.com/" class="tab">Facebook</a>
-    <a href="https://www.tiktok.com/" class="tab">TikTok</a>
-    <a href="https://github.com/" class="tab">GitHub</a>
-    <a href="https://hofstra.quickstart.com/my-dashboard/#/bootcamp" class="tab">Hofstra Bootcamp</a>
-    <a href="https://codesandbox.io/dashboard/recent" class="tab">CodeSandbox</a>
-    <a href="https://codesandbox.io/docs/learn" class="tab">CodeSandbox Learn</a>
-    <a href="https://validator.w3.org/" class="tab">W3C Validator</a>
-    <a href="https://htmlcheatsheet.com/" class="tab">HTML Cheat Sheet</a>
-    <a href="https://developer.mozilla.org/en-US/" class="tab">MDN Web Docs</a>
-    <a href="https://devdocs.io/html/" class="tab">DevDocs HTML</a>
-    <a href="https://www.w3schools.com/" class="tab">W3Schools</a>
-    <a href="https://vscode.dev/" class="tab">VSCode.dev</a>
-    <a href="https://flutter.dev/" class="tab">Flutter</a>
-    <a href="https://reactnative.dev/" class="tab">React Native</a>
-    <a href="https://expo.dev/" class="tab">Expo</a>
-    <a href="https://www.figma.com/" class="tab">Figma</a>
-    <a href="https://www.canva.com/" class="tab">Canva</a>
-    <a href="https://www.eclipse.org/downloads/" class="tab">Eclipse Downloads</a>
-    
-
-
-
-
-  </div>
+  <div class="tabs" role="tablist" aria-label="Quick Links">
+    <a href="https://www.yahoo.com/" class="tab" role="tab">Yahoo</a>
+    <a href="https://www.google.com/" class="tab" role="tab">Google</a>
+    <a href="https://www.facebook.com/" class="tab" role="tab">Facebook</a>
+    <a href="https://www.tiktok.com/" class="tab" role="tab">TikTok</a>
+    <a href="https://github.com/" class="tab" role="tab">GitHub</a>
+    <a href="https://hofstra.quickstart.com/my-dashboard/#/bootcamp" class="tab" role="tab">Hofstra Bootcamp</a>
+    <a href="https://codesandbox.io/dashboard/recent" class="tab" role="tab">CodeSandbox</a>
+    <a href="https://codesandbox.io/docs/learn" class="tab" role="tab">CodeSandbox Learn</a>
+    <a href="https://validator.w3.org/" class="tab" role="tab">W3C Validator</a>
+    <a href="https://htmlcheatsheet.com/" class="tab" role="tab">HTML Cheat Sheet</a>
+    <a href="https://developer.mozilla.org/en-US/" class="tab" role="tab">MDN Web Docs</a>
+    <a href="https://devdocs.io/html/" class="tab" role="tab">DevDocs HTML</a>
+    <a href="https://www.w3schools.com/" class="tab" role="tab">W3Schools</a>
+    <a href="https://vscode.dev/" class="tab" role="tab">VSCode.dev</a>
+    <a href="https://flutter.dev/" class="tab" role="tab">Flutter</a>
+    <a href="https://reactnative.dev/" class="tab" role="tab">React Native</a>
+    <a href="https://expo.dev/" class="tab" role="tab">Expo</a>
+    <a href="https://www.figma.com/" class="tab" role="tab">Figma</a>
+    <a href="https://www.canva.com/" class="tab" role="tab">Canva</a>
+    <a href="https://www.eclipse.org/downloads/" class="tab" role="tab">Eclipse Downloads</a>
+    </div>
   <hr>
   <div class="media-row">
   <section class="media-card" aria-labelledby="anthem-heading">
@@ -1088,13 +1084,7 @@
   <div class="git-notes-header">
     <h2 class="git-notes-tab">Git Notes</h2>
     <div class="git-cert-thumbs" aria-label="Git certificates">
-      <a href="https://www.hackerrank.com/certificates/0e7f1b3c5d6e" target="_blank" rel="noopener noreferrer" title="HackerRank Git Certificate">
-        <img src="https://i.ibb.co/2sZ8k9M/hackerrank-git-certificate.png" alt="HackerRank Git Certificate" class="git-cert-thumb">
-      </a>
-      <a href="https://www.hackerrank.com/certificates/0e7f1b3c5d6e" target="_blank" rel="noopener noreferrer" title="HackerRank Git Certificate">
-        <img src="https://i.ibb.co/2sZ8k9M/hackerrank-git-certificate.png" alt="HackerRank Git Certificate" class="git-cert-thumb">
-      </a>
-    </div>
+      </div>
   </div>
   <div class="git-content">
   <div class="sidebar-left">
