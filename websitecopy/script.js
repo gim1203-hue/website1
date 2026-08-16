@@ -264,14 +264,21 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       });
       return card;
     }
+    function normalizeForSearch(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '')   // strip spaces, hyphens, apostrophes
+        .replace(/(.)\1+/g, '$1');   // collapse repeated letters (aa -> a, ii -> i)
+    }
     function renderSurahCards(searchText = '') {
-      const normalized = searchText.trim().toLowerCase();
+      const raw = searchText.trim().toLowerCase();
+      const normalizedQuery = normalizeForSearch(searchText);
       const filtered = quranState.catalog.filter(surah => {
-        if (!normalized) return true;
+        if (!raw) return true;
+        if (String(surah.number).includes(raw)) return true;
         return (
-          String(surah.number).includes(normalized) ||
-          surah.englishName.toLowerCase().includes(normalized) ||
-          surah.englishNameTranslation.toLowerCase().includes(normalized)
+          normalizeForSearch(surah.englishName).includes(normalizedQuery) ||
+          normalizeForSearch(surah.englishNameTranslation).includes(normalizedQuery)
         );
       });
       quranSurahsContainer.innerHTML = '';
@@ -283,6 +290,27 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       filtered.forEach(surah => fragment.appendChild(buildSurahCard(surah)));
       quranSurahsContainer.appendChild(fragment);
     }
+    async function ensureCatalogLoaded() {
+      if (quranState.catalog.length) return true;
+      loadSurahsBtn.disabled = true;
+      loadSurahsBtn.textContent = 'Loading...';
+      quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
+      try {
+        const response = await fetch('https://api.alquran.cloud/v1/surah');
+        if (!response.ok) throw new Error('Failed to load surah list');
+        const data = await response.json();
+        quranState.catalog = data?.data || [];
+        loadSurahsBtn.textContent = 'All Surahs ▲';
+        return true;
+      } catch (error) {
+        quranSurahsContainer.innerHTML = '<p class="surah-status">Could not load surahs. Check internet and try again.</p>';
+        quranState.catalog = [];
+        loadSurahsBtn.textContent = 'All Surahs ▼';
+        return false;
+      } finally {
+        loadSurahsBtn.disabled = false;
+      }
+    }
     loadSurahsBtn.addEventListener('click', async () => {
       // If already loaded, just toggle visibility
       if (quranState.catalog.length) {
@@ -292,50 +320,21 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         return;
       }
       // First click — load from API
-      loadSurahsBtn.disabled = true;
-      loadSurahsBtn.textContent = 'Loading...';
-      quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
-      try {
-        const response = await fetch('https://api.alquran.cloud/v1/surah');
-        if (!response.ok) throw new Error('Failed to load surah list');
-        const data = await response.json();
-        quranState.catalog = data?.data || [];
+      const loaded = await ensureCatalogLoaded();
+      if (loaded) {
+        quranSurahsContainer.style.display = '';
         renderSurahCards(surahSearchInput.value);
-        loadSurahsBtn.textContent = 'All Surahs ▲';
-      } catch (error) {
-        quranSurahsContainer.innerHTML = '<p class="surah-status">Could not load surahs. Check internet and try again.</p>';
-        quranState.catalog = [];
-        loadSurahsBtn.textContent = 'All Surahs ▼';
-      } finally {
-        loadSurahsBtn.disabled = false;
       }
     });
-    surahSearchInput.addEventListener('input', () => {
+    surahSearchInput.addEventListener('input', async () => {
       if (!quranState.catalog.length) {
-        return;
+        const loaded = await ensureCatalogLoaded();
+        if (!loaded) return;
       }
+      quranSurahsContainer.style.display = '';
       renderSurahCards(surahSearchInput.value);
     });
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-/* ── Weather Widget ── */
+    /* ── Weather Widget ── */
     (function() {
       const weatherWidget = document.getElementById('weather-widget');
       const locationNameEl = document.getElementById('weather-location-name');
