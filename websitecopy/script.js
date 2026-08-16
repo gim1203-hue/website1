@@ -907,3 +907,865 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
                                     today.getDate() + 1) - Date.now();
       setTimeout(() => { renderCalendar(); setInterval(renderCalendar, 86400000); }, msToMidnight);
     })();
+    /* ── Live AM/FM Radio (Radio Browser API — no key required) ── */
+    (function() {
+      const countrySelect = document.getElementById('radio-country-select');
+      const searchInput   = document.getElementById('radio-search-input');
+      const searchBtn     = document.getElementById('radio-search-btn');
+      const listEl        = document.getElementById('radio-station-list');
+      const nowPlayingEl  = document.getElementById('radio-now-playing-name');
+      const audioEl       = document.getElementById('radio-audio');
+      const statusEl      = document.getElementById('radio-status-line');
+      if (!countrySelect || !listEl || !audioEl) return;
+
+      // Several mirrors exist; try them in order until one responds.
+      const RADIO_API_MIRRORS = [
+        'https://de1.api.radio-browser.info',
+        'https://de2.api.radio-browser.info',
+        'https://at1.api.radio-browser.info',
+        'https://nl1.api.radio-browser.info'
+      ];
+      let workingMirror = null;
+
+      async function radioFetch(path) {
+        const mirrors = workingMirror ? [workingMirror, ...RADIO_API_MIRRORS] : RADIO_API_MIRRORS;
+        let lastError = null;
+        for (const mirror of mirrors) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const response = await fetch(mirror + path, {
+              signal: controller.signal,
+              headers: { 'User-Agent': 'ImranKhanPersonalSite/1.0' }
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('Radio API error ' + response.status);
+            workingMirror = mirror;
+            return await response.json();
+          } catch (error) {
+            lastError = error;
+          }
+        }
+        throw lastError || new Error('All radio mirrors failed.');
+      }
+
+      function setListStatus(message) {
+        listEl.innerHTML = `<p class="radio-status">${message}</p>`;
+      }
+
+      function renderStations(stations) {
+        if (!stations || !stations.length) {
+          setListStatus('No stations found. Try a different name or country.');
+          return;
+        }
+        listEl.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        stations.slice(0, 40).forEach(station => {
+          if (!station.url_resolved && !station.url) return;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'radio-station-btn';
+          const tags = (station.tags || '').split(',').filter(Boolean).slice(0, 2).join(', ');
+          btn.innerHTML = `
+            <span class="radio-station-name">${station.name || 'Unnamed station'}</span>
+            <span class="radio-station-meta">${[station.country, tags].filter(Boolean).join(' • ')}</span>
+          `;
+          btn.addEventListener('click', () => playStation(station));
+          fragment.appendChild(btn);
+        });
+        listEl.appendChild(fragment);
+      }
+
+      function playStation(station) {
+        const streamUrl = station.url_resolved || station.url;
+        if (!streamUrl) {
+          statusEl.textContent = 'This station has no playable stream.';
+          return;
+        }
+        nowPlayingEl.textContent = station.name || 'Live station';
+        statusEl.textContent = 'Loading stream...';
+        audioEl.src = streamUrl;
+        audioEl.play().then(() => {
+          statusEl.textContent = 'Playing live.';
+        }).catch(() => {
+          statusEl.textContent = 'Could not autoplay — press play on the player.';
+        });
+      }
+
+      async function loadCountries() {
+        try {
+          const countries = await radioFetch('/json/countries');
+          const seen = new Set();
+          countries
+            .filter(c => c.name && c.stationcount > 0)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach(c => {
+              if (seen.has(c.name)) return;
+              seen.add(c.name);
+              const opt = document.createElement('option');
+              opt.value = c.name;
+              opt.textContent = `${c.name} (${c.stationcount})`;
+              countrySelect.appendChild(opt);
+            });
+        } catch (error) {
+          // Country list is a convenience; search by name still works without it.
+        }
+      }
+
+      async function searchStations() {
+        const name = searchInput.value.trim();
+        const country = countrySelect.value;
+        if (!name && !country) {
+          setListStatus('Choose a country or type a station name to search.');
+          return;
+        }
+        setListStatus('Searching stations...');
+        try {
+          const params = new URLSearchParams({
+            limit: '40',
+            hidebroken: 'true',
+            order: 'clickcount',
+            reverse: 'true'
+          });
+          if (name) params.set('name', name);
+          if (country) params.set('country', country);
+          const stations = await radioFetch(`/json/stations/search?${params.toString()}`);
+          renderStations(stations);
+        } catch (error) {
+          setListStatus('Could not reach the radio directory. Check your internet connection and try again.');
+        }
+      }
+
+      searchBtn.addEventListener('click', searchStations);
+      searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') searchStations(); });
+      countrySelect.addEventListener('change', searchStations);
+      loadCountries();
+    })();
+    /* ── YouTube Search + Video Screen ── */
+    (function() {
+      const searchInput   = document.getElementById('youtube-search-input');
+      const searchBtn     = document.getElementById('youtube-search-btn');
+      const apiKeyBtn     = document.getElementById('youtube-api-key-btn');
+      const apiKeyPanel   = document.getElementById('youtube-api-key-panel');
+      const apiKeyInput   = document.getElementById('youtube-api-key-input');
+      const apiKeySaveBtn = document.getElementById('youtube-api-key-save');
+      const apiKeyClearBtn = document.getElementById('youtube-api-key-clear');
+      const apiKeyStatus  = document.getElementById('youtube-api-key-status');
+      const resultsEl     = document.getElementById('youtube-results');
+      const playerEl      = document.getElementById('youtube-player');
+      const screenHintEl  = document.getElementById('youtube-screen-hint');
+      const countrySelect = document.getElementById('youtube-country-select');
+      if (!searchInput || !playerEl) return;
+
+      const YT_KEY_STORE = 'ik_youtube_api_key';
+
+      /* All countries in the world (ISO 3166-1 codes) mapped to their
+         primary spoken language (ISO 639-1), so picking a country biases
+         search results to videos/audio in that country's language. */
+      const YOUTUBE_COUNTRIES = [
+        { code: 'AF', name: 'Afghanistan', lang: 'ps' }, { code: 'AL', name: 'Albania', lang: 'sq' },
+        { code: 'DZ', name: 'Algeria', lang: 'ar' }, { code: 'AD', name: 'Andorra', lang: 'ca' },
+        { code: 'AO', name: 'Angola', lang: 'pt' }, { code: 'AG', name: 'Antigua and Barbuda', lang: 'en' },
+        { code: 'AR', name: 'Argentina', lang: 'es' }, { code: 'AM', name: 'Armenia', lang: 'hy' },
+        { code: 'AU', name: 'Australia', lang: 'en' }, { code: 'AT', name: 'Austria', lang: 'de' },
+        { code: 'AZ', name: 'Azerbaijan', lang: 'az' }, { code: 'BS', name: 'Bahamas', lang: 'en' },
+        { code: 'BH', name: 'Bahrain', lang: 'ar' }, { code: 'BD', name: 'Bangladesh', lang: 'bn' },
+        { code: 'BB', name: 'Barbados', lang: 'en' }, { code: 'BY', name: 'Belarus', lang: 'be' },
+        { code: 'BE', name: 'Belgium', lang: 'nl' }, { code: 'BZ', name: 'Belize', lang: 'en' },
+        { code: 'BJ', name: 'Benin', lang: 'fr' }, { code: 'BT', name: 'Bhutan', lang: 'dz' },
+        { code: 'BO', name: 'Bolivia', lang: 'es' }, { code: 'BA', name: 'Bosnia and Herzegovina', lang: 'bs' },
+        { code: 'BW', name: 'Botswana', lang: 'en' }, { code: 'BR', name: 'Brazil', lang: 'pt' },
+        { code: 'BN', name: 'Brunei', lang: 'ms' }, { code: 'BG', name: 'Bulgaria', lang: 'bg' },
+        { code: 'BF', name: 'Burkina Faso', lang: 'fr' }, { code: 'BI', name: 'Burundi', lang: 'fr' },
+        { code: 'CV', name: 'Cabo Verde', lang: 'pt' }, { code: 'KH', name: 'Cambodia', lang: 'km' },
+        { code: 'CM', name: 'Cameroon', lang: 'fr' }, { code: 'CA', name: 'Canada', lang: 'en' },
+        { code: 'CF', name: 'Central African Republic', lang: 'fr' }, { code: 'TD', name: 'Chad', lang: 'fr' },
+        { code: 'CL', name: 'Chile', lang: 'es' }, { code: 'CN', name: 'China', lang: 'zh' },
+        { code: 'CO', name: 'Colombia', lang: 'es' }, { code: 'KM', name: 'Comoros', lang: 'ar' },
+        { code: 'CG', name: 'Congo (Republic of)', lang: 'fr' }, { code: 'CD', name: 'Congo (DR)', lang: 'fr' },
+        { code: 'CR', name: 'Costa Rica', lang: 'es' }, { code: 'CI', name: "Côte d'Ivoire", lang: 'fr' },
+        { code: 'HR', name: 'Croatia', lang: 'hr' }, { code: 'CU', name: 'Cuba', lang: 'es' },
+        { code: 'CY', name: 'Cyprus', lang: 'el' }, { code: 'CZ', name: 'Czechia', lang: 'cs' },
+        { code: 'DK', name: 'Denmark', lang: 'da' }, { code: 'DJ', name: 'Djibouti', lang: 'fr' },
+        { code: 'DM', name: 'Dominica', lang: 'en' }, { code: 'DO', name: 'Dominican Republic', lang: 'es' },
+        { code: 'EC', name: 'Ecuador', lang: 'es' }, { code: 'EG', name: 'Egypt', lang: 'ar' },
+        { code: 'SV', name: 'El Salvador', lang: 'es' }, { code: 'GQ', name: 'Equatorial Guinea', lang: 'es' },
+        { code: 'ER', name: 'Eritrea', lang: 'ti' }, { code: 'EE', name: 'Estonia', lang: 'et' },
+        { code: 'SZ', name: 'Eswatini', lang: 'en' }, { code: 'ET', name: 'Ethiopia', lang: 'am' },
+        { code: 'FJ', name: 'Fiji', lang: 'en' }, { code: 'FI', name: 'Finland', lang: 'fi' },
+        { code: 'FR', name: 'France', lang: 'fr' }, { code: 'GA', name: 'Gabon', lang: 'fr' },
+        { code: 'GM', name: 'Gambia', lang: 'en' }, { code: 'GE', name: 'Georgia', lang: 'ka' },
+        { code: 'DE', name: 'Germany', lang: 'de' }, { code: 'GH', name: 'Ghana', lang: 'en' },
+        { code: 'GR', name: 'Greece', lang: 'el' }, { code: 'GD', name: 'Grenada', lang: 'en' },
+        { code: 'GT', name: 'Guatemala', lang: 'es' }, { code: 'GN', name: 'Guinea', lang: 'fr' },
+        { code: 'GW', name: 'Guinea-Bissau', lang: 'pt' }, { code: 'GY', name: 'Guyana', lang: 'en' },
+        { code: 'HT', name: 'Haiti', lang: 'fr' }, { code: 'HN', name: 'Honduras', lang: 'es' },
+        { code: 'HK', name: 'Hong Kong', lang: 'zh' }, { code: 'HU', name: 'Hungary', lang: 'hu' },
+        { code: 'IS', name: 'Iceland', lang: 'is' }, { code: 'IN', name: 'India', lang: 'hi' },
+        { code: 'ID', name: 'Indonesia', lang: 'id' }, { code: 'IR', name: 'Iran', lang: 'fa' },
+        { code: 'IQ', name: 'Iraq', lang: 'ar' }, { code: 'IE', name: 'Ireland', lang: 'en' },
+        { code: 'IL', name: 'Israel', lang: 'he' }, { code: 'IT', name: 'Italy', lang: 'it' },
+        { code: 'JM', name: 'Jamaica', lang: 'en' }, { code: 'JP', name: 'Japan', lang: 'ja' },
+        { code: 'JO', name: 'Jordan', lang: 'ar' }, { code: 'KZ', name: 'Kazakhstan', lang: 'kk' },
+        { code: 'KE', name: 'Kenya', lang: 'sw' }, { code: 'KI', name: 'Kiribati', lang: 'en' },
+        { code: 'KW', name: 'Kuwait', lang: 'ar' }, { code: 'KG', name: 'Kyrgyzstan', lang: 'ky' },
+        { code: 'LA', name: 'Laos', lang: 'lo' }, { code: 'LV', name: 'Latvia', lang: 'lv' },
+        { code: 'LB', name: 'Lebanon', lang: 'ar' }, { code: 'LS', name: 'Lesotho', lang: 'en' },
+        { code: 'LR', name: 'Liberia', lang: 'en' }, { code: 'LY', name: 'Libya', lang: 'ar' },
+        { code: 'LI', name: 'Liechtenstein', lang: 'de' }, { code: 'LT', name: 'Lithuania', lang: 'lt' },
+        { code: 'LU', name: 'Luxembourg', lang: 'fr' }, { code: 'MO', name: 'Macao', lang: 'zh' },
+        { code: 'MG', name: 'Madagascar', lang: 'mg' }, { code: 'MW', name: 'Malawi', lang: 'en' },
+        { code: 'MY', name: 'Malaysia', lang: 'ms' }, { code: 'MV', name: 'Maldives', lang: 'dv' },
+        { code: 'ML', name: 'Mali', lang: 'fr' }, { code: 'MT', name: 'Malta', lang: 'mt' },
+        { code: 'MH', name: 'Marshall Islands', lang: 'en' }, { code: 'MR', name: 'Mauritania', lang: 'ar' },
+        { code: 'MU', name: 'Mauritius', lang: 'en' }, { code: 'MX', name: 'Mexico', lang: 'es' },
+        { code: 'FM', name: 'Micronesia', lang: 'en' }, { code: 'MD', name: 'Moldova', lang: 'ro' },
+        { code: 'MC', name: 'Monaco', lang: 'fr' }, { code: 'MN', name: 'Mongolia', lang: 'mn' },
+        { code: 'ME', name: 'Montenegro', lang: 'sr' }, { code: 'MA', name: 'Morocco', lang: 'ar' },
+        { code: 'MZ', name: 'Mozambique', lang: 'pt' }, { code: 'MM', name: 'Myanmar', lang: 'my' },
+        { code: 'NA', name: 'Namibia', lang: 'en' }, { code: 'NR', name: 'Nauru', lang: 'en' },
+        { code: 'NP', name: 'Nepal', lang: 'ne' }, { code: 'NL', name: 'Netherlands', lang: 'nl' },
+        { code: 'NZ', name: 'New Zealand', lang: 'en' }, { code: 'NI', name: 'Nicaragua', lang: 'es' },
+        { code: 'NE', name: 'Niger', lang: 'fr' }, { code: 'NG', name: 'Nigeria', lang: 'en' },
+        { code: 'KP', name: 'North Korea', lang: 'ko' }, { code: 'MK', name: 'North Macedonia', lang: 'mk' },
+        { code: 'NO', name: 'Norway', lang: 'no' }, { code: 'OM', name: 'Oman', lang: 'ar' },
+        { code: 'PK', name: 'Pakistan', lang: 'ur' }, { code: 'PW', name: 'Palau', lang: 'en' },
+        { code: 'PS', name: 'Palestine', lang: 'ar' }, { code: 'PA', name: 'Panama', lang: 'es' },
+        { code: 'PG', name: 'Papua New Guinea', lang: 'en' }, { code: 'PY', name: 'Paraguay', lang: 'es' },
+        { code: 'PE', name: 'Peru', lang: 'es' }, { code: 'PH', name: 'Philippines', lang: 'tl' },
+        { code: 'PL', name: 'Poland', lang: 'pl' }, { code: 'PT', name: 'Portugal', lang: 'pt' },
+        { code: 'QA', name: 'Qatar', lang: 'ar' }, { code: 'RO', name: 'Romania', lang: 'ro' },
+        { code: 'RU', name: 'Russia', lang: 'ru' }, { code: 'RW', name: 'Rwanda', lang: 'rw' },
+        { code: 'KN', name: 'Saint Kitts and Nevis', lang: 'en' }, { code: 'LC', name: 'Saint Lucia', lang: 'en' },
+        { code: 'VC', name: 'Saint Vincent and the Grenadines', lang: 'en' }, { code: 'WS', name: 'Samoa', lang: 'sm' },
+        { code: 'SM', name: 'San Marino', lang: 'it' }, { code: 'ST', name: 'Sao Tome and Principe', lang: 'pt' },
+        { code: 'SA', name: 'Saudi Arabia', lang: 'ar' }, { code: 'SN', name: 'Senegal', lang: 'fr' },
+        { code: 'RS', name: 'Serbia', lang: 'sr' }, { code: 'SC', name: 'Seychelles', lang: 'fr' },
+        { code: 'SL', name: 'Sierra Leone', lang: 'en' }, { code: 'SG', name: 'Singapore', lang: 'en' },
+        { code: 'SK', name: 'Slovakia', lang: 'sk' }, { code: 'SI', name: 'Slovenia', lang: 'sl' },
+        { code: 'SB', name: 'Solomon Islands', lang: 'en' }, { code: 'SO', name: 'Somalia', lang: 'so' },
+        { code: 'ZA', name: 'South Africa', lang: 'en' }, { code: 'KR', name: 'South Korea', lang: 'ko' },
+        { code: 'SS', name: 'South Sudan', lang: 'en' }, { code: 'ES', name: 'Spain', lang: 'es' },
+        { code: 'LK', name: 'Sri Lanka', lang: 'si' }, { code: 'SD', name: 'Sudan', lang: 'ar' },
+        { code: 'SR', name: 'Suriname', lang: 'nl' }, { code: 'SE', name: 'Sweden', lang: 'sv' },
+        { code: 'CH', name: 'Switzerland', lang: 'de' }, { code: 'SY', name: 'Syria', lang: 'ar' },
+        { code: 'TW', name: 'Taiwan', lang: 'zh' }, { code: 'TJ', name: 'Tajikistan', lang: 'tg' },
+        { code: 'TZ', name: 'Tanzania', lang: 'sw' }, { code: 'TH', name: 'Thailand', lang: 'th' },
+        { code: 'TL', name: 'Timor-Leste', lang: 'pt' }, { code: 'TG', name: 'Togo', lang: 'fr' },
+        { code: 'TO', name: 'Tonga', lang: 'to' }, { code: 'TT', name: 'Trinidad and Tobago', lang: 'en' },
+        { code: 'TN', name: 'Tunisia', lang: 'ar' }, { code: 'TR', name: 'Turkey', lang: 'tr' },
+        { code: 'TM', name: 'Turkmenistan', lang: 'tk' }, { code: 'TV', name: 'Tuvalu', lang: 'en' },
+        { code: 'UG', name: 'Uganda', lang: 'en' }, { code: 'UA', name: 'Ukraine', lang: 'uk' },
+        { code: 'AE', name: 'United Arab Emirates', lang: 'ar' }, { code: 'GB', name: 'United Kingdom', lang: 'en' },
+        { code: 'US', name: 'United States', lang: 'en' }, { code: 'UY', name: 'Uruguay', lang: 'es' },
+        { code: 'UZ', name: 'Uzbekistan', lang: 'uz' }, { code: 'VU', name: 'Vanuatu', lang: 'en' },
+        { code: 'VA', name: 'Vatican City', lang: 'it' }, { code: 'VE', name: 'Venezuela', lang: 'es' },
+        { code: 'VN', name: 'Vietnam', lang: 'vi' }, { code: 'YE', name: 'Yemen', lang: 'ar' },
+        { code: 'ZM', name: 'Zambia', lang: 'en' }, { code: 'ZW', name: 'Zimbabwe', lang: 'en' }
+      ];
+      if (countrySelect) {
+        YOUTUBE_COUNTRIES
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach(country => {
+            const opt = document.createElement('option');
+            opt.value = country.code;
+            opt.dataset.lang = country.lang;
+            opt.textContent = country.name;
+            countrySelect.appendChild(opt);
+          });
+      }
+
+      function getApiKey() {
+        try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
+      }
+      function setApiKey(key) {
+        try {
+          if (key) localStorage.setItem(YT_KEY_STORE, key);
+          else localStorage.removeItem(YT_KEY_STORE);
+        } catch (_) { /* ignore storage errors */ }
+      }
+
+      apiKeyBtn.addEventListener('click', () => {
+        apiKeyPanel.hidden = !apiKeyPanel.hidden;
+        if (!apiKeyPanel.hidden) {
+          apiKeyInput.value = getApiKey();
+          apiKeyStatus.textContent = getApiKey() ? 'A key is currently saved.' : 'No key saved yet — search will not work until one is added.';
+        }
+      });
+      apiKeySaveBtn.addEventListener('click', () => {
+        const key = apiKeyInput.value.trim();
+        if (!key) {
+          apiKeyStatus.textContent = 'Enter a key before saving.';
+          return;
+        }
+        setApiKey(key);
+        apiKeyStatus.textContent = 'Key saved. You can search now.';
+      });
+      apiKeyClearBtn.addEventListener('click', () => {
+        setApiKey('');
+        apiKeyInput.value = '';
+        apiKeyStatus.textContent = 'Key cleared.';
+      });
+
+      function extractVideoId(text) {
+        const trimmed = text.trim();
+        if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+        const patterns = [
+          /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+          /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+          /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+          /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+        ];
+        for (const pattern of patterns) {
+          const match = trimmed.match(pattern);
+          if (match) return match[1];
+        }
+        return null;
+      }
+
+      function loadVideo(videoId, title) {
+        if (!videoId) return;
+        playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        screenHintEl.textContent = title ? `Now playing: ${title}` : 'Video loaded.';
+      }
+
+      function renderResults(items) {
+        resultsEl.innerHTML = '';
+        if (!items || !items.length) {
+          resultsEl.innerHTML = '<p class="radio-status">No results. Try a different search.</p>';
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+          const videoId = item.id?.videoId;
+          if (!videoId) return;
+          const title = item.snippet?.title || 'Untitled video';
+          const channel = item.snippet?.channelTitle || '';
+          const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'youtube-result-card';
+          card.innerHTML = `
+            <img src="${thumb}" alt="${title}" loading="lazy">
+            <span class="youtube-result-title">${title}</span>
+            <span class="youtube-result-channel">${channel}</span>
+          `;
+          card.addEventListener('click', () => loadVideo(videoId, title));
+          fragment.appendChild(card);
+        });
+        resultsEl.appendChild(fragment);
+      }
+
+      async function performSearch() {
+        const query = searchInput.value.trim();
+        if (!query) {
+          screenHintEl.textContent = 'Type a search or paste a YouTube link first.';
+          return;
+        }
+        // If the input is a direct video link/ID, just load it — no API key needed.
+        const directId = extractVideoId(query);
+        if (directId) {
+          resultsEl.innerHTML = '';
+          loadVideo(directId, null);
+          return;
+        }
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
+          apiKeyPanel.hidden = false;
+          apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
+          return;
+        }
+        resultsEl.innerHTML = '<p class="radio-status">Searching YouTube...</p>';
+        try {
+          const params = new URLSearchParams({
+            part: 'snippet',
+            type: 'video',
+            videoCategoryId: '10',
+            maxResults: '12',
+            q: query,
+            key: apiKey
+          });
+          // If a country is selected, bias results to that country's
+          // region and primary language (e.g. Pakistan → Urdu results).
+          const selectedOption = countrySelect && countrySelect.selectedOptions[0];
+          if (selectedOption && selectedOption.value) {
+            params.set('regionCode', selectedOption.value);
+            if (selectedOption.dataset.lang) {
+              params.set('relevanceLanguage', selectedOption.dataset.lang);
+            }
+          }
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+          if (!response.ok) {
+            const errorPayload = await response.json().catch(() => null);
+            throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
+          }
+          const data = await response.json();
+          renderResults(data.items || []);
+        } catch (error) {
+          resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
+        }
+      }
+
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+})();
+    
+/* ---------- Country & language data (worldwide) ---------- */
+const COUNTRIES = [
+["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],
+["AO","Angola"],["AI","Anguilla"],["AG","Antigua and Barbuda"],["AR","Argentina"],["AM","Armenia"],
+["AW","Aruba"],["AU","Australia"],["AT","Austria"],["AZ","Azerbaijan"],["BS","Bahamas"],
+["BH","Bahrain"],["BD","Bangladesh"],["BB","Barbados"],["BY","Belarus"],["BE","Belgium"],
+["BZ","Belize"],["BJ","Benin"],["BM","Bermuda"],["BT","Bhutan"],["BO","Bolivia"],
+["BA","Bosnia and Herzegovina"],["BW","Botswana"],["BR","Brazil"],["BN","Brunei"],["BG","Bulgaria"],
+["BF","Burkina Faso"],["BI","Burundi"],["KH","Cambodia"],["CM","Cameroon"],["CA","Canada"],
+["CV","Cape Verde"],["KY","Cayman Islands"],["CF","Central African Republic"],["TD","Chad"],["CL","Chile"],
+["CN","China"],["CO","Colombia"],["KM","Comoros"],["CG","Congo"],["CD","Congo (DRC)"],
+["CR","Costa Rica"],["CI","Côte d'Ivoire"],["HR","Croatia"],["CU","Cuba"],["CY","Cyprus"],
+["CZ","Czech Republic"],["DK","Denmark"],["DJ","Djibouti"],["DM","Dominica"],["DO","Dominican Republic"],
+["EC","Ecuador"],["EG","Egypt"],["SV","El Salvador"],["GQ","Equatorial Guinea"],["ER","Eritrea"],
+["EE","Estonia"],["SZ","Eswatini"],["ET","Ethiopia"],["FJ","Fiji"],["FI","Finland"],
+["FR","France"],["GA","Gabon"],["GM","Gambia"],["GE","Georgia"],["DE","Germany"],
+["GH","Ghana"],["GI","Gibraltar"],["GR","Greece"],["GL","Greenland"],["GD","Grenada"],
+["GU","Guam"],["GT","Guatemala"],["GN","Guinea"],["GW","Guinea-Bissau"],["GY","Guyana"],
+["HT","Haiti"],["HN","Honduras"],["HK","Hong Kong"],["HU","Hungary"],["IS","Iceland"],
+["IN","India"],["ID","Indonesia"],["IR","Iran"],["IQ","Iraq"],["IE","Ireland"],
+["IL","Israel"],["IT","Italy"],["JM","Jamaica"],["JP","Japan"],["JO","Jordan"],
+["KZ","Kazakhstan"],["KE","Kenya"],["KI","Kiribati"],["KP","North Korea"],["KR","South Korea"],
+["KW","Kuwait"],["KG","Kyrgyzstan"],["LA","Laos"],["LV","Latvia"],["LB","Lebanon"],
+["LS","Lesotho"],["LR","Liberia"],["LY","Libya"],["LI","Liechtenstein"],["LT","Lithuania"],
+["LU","Luxembourg"],["MO","Macau"],["MG","Madagascar"],["MW","Malawi"],["MY","Malaysia"],
+["MV","Maldives"],["ML","Mali"],["MT","Malta"],["MH","Marshall Islands"],["MR","Mauritania"],
+["MU","Mauritius"],["MX","Mexico"],["FM","Micronesia"],["MD","Moldova"],["MC","Monaco"],
+["MN","Mongolia"],["ME","Montenegro"],["MA","Morocco"],["MZ","Mozambique"],["MM","Myanmar"],
+["NA","Namibia"],["NR","Nauru"],["NP","Nepal"],["NL","Netherlands"],["NZ","New Zealand"],
+["NI","Nicaragua"],["NE","Niger"],["NG","Nigeria"],["MK","North Macedonia"],["NO","Norway"],
+["OM","Oman"],["PK","Pakistan"],["PW","Palau"],["PS","Palestine"],["PA","Panama"],
+["PG","Papua New Guinea"],["PY","Paraguay"],["PE","Peru"],["PH","Philippines"],["PL","Poland"],
+["PT","Portugal"],["PR","Puerto Rico"],["QA","Qatar"],["RO","Romania"],["RU","Russia"],
+["RW","Rwanda"],["KN","Saint Kitts and Nevis"],["LC","Saint Lucia"],["VC","Saint Vincent and the Grenadines"],["WS","Samoa"],
+["SM","San Marino"],["ST","Sao Tome and Principe"],["SA","Saudi Arabia"],["SN","Senegal"],["RS","Serbia"],
+["SC","Seychelles"],["SL","Sierra Leone"],["SG","Singapore"],["SK","Slovakia"],["SI","Slovenia"],
+["SB","Solomon Islands"],["SO","Somalia"],["ZA","South Africa"],["SS","South Sudan"],["ES","Spain"],
+["LK","Sri Lanka"],["SD","Sudan"],["SR","Suriname"],["SE","Sweden"],["CH","Switzerland"],
+["SY","Syria"],["TW","Taiwan"],["TJ","Tajikistan"],["TZ","Tanzania"],["TH","Thailand"],
+["TL","Timor-Leste"],["TG","Togo"],["TO","Tonga"],["TT","Trinidad and Tobago"],["TN","Tunisia"],
+["TR","Turkey"],["TM","Turkmenistan"],["TV","Tuvalu"],["UG","Uganda"],["UA","Ukraine"],
+["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["UY","Uruguay"],["UZ","Uzbekistan"],
+["VU","Vanuatu"],["VA","Vatican City"],["VE","Venezuela"],["VN","Vietnam"],["YE","Yemen"],
+["ZM","Zambia"],["ZW","Zimbabwe"]
+].sort((a,b)=> a[1].localeCompare(b[1]));
+
+const LANGUAGES = [
+["ab","Abkhazian"],["aa","Afar"],["af","Afrikaans"],["ak","Akan"],["sq","Albanian"],
+["am","Amharic"],["ar","Arabic"],["an","Aragonese"],["hy","Armenian"],["as","Assamese"],
+["av","Avaric"],["ae","Avestan"],["ay","Aymara"],["az","Azerbaijani"],["bm","Bambara"],
+["ba","Bashkir"],["eu","Basque"],["be","Belarusian"],["bn","Bengali"],["bi","Bislama"],
+["bs","Bosnian"],["br","Breton"],["bg","Bulgarian"],["my","Burmese"],["ca","Catalan"],
+["ch","Chamorro"],["ce","Chechen"],["ny","Chichewa"],["zh","Chinese"],["cv","Chuvash"],
+["kw","Cornish"],["co","Corsican"],["cr","Cree"],["hr","Croatian"],["cs","Czech"],
+["da","Danish"],["dv","Divehi"],["nl","Dutch"],["dz","Dzongkha"],["en","English"],
+["eo","Esperanto"],["et","Estonian"],["ee","Ewe"],["fo","Faroese"],["fj","Fijian"],
+["fi","Finnish"],["fr","French"],["ff","Fulah"],["gl","Galician"],["ka","Georgian"],
+["de","German"],["el","Greek"],["gn","Guarani"],["gu","Gujarati"],["ht","Haitian"],
+["ha","Hausa"],["he","Hebrew"],["hz","Herero"],["hi","Hindi"],["ho","Hiri Motu"],
+["hu","Hungarian"],["ia","Interlingua"],["id","Indonesian"],["ie","Interlingue"],["ga","Irish"],
+["ig","Igbo"],["ik","Inupiaq"],["io","Ido"],["is","Icelandic"],["it","Italian"],
+["iu","Inuktitut"],["ja","Japanese"],["jv","Javanese"],["kl","Kalaallisut"],["kn","Kannada"],
+["kr","Kanuri"],["ks","Kashmiri"],["kk","Kazakh"],["km","Khmer"],["ki","Kikuyu"],
+["rw","Kinyarwanda"],["ky","Kyrgyz"],["kv","Komi"],["kg","Kongo"],["ko","Korean"],
+["ku","Kurdish"],["kj","Kwanyama"],["la","Latin"],["lb","Luxembourgish"],["lg","Ganda"],
+["li","Limburgish"],["ln","Lingala"],["lo","Lao"],["lt","Lithuanian"],["lu","Luba-Katanga"],
+["lv","Latvian"],["gv","Manx"],["mk","Macedonian"],["mg","Malagasy"],["ms","Malay"],
+["ml","Malayalam"],["mt","Maltese"],["mi","Maori"],["mr","Marathi"],["mh","Marshallese"],
+["mn","Mongolian"],["na","Nauru"],["nv","Navajo"],["nd","North Ndebele"],["ne","Nepali"],
+["ng","Ndonga"],["nb","Norwegian Bokmål"],["nn","Norwegian Nynorsk"],["no","Norwegian"],["ii","Sichuan Yi"],
+["nr","South Ndebele"],["oc","Occitan"],["oj","Ojibwa"],["cu","Church Slavic"],["om","Oromo"],
+["or","Oriya"],["os","Ossetian"],["pa","Punjabi"],["pi","Pali"],["fa","Persian"],
+["pl","Polish"],["ps","Pashto"],["pt","Portuguese"],["qu","Quechua"],["rm","Romansh"],
+["rn","Rundi"],["ro","Romanian"],["ru","Russian"],["sa","Sanskrit"],["sc","Sardinian"],
+["sd","Sindhi"],["se","Northern Sami"],["sm","Samoan"],["sg","Sango"],["sr","Serbian"],
+["gd","Gaelic"],["sn","Shona"],["si","Sinhala"],["sk","Slovak"],["sl","Slovenian"],
+["so","Somali"],["st","Southern Sotho"],["es","Spanish"],["su","Sundanese"],["sw","Swahili"],
+["ss","Swati"],["sv","Swedish"],["ta","Tamil"],["te","Telugu"],["tg","Tajik"],
+["th","Thai"],["ti","Tigrinya"],["bo","Tibetan"],["tk","Turkmen"],["tl","Tagalog"],
+["tn","Tswana"],["to","Tonga"],["tr","Turkish"],["ts","Tsonga"],["tt","Tatar"],
+["tw","Twi"],["ty","Tahitian"],["ug","Uyghur"],["uk","Ukrainian"],["ur","Urdu"],
+["uz","Uzbek"],["ve","Venda"],["vi","Vietnamese"],["vo","Volapük"],["wa","Walloon"],
+["cy","Welsh"],["wo","Wolof"],["fy","Western Frisian"],["xh","Xhosa"],["yi","Yiddish"],
+["yo","Yoruba"],["za","Zhuang"],["zu","Zulu"]
+].sort((a,b)=> a[1].localeCompare(b[1]));
+
+(function(){
+  const state = {
+    apiKey: "",
+    activeTab: "theaters",
+    country: "",
+    language: "",
+    ytPlayer: null,
+    ytReady: false,
+    pendingVideoId: null,
+    muted: false,
+    ccOn: false
+  };
+
+  const els = {
+    tvScreen: document.getElementById('tvScreen'),
+    tabsRow: document.getElementById('tabsRow'),
+    searchInput: document.getElementById('searchInput'),
+    searchBtn: document.getElementById('searchBtn'),
+    apiKeyBtn: document.getElementById('apiKeyBtn'),
+    modalBackdrop: document.getElementById('modalBackdrop'),
+    apiKeyInput: document.getElementById('apiKeyInput'),
+    modalSave: document.getElementById('modalSave'),
+    modalCancel: document.getElementById('modalCancel'),
+    npBar: document.getElementById('npBar'),
+    npTitle: document.getElementById('npTitle'),
+    npBackBtn: document.getElementById('npBackBtn'),
+    countrySelect: document.getElementById('countrySelect'),
+    languageSelect: document.getElementById('languageSelect'),
+    filterHint: document.getElementById('filterHint'),
+  };
+
+  const IMG = (path, size='w342') => path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
+
+  /* ---------- Populate dropdowns ---------- */
+  function populateDropdowns(){
+    const cFrag = document.createDocumentFragment();
+    const optAllC = document.createElement('option');
+    optAllC.value=''; optAllC.textContent='🌍 All Countries';
+    cFrag.appendChild(optAllC);
+    COUNTRIES.forEach(([code,name])=>{
+      const o = document.createElement('option');
+      o.value = code; o.textContent = name;
+      cFrag.appendChild(o);
+    });
+    els.countrySelect.appendChild(cFrag);
+
+    const lFrag = document.createDocumentFragment();
+    const optAllL = document.createElement('option');
+    optAllL.value=''; optAllL.textContent='🌐 All Languages';
+    lFrag.appendChild(optAllL);
+    LANGUAGES.forEach(([code,name])=>{
+      const o = document.createElement('option');
+      o.value = code; o.textContent = name;
+      lFrag.appendChild(o);
+    });
+    els.languageSelect.appendChild(lFrag);
+  }
+  populateDropdowns();
+
+  function updateFilterHint(){
+    const cName = state.country ? (COUNTRIES.find(c=>c[0]===state.country)||[,state.country])[1] : 'all countries';
+    const lName = state.language ? (LANGUAGES.find(l=>l[0]===state.language)||[,state.language])[1] : 'all languages';
+    els.filterHint.textContent = `Showing movies from ${cName}, ${lName}.`;
+  }
+
+  els.countrySelect.addEventListener('change', ()=>{
+    state.country = els.countrySelect.value;
+    updateFilterHint();
+    refreshCurrentView();
+  });
+  els.languageSelect.addEventListener('change', ()=>{
+    state.language = els.languageSelect.value;
+    updateFilterHint();
+    refreshCurrentView();
+  });
+
+  function refreshCurrentView(){
+    if(els.searchInput.value.trim()){ doSearch(); }
+    else { loadTab(state.activeTab); }
+  }
+
+  /* ---------- YouTube IFrame API (for volume + enlarge controls) ---------- */
+  let ytApiInjected = false;
+  function ensureYTApi(){
+    if(ytApiInjected) return;
+    ytApiInjected = true;
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
+  window.onYouTubeIframeAPIReady = function(){
+    state.ytReady = true;
+    if(state.pendingVideoId){
+      const id = state.pendingVideoId;
+      state.pendingVideoId = null;
+      mountPlayer(id);
+    }
+  };
+
+  function mountPlayer(videoId){
+    if(!state.ytReady){ state.pendingVideoId = videoId; ensureYTApi(); return; }
+    els.tvScreen.innerHTML = `
+      <div id="ytHolder" style="position:absolute;inset:0;"></div>
+      <div class="player-controls pinned" id="playerControls">
+        <button class="ctrl-btn" id="muteBtn" title="Mute / Unmute">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volume">
+        <button class="ctrl-btn" id="ccBtn" title="Toggle captions">CC</button>
+        <div class="ctrl-spacer"></div>
+        <button class="ctrl-btn" id="fullscreenBtn" title="Enlarge / fullscreen">⤢</button>
+      </div>`;
+    // Always build a fresh player: innerHTML above just destroyed any previous
+    // player's DOM node, so reusing the old YT.Player instance is unsafe.
+    state.ytPlayer = new YT.Player('ytHolder', {
+      width:'100%',
+      height:'100%',
+      videoId: videoId,
+      playerVars:{ autoplay:1, rel:0, modestbranding:1, playsinline:1 },
+      events:{
+        onReady:(e)=>{
+          e.target.setVolume(100);
+          state.muted = e.target.isMuted();
+          updateMuteIcon();
+        }
+      }
+    });
+    wireControls();
+  }
+
+  function updateMuteIcon(){
+    const btn = document.getElementById('muteBtn');
+    if(!btn) return;
+    btn.textContent = state.muted ? '🔇' : '🔊';
+    btn.classList.toggle('on', state.muted);
+  }
+
+  function wireControls(){
+    const muteBtn = document.getElementById('muteBtn');
+    const volSlider = document.getElementById('volumeSlider');
+    const ccBtn = document.getElementById('ccBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    if(muteBtn) muteBtn.addEventListener('click', ()=>{
+      if(!state.ytPlayer) return;
+      if(state.muted){ state.ytPlayer.unMute(); state.muted=false; }
+      else { state.ytPlayer.mute(); state.muted=true; }
+      updateMuteIcon();
+    });
+
+    if(volSlider) volSlider.addEventListener('input', (e)=>{
+      if(!state.ytPlayer) return;
+      const v = Number(e.target.value);
+      state.ytPlayer.setVolume(v);
+      if(v===0){ state.ytPlayer.mute(); state.muted=true; }
+      else { state.ytPlayer.unMute(); state.muted=false; }
+      updateMuteIcon();
+    });
+
+    if(ccBtn) ccBtn.addEventListener('click', ()=>{
+      if(!state.ytPlayer) return;
+      state.ccOn = !state.ccOn;
+      try{
+        if(state.ccOn) state.ytPlayer.loadModule('captions');
+        else state.ytPlayer.unloadModule('captions');
+      } catch(err){ /* captions module not available for this video - ignore */ }
+      ccBtn.classList.toggle('on', state.ccOn);
+    });
+
+    if(fsBtn) fsBtn.addEventListener('click', ()=>{
+      const target = els.tvScreen;
+      if(document.fullscreenElement){
+        document.exitFullscreen();
+      } else if(target.requestFullscreen){
+        target.requestFullscreen().catch(()=>{ /* fullscreen blocked by browser - ignore */ });
+      }
+    });
+  }
+
+  function openModal(){
+    els.apiKeyInput.value = state.apiKey;
+    els.modalBackdrop.classList.add('open');
+    els.apiKeyInput.focus();
+  }
+  function closeModal(){ els.modalBackdrop.classList.remove('open'); }
+
+  els.apiKeyBtn.addEventListener('click', openModal);
+  els.modalCancel.addEventListener('click', closeModal);
+  els.modalBackdrop.addEventListener('click', (e)=>{ if(e.target===els.modalBackdrop) closeModal(); });
+  els.modalSave.addEventListener('click', ()=>{
+    state.apiKey = els.apiKeyInput.value.trim();
+    closeModal();
+    if(state.apiKey){ loadTab(state.activeTab); }
+  });
+  els.apiKeyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') els.modalSave.click(); });
+
+  els.tabsRow.addEventListener('click', (e)=>{
+    const tab = e.target.closest('.iw-tab');
+    if(!tab) return;
+    [...els.tabsRow.children].forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    state.activeTab = tab.dataset.tab;
+    els.searchInput.value = "";
+    loadTab(state.activeTab);
+  });
+
+  els.searchBtn.addEventListener('click', doSearch);
+  els.searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doSearch(); });
+
+  els.npBackBtn.addEventListener('click', ()=>{
+    els.npBar.style.display = 'none';
+    state.ytPlayer = null;
+    if(els.searchInput.value.trim()){ doSearch(); } else { loadTab(state.activeTab); }
+  });
+
+  function showIdle(msg, sub){
+    els.tvScreen.innerHTML = `
+      <div class="screen-idle">
+        <div class="static-bars"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="big">${msg}</div>
+        <div class="small">${sub}</div>
+      </div>`;
+    els.npBar.style.display = 'none';
+    state.ytPlayer = null;
+  }
+
+  function showLoading(){
+    els.tvScreen.innerHTML = `<div class="screen-idle"><div class="big">Tuning in…</div><div class="small">Loading movies</div></div>`;
+    state.ytPlayer = null;
+  }
+
+  function requireKey(){
+    if(!state.apiKey){
+      showIdle("No signal", "Add your TMDB API key to start browsing");
+      return false;
+    }
+    return true;
+  }
+
+  async function tmdb(path, params={}){
+    const url = new URL(`https://api.themoviedb.org/3${path}`);
+    url.searchParams.set('api_key', state.apiKey);
+    Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!=='') url.searchParams.set(k, v); });
+    const res = await fetch(url.toString());
+    if(!res.ok){
+      const body = await res.json().catch(()=>({}));
+      throw new Error(body.status_message || `Request failed (${res.status})`);
+    }
+    return res.json();
+  }
+
+  function applyLanguageFilter(movies){
+    if(!state.language) return movies;
+    return movies.filter(m => (m.original_language||'').toLowerCase() === state.language);
+  }
+
+  function renderGrid(movies, emptyMsg){
+    if(!movies || movies.length===0){
+      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">${emptyMsg||'No movies found.'}</div></div>`;
+      return;
+    }
+    const cards = movies.map(m=>{
+      const poster = IMG(m.poster_path);
+      const title = (m.title || m.name || 'Untitled').replace(/</g,'&lt;');
+      const date = m.release_date ? m.release_date.slice(0,4) : '—';
+      return `
+        <div class="card" data-id="${m.id}" data-title="${title.replace(/"/g,'&quot;')}">
+          <div class="poster-wrap">
+            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a5c52;font-size:11px;">No image</div>`}
+          </div>
+          <div class="card-meta">
+            <div class="card-title">${title}</div>
+            <div class="card-date">${date}</div>
+          </div>
+        </div>`;
+    }).join('');
+    els.tvScreen.innerHTML = `<div class="screen-inner"><div class="grid">${cards}</div></div>`;
+    els.tvScreen.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('click', ()=> playMovie(card.dataset.id, card.dataset.title));
+    });
+  }
+
+  async function playMovie(id, title){
+    showLoading();
+    ensureYTApi();
+    try{
+      const vids = await tmdb(`/movie/${id}/videos`);
+      const trailer = (vids.results||[]).find(v=> v.site==='YouTube' && v.type==='Trailer')
+                    || (vids.results||[]).find(v=> v.site==='YouTube');
+      if(trailer){
+        mountPlayer(trailer.key);
+      } else {
+        const details = await tmdb(`/movie/${id}`);
+        const backdrop = IMG(details.backdrop_path, 'original');
+        els.tvScreen.innerHTML = `
+          <div class="screen-inner" style="padding:0;">
+            <div style="position:relative;width:100%;height:100%;">
+              ${backdrop ? `<img src="${backdrop}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.75));display:flex;align-items:flex-end;padding:16px;">
+                <div>
+                  <div style="font-weight:700;font-size:16px;">${title}</div>
+                  <div style="font-size:12px;color:#c8d6cf;margin-top:4px;">${(details.overview||'No trailer available.').slice(0,180)}${details.overview && details.overview.length>180 ? '…' : ''}</div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }
+      els.npTitle.textContent = title;
+      els.npBar.style.display = 'flex';
+    } catch(err){
+      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">Couldn't load "${title}": ${err.message}</div></div>`;
+    }
+  }
+
+  async function loadTab(tab){
+    if(!requireKey()) return;
+    showLoading();
+    els.npBar.style.display = 'none';
+    const year = new Date().getFullYear();
+    const today = new Date().toISOString().slice(0,10);
+    try{
+      let data, movies;
+      if(tab==='theaters'){
+        data = await tmdb('/movie/now_playing', { language:'en-US', page:1, region: state.country });
+        movies = applyLanguageFilter(data.results||[]);
+        renderGrid(movies, 'Nothing currently in theaters for this filter.');
+      } else if(tab==='new'){
+        data = await tmdb('/discover/movie', {
+          sort_by:'primary_release_date.desc',
+          'primary_release_date.lte': today,
+          'primary_release_year': year,
+          'vote_count.gte': 1,
+          language:'en-US', page:1,
+          region: state.country,
+          with_original_language: state.language
+        });
+        movies = data.results||[];
+        renderGrid(movies, 'No new releases found for this filter.');
+      } else if(tab==='recent'){
+        data = await tmdb('/discover/movie', {
+          sort_by:'popularity.desc',
+          primary_release_year: year,
+          language:'en-US', page:1,
+          region: state.country,
+          with_original_language: state.language
+        });
+        movies = data.results||[];
+        renderGrid(movies, 'Nothing popular found for this filter.');
+      }
+    } catch(err){
+      showIdle("Signal lost", err.message);
+    }
+  }
+
+  async function doSearch(){
+    const q = els.searchInput.value.trim();
+    if(!q){ loadTab(state.activeTab); return; }
+    if(!requireKey()) return;
+    showLoading();
+    els.npBar.style.display = 'none';
+    try{
+      const data = await tmdb('/search/movie', { query:q, language:'en-US', page:1, include_adult:false, region: state.country });
+      const movies = applyLanguageFilter(data.results||[]);
+      renderGrid(movies, `No movies found for "${q}" with this filter.`);
+    } catch(err){
+      showIdle("Signal lost", err.message);
+    }
+  }
+
+  // initial state
+  updateFilterHint();
+  showIdle("No signal", "Add your TMDB API key to start browsing");
+})();

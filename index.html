@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imran Khan's first website</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="style.css">
-
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- Weather widget -->
@@ -92,10 +93,10 @@
     <input type="text" name="q" placeholder="Search Google..." required>
     <button type="submit">Search</button>
   </form>
-  <div target="_blank" class="tabs" role="tablist" aria-label="Quick Links">
+  <div class="tabs" role="tablist" aria-label="Quick Links">
+    <a href="https://www.themoviedb.org/login/username" target="_blank" rel="noopener" class="tab" role="tab">The Movie Database/user name (khan86imran12031986)</a>
     <a href="https://me.developers.google.com/" target="_blank" rel="noopener" class="tab" role="tab">Google Developers</a>
     <a href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/metrics?project=my-website-505707" target="_blank" rel="noopener" class="tab" role="tab">YouTube Metrics</a>
-    <a href="https://developers.google.com/youtube/v3/docs/?apix=true" target="_blank" rel="noopener" class="tab" role="tab">YouTube API</a>
     <a href="https://www.yahoo.com" target="_blank" rel="noopener" class="tab" role="tab">Yahoo</a>
     <a href="https://www.google.com" target="_blank" rel="noopener" class="tab" role="tab">Google</a>
     <a href="https://www.facebook.com" target="_blank" rel="noopener" class="tab" role="tab">Facebook</a>
@@ -191,8 +192,14 @@
     </div>
   </section>
   <section class="media-card youtube-card" aria-labelledby="youtube-heading">
-    <h3 id="youtube-heading">🎬 YouTube Music Videos</h3>
+    <h3 id="youtube-heading">🎬 I-LISTEN</h3>
     <p class="widget-subtext">Search for a song or paste a YouTube link to watch music videos right here.</p>
+    <div class="youtube-country-row">
+      <label for="youtube-country-select">Country / language</label>
+      <select id="youtube-country-select">
+        <option value="">— Any country / language —</option>
+      </select>
+    </div>
     <div class="youtube-toolbar">
       <input id="youtube-search-input" type="text" placeholder="Search a song, or paste a YouTube link/ID…">
       <button id="youtube-search-btn" class="quran-btn" type="button">Search</button>
@@ -213,10 +220,82 @@
     </div>
   </section>
   </div>
-  <div class="dhol-wrapper">
-    <h3 class="dhol-title">Pakistani Dhol Playing</h3>
-    <iframe width="480" height="270" src="https://www.youtube.com/embed/EjJOYrMnOOk" title="Pakistani Dhol Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  
+
+  <!-- ============================================================
+       I-WATCH movie browser (ported from the first webpage)
+       Scoped under .iwatch-app; tab buttons use .iw-tab instead of
+       .tab so they don't collide with the Quick Links .tab styling.
+       ============================================================ -->
+  <div class="iwatch-app">
+  <div class="wrap">
+    <div class="app-title"><span class="emoji">📺</span> <b>I-WATCH</b></div>
+
+    <div class="section">
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Search any movie, worldwide…">
+        <select class="dropdown-select" id="countrySelect" aria-label="Country"></select>
+        <select class="dropdown-select" id="languageSelect" aria-label="Language"></select>
+        <button class="btn btn-primary" id="searchBtn">🔍 Search</button>
+        <button class="btn btn-ghost" id="apiKeyBtn">🔑 API Key</button>
+      </div>
+      <div class="filter-hint" id="filterHint">Showing movies from all countries, all languages.</div>
+
+      <div class="tabs-row" id="tabsRow">
+        <button class="iw-tab active" data-tab="theaters">🎟️ In Theaters</button>
+        <button class="iw-tab" data-tab="new">🆕 New Releases</button>
+        <button class="iw-tab" data-tab="recent">⏱️ Recent (This Year)</button>
+      </div>
+
+      <div class="tv-outer">
+        <div class="tv-frame">
+          <div class="tv-screen" id="tvScreen">
+            <div class="screen-idle" id="screenIdle">
+              <div class="static-bars">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="big">No signal</div>
+              <div class="small">Add your TMDB API key to start browsing</div>
+            </div>
+          </div>
+        </div>
+        <div class="tv-stand"></div>
+        <div class="tv-base"></div>
+      </div>
+
+      <div class="now-playing-bar" id="npBar" style="display:none;">
+        <div class="np-info">Now showing: <b id="npTitle">—</b></div>
+        <button class="btn btn-ghost" id="npBackBtn">◀ Back to browsing</button>
+      </div>
+
+      <div class="attribution">
+        Movie data provided by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a>.
+        This product uses the TMDB API but is not endorsed or certified by TMDB.
+      </div>
+    </div>
   </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h3>TMDB API Key</h3>
+      <p>
+        I-WATCH pulls movie data from the worldwide TMDB database. Get a free key at
+        <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org/settings/api</a>,
+        then paste the "API Key (v3 auth)" value below. The key is kept only in this page's memory
+        for the current session — it's not saved anywhere.
+      </p>
+      <input type="text" id="apiKeyInput" placeholder="Paste your TMDB API key…">
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+        <button class="btn btn-primary" id="modalSave">Save Key</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- ============================================================
+       end I-WATCH movie browser
+       ============================================================ -->
+
   <p class="left-block"><a href="#git-notes">Jump to Git notes ↓</a></p>
   <div class="git-notes-section" id="git-notes">
   <div class="git-notes-header">
@@ -726,7 +805,7 @@ Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3
 
 <p>When you open your key on the Credentials page in Google Cloud Console, it'll look exactly like that — one unbroken string with no spaces.<br>
    That's the whole thing; you copy that entire string and paste it into the 🔑 API Key box on your site.
-
+   
 
   </div>
   <div class="cert-modal" id="cert-modal" aria-hidden="true">
@@ -736,24 +815,12 @@ Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3
       <p class="cert-modal-hint" id="cert-modal-hint">Click the image to zoom in</p>
     </div>
   </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const certModal = document.getElementById('cert-modal');
-      const certModalImage = document.getElementById('cert-modal-image');
-      const certModalClose = document.getElementById('cert-modal-close');
-
-      certModalClose.addEventListener('click', function() {
-        certModal.style.display = 'none';
-      });
-
-      certModalImage.addEventListener('click', function() {
-        certModal.classList.toggle('zoom');
-      });
-    });
-  </script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="script.js"></script>
 
 </body>
 </html>
+
+
+  
