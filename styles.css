@@ -1,8 +1,9 @@
 /* layout and component styles */
     .tabs {
       display: flex;
+      flex-wrap: wrap;
       border-bottom: 2px solid #ccc;
-      max-width: 300px;
+      max-width: 100%;
       margin: 15px 0;
     }
     .tab {
@@ -107,6 +108,8 @@
       position: relative;
       max-width: min(96vw, 1100px);
       width: 100%;
+      max-height: 92vh;
+      overflow: auto;
     }
     .cert-modal-image {
       width: 100%;
@@ -116,6 +119,22 @@
       border: 1px solid rgba(255,255,255,0.3);
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       background: #111827;
+      cursor: zoom-in;
+      transition: transform 0.25s ease;
+      transform-origin: top center;
+    }
+    .cert-modal-image.zoomed {
+      width: auto;
+      max-width: none;
+      max-height: none;
+      transform: scale(1.9);
+      cursor: zoom-out;
+    }
+    .cert-modal-hint {
+      text-align: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      margin: 8px 0 0;
     }
     .cert-modal-close {
       position: absolute;
@@ -294,7 +313,6 @@
       z-index: -1;
       pointer-events: none;
     }
-
     /* base body — transparent so lake shows everywhere */
     body {
       font-family: Arial, sans-serif;
@@ -307,13 +325,11 @@
       color: #ffffff;
       background: transparent;
     }
-
     /* headings and loose text — bright white with shadow for legibility */
     h1, h2, p, li, label {
       color: #ffffff;
       text-shadow: 0 2px 8px rgba(0,0,0,0.75);
     }
-
     /* ── Glass-morphism cards — lake visible through every card ── */
     .media-card,
     .git-content,
@@ -323,50 +339,43 @@
       background: rgba(255, 255, 255, 0.12) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
+      backdrop-filter: blur(10px) !important;
       border: 1px solid rgba(255,255,255,0.30) !important;
       color: #ffffff !important;
       box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
     }
-
     /* text inside cards */
     .media-card *, .git-content *, .surah *, .translation-preview * {
       color: #f0f9ff !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.6);
     }
-
     /* surah heading */
     .surah h4 { color: #bef264 !important; }
-
     /* arabic text */
     .arabic { color: #fef9c3 !important; }
-
     /* translation text */
     .translation, .translation-preview { color: #e0f2fe !important; }
-
     /* surah status label */
     .surah-status { color: #cbd5e1 !important; }
-
     /* code/pre blocks inside git notes */
     pre, code {
       background: rgba(0,0,0,0.35) !important;
       color: #86efac !important;
       border-color: rgba(255,255,255,0.15) !important;
     }
-
     /* ordered list text */
     ol { color: #86efac !important; border-color: rgba(255,255,255,0.2) !important; }
-
     /* h3 keeps its bold look but glass-friendly */
     h3 {
       color: #fca5a5 !important;
       background: rgba(0,0,0,0.50) !important;
       border-color: rgba(255,255,255,0.15) !important;
     }
-
     /* tabs */
     .tabs {
       background: rgba(0,0,0,0.25);
       border-radius: 8px 8px 0 0;
+      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
     }
     .tab {
@@ -374,14 +383,12 @@
       color: #1a1a1a !important;
     }
     .tab:hover { background: rgba(234,179,8,0.95) !important; }
-
     /* git notes tab */
     .git-notes-tab {
       background: transparent !important;
       color: #facc15 !important;
       border-color: #facc15 !important;
     }
-
     /* ── Remove ALL backgrounds from git notes section downward ── */
     .git-notes-section,
     .git-notes-section .git-content,
@@ -397,6 +404,7 @@
       background: transparent !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
       border-color: rgba(255,255,255,0.20) !important;
       box-shadow: none !important;
     }
@@ -452,6 +460,7 @@
       border-radius: 8px !important;
       padding: 10px 14px !important;
       margin-top: 20px !important;
+      -webkit-user-select: none !important;
       user-select: none !important;
     }
     .git-notes-section .content-right .accordion-caret {
@@ -462,16 +471,16 @@
     .git-notes-section .content-right [data-accordion-item][hidden] {
       display: none !important;
     }
-
     /* quran buttons */
     .quran-btn {
       background: rgba(37,99,235,0.75) !important;
       border-color: rgba(147,197,253,0.5) !important;
       color: #fff !important;
       backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
     }
     .quran-btn:hover { background: rgba(37,99,235,0.95) !important; }
-
     /* quran search input */
     .quran-toolbar input {
       background: rgba(255,255,255,0.15) !important;
@@ -479,7 +488,6 @@
       color: #fff !important;
     }
     .quran-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
-
     /* ── Floating yearly calendar (top-right) ── */
     #cal-widget {
       position: absolute;
@@ -489,12 +497,14 @@
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 14px;
       padding: 14px 16px 16px;
       color: #fff;
       z-index: 100;
       box-shadow: 0 6px 32px rgba(0,0,0,0.45);
+      -webkit-user-select: none;
       user-select: none;
     }
     #cal-widget .cal-nav {
@@ -566,7 +576,6 @@
       font-weight: 700;
     }
     #cal-widget .cal-month-chip:hover { background: rgba(255,255,255,0.25); }
-
     /* ── To-Do / Notes widget (left of calendar) ── */
     #todo-widget {
       position: absolute;
@@ -576,6 +585,7 @@
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 14px;
       padding: 14px 16px 16px;
@@ -662,7 +672,6 @@
       text-align: center;
       padding: 10px 0;
     }
-
     /* ── Weather widget (left of To-Do / Notes) ── */
     #weather-widget {
       position: absolute;
@@ -915,189 +924,4 @@
       font-size: 11px !important;
       color: #6b7280 !important;
       text-align: right;
-    }
-
-    /* Keep the floating widgets and long-form notes usable on narrow screens. */
-    @media (max-width: 1100px) {
-      body {
-        margin: 24px auto;
-      }
-
-      #weather-widget,
-      #todo-widget,
-      #cal-widget {
-        position: static;
-        width: min(100%, 560px);
-        margin: 0 auto 16px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      html {
-        background-attachment: scroll;
-      }
-
-      body {
-        margin: 16px auto;
-        padding: 0 16px;
-        overflow-x: hidden;
-      }
-
-      h1 {
-        font-size: clamp(1.75rem, 9vw, 2.25rem);
-        line-height: 1.2;
-      }
-
-      .course-title {
-        font-size: clamp(1.5rem, 7vw, 2rem);
-        line-height: 1.2;
-      }
-
-      .hero-image {
-        width: 100%;
-        height: auto;
-        max-width: 280px;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      form input,
-      form button {
-        width: 100%;
-        min-height: 44px;
-      }
-
-      .tabs {
-        max-width: none;
-        flex-wrap: wrap;
-        gap: 6px;
-        border-bottom: 0;
-        padding: 6px;
-      }
-
-      .tab {
-        flex: 1 1 calc(50% - 6px);
-        margin: 0;
-        padding: 10px 8px;
-        text-align: center;
-        border-bottom: 1px solid #ccc;
-        border-radius: 8px;
-      }
-
-      .media-row {
-        margin: 16px 0;
-      }
-
-      .media-card {
-        padding: 16px;
-      }
-
-      .quran-toolbar {
-        align-items: stretch;
-      }
-
-      .quran-toolbar input,
-      .quran-btn {
-        flex-basis: 100%;
-        min-height: 44px;
-      }
-
-      iframe {
-        width: 100% !important;
-        height: auto;
-        aspect-ratio: 16 / 9;
-      }
-
-      .git-notes-section {
-        margin-top: 28px;
-      }
-
-      .git-notes-header,
-      .git-cert-thumbs {
-        align-items: stretch;
-      }
-
-      .git-cert-thumbs {
-        flex-wrap: wrap;
-      }
-
-      .git-notes-tab {
-        width: 100%;
-        padding: 10px 14px;
-        font-size: 24px !important;
-      }
-
-      .git-content {
-        padding: 16px;
-      }
-
-      .git-notes-section *,
-      .git-notes-section p,
-      .git-notes-section li,
-      .git-notes-section ol,
-      .git-notes-section ul,
-      .git-notes-section span,
-      .git-notes-section td,
-      .git-notes-section label,
-      .git-notes-section code {
-        font-size: 16px !important;
-      }
-
-      .git-notes-section h2,
-      .git-notes-section h3,
-      .git-notes-section h4,
-      .git-notes-section .repo-steps-toggle {
-        font-size: 21px !important;
-      }
-
-      .git-notes-section pre {
-        padding: 10px;
-        font-size: 15px !important;
-        overflow-wrap: anywhere;
-      }
-
-      .repo-steps-toggle,
-      .git-notes-section .content-right .accordion-toggle {
-        padding: 10px 12px !important;
-      }
-
-      #weather-widget,
-      #todo-widget,
-      #cal-widget {
-        padding: 14px;
-      }
-
-      #weather-location-btn,
-      #weather-location-name {
-        font-size: 18px;
-      }
-
-      #weather-location-name {
-        max-width: 150px;
-      }
-
-      #weather-menu {
-        position: static;
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      #weather-menu-btn,
-      #weather-add-location-btn,
-      #todo-add-btn,
-      #cal-widget .cal-nav button {
-        min-height: 40px;
-      }
-
-      #weather-temp-big {
-        font-size: 48px;
-      }
-
-      #weather-forecast-link {
-        font-size: 22px;
-      }
     }
