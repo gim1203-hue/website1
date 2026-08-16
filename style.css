@@ -280,6 +280,31 @@
       .media-row, .git-content { display: block; }
       .media-card { margin-bottom: 20px; }
       .quran-toolbar input { flex-basis: 100%; }
+      /* ── Stack the floating widgets instead of pinning them to fixed
+         pixel offsets from the right edge — on narrow screens those
+         offsets push them off-screen and on top of the name/flag. ── */
+      body { margin: 20px auto; padding: 0 16px; }
+      #weather-widget,
+      #todo-widget,
+      #cal-widget {
+        position: relative;
+        top: auto;
+        right: auto;
+        left: auto;
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto 16px;
+        box-sizing: border-box;
+      }
+    }
+    @media (max-width: 480px) {
+      /* Shrink the oversized weather numerals so they don't wrap or
+         overflow their card on small phones. */
+      #weather-temp-big { font-size: 42px; }
+      #weather-temp-unit { font-size: 24px; }
+      #weather-forecast-toggle { font-size: 18px; }
+      #weather-forecast-link { font-size: 18px; }
+      #weather-location-name { font-size: 18px; max-width: 140px; }
     }
     ol {
       color: green;
