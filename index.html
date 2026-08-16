@@ -703,7 +703,30 @@ git push</pre>
   </li>
 </ol>
 
-    </div>
+<h3>creating an API KEY</h3>
+<p>Go to console.cloud.google.com and <br>
+  sign in with your Google account.
+Create a new project (top left project dropdown → "New Project"). Name it anything, like "my-website".
+Once it's created and selected, go to APIs & Services → Library, search for "YouTube Data API v3", and click Enable.
+Go to APIs & Services → Credentials, click Create Credentials → API key. It'll generate a key immediately — copy it.
+(Recommended) Click Edit on that key and under "API restrictions" limit it to just "YouTube Data API v3",<br>
+ so it can't be used for anything else if it ever leaks.
+Paste it into the 🔑 API Key box on your site and hit "Save key" — search will start working right away.</p>
+
+<p>Go to APIs & Services → Credentials.
+Under "API Keys," you'll see a table row with a name like "API key 1" — click directly on that name text (not a separate icon).
+That opens the key's detail page, where you'll see two sections: "Application restrictions" and "API restrictions."
+Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3" from the list, and click Save at the bottom.</p>
+
+
+<p>A Google API key is just a random-looking string, typically starting with AIza, followed by about 35 more letters, numbers, <br>
+  hyphens, and underscores — 39 characters total. As an example (this is a fake placeholder, not a real key):<br>
+
+  <code>AIzaSyD4X9k2LmQ8vB3nR7pW1cF6tH0jY5sA9eZ</code><br></p>
+
+<p>When you open your key on the Credentials page in Google Cloud Console, it'll look exactly like that — one unbroken string with no spaces.<br>
+   That's the whole thing; you copy that entire string and paste it into the 🔑 API Key box on your site.
+
 
   </div>
   <div class="cert-modal" id="cert-modal" aria-hidden="true">
