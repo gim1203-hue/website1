@@ -1,11 +1,13 @@
 document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
     (function() {
       const toggleBtn = document.getElementById('repo-steps-toggle');
       const panel = document.getElementById('repo-steps-panel');
       const caret = document.getElementById('repo-steps-caret');
       if (!toggleBtn || !panel || !caret) return;
+
       toggleBtn.addEventListener('click', () => {
         const willOpen = panel.hidden;
         panel.hidden = !willOpen;
@@ -13,18 +15,22 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         caret.textContent = willOpen ? '▲' : '▼';
       });
     })();
+
     (function() {
       const contentRight = document.querySelector('.git-notes-section .content-right');
       if (!contentRight) return;
+
       const headers = Array.from(contentRight.querySelectorAll('h3'));
       headers.forEach((header, index) => {
         header.classList.add('accordion-toggle');
         header.setAttribute('role', 'button');
         header.setAttribute('tabindex', '0');
+
         const caret = document.createElement('span');
         caret.className = 'accordion-caret';
         caret.textContent = '▼';
         header.appendChild(caret);
+
         const panelId = `git-accordion-panel-${index + 1}`;
         const panelItems = [];
         let sibling = header.nextElementSibling;
@@ -32,12 +38,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           panelItems.push(sibling);
           sibling = sibling.nextElementSibling;
         }
+
         header.setAttribute('aria-controls', panelId);
         header.setAttribute('aria-expanded', 'false');
         panelItems.forEach((item) => {
           item.dataset.accordionItem = panelId;
           item.hidden = true;
         });
+
         function togglePanel() {
           const willOpen = header.getAttribute('aria-expanded') !== 'true';
           header.setAttribute('aria-expanded', String(willOpen));
@@ -46,6 +54,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             item.hidden = !willOpen;
           });
         }
+
         header.addEventListener('click', togglePanel);
         header.addEventListener('keydown', (event) => {
           if (event.key === 'Enter' || event.key === ' ') {
@@ -55,37 +64,28 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         });
       });
     })();
+
     (function() {
       const modal = document.getElementById('cert-modal');
-      const modalInner = document.querySelector('.cert-modal-inner');
       const modalImage = document.getElementById('cert-modal-image');
-      const modalHint = document.getElementById('cert-modal-hint');
       const closeBtn = document.getElementById('cert-modal-close');
       const thumbButtons = document.querySelectorAll('.cert-thumb-btn');
-      function setZoomed(isZoomed) {
-        modalImage.classList.toggle('zoomed', isZoomed);
-        modalHint.textContent = isZoomed ? 'Click the image to zoom out' : 'Click the image to zoom in';
-        if (!isZoomed) modalInner.scrollTop = 0;
-      }
+
       function closeModal() {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
         modalImage.src = '';
-        setZoomed(false);
       }
+
       thumbButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          setZoomed(false);
           modalImage.src = btn.dataset.fullSrc;
           modalImage.alt = btn.dataset.fullAlt || 'Certificate preview';
           modal.classList.add('is-open');
           modal.setAttribute('aria-hidden', 'false');
         });
       });
-      modalImage.addEventListener('click', (event) => {
-        event.stopPropagation();
-        setZoomed(!modalImage.classList.contains('zoomed'));
-      });
+
       closeBtn.addEventListener('click', closeModal);
       modal.addEventListener('click', (event) => {
         if (event.target === modal) closeModal();
@@ -94,14 +94,17 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
     })();
+
     const quranState = {
       catalog: [],
       loadedSurahs: new Map(),
       currentUtterance: null
     };
+
     const quranSurahsContainer = document.getElementById('quran-surahs');
     const loadSurahsBtn = document.getElementById('load-surahs-btn');
     const surahSearchInput = document.getElementById('surah-search');
+
     function setSpeakingState(card, isSpeaking) {
       const playBtn = card.querySelector('.play-translation-btn');
       const playBothBtn = card.querySelector('.play-both-btn');
@@ -110,6 +113,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       playBothBtn.disabled = !card.dataset.translationReady || isSpeaking;
       stopBtn.disabled = !isSpeaking;
     }
+
     function stopTranslationAudio() {
       window.speechSynthesis.cancel();
       quranState.currentUtterance = null;
@@ -119,6 +123,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       });
       document.querySelectorAll('.surah').forEach(card => setSpeakingState(card, false));
     }
+
     function playEnglishTranslation(card, surah, statusEl) {
       if (!('speechSynthesis' in window)) {
         statusEl.textContent = 'Speech playback is not supported in this browser.';
@@ -129,6 +134,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         statusEl.textContent = 'Load this surah first to play translation audio.';
         return;
       }
+
       const utterance = new SpeechSynthesisUtterance(cached.translationText);
       utterance.lang = 'en-US';
       utterance.rate = 0.95;
@@ -149,6 +155,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       };
       window.speechSynthesis.speak(utterance);
     }
+
     function buildSurahCard(surah) {
       const card = document.createElement('article');
       card.className = 'surah';
@@ -167,6 +174,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         <div class="translation-preview">Translation preview will appear after loading this surah.</div>
         <p class="surah-status">Ready</p>
       `;
+
       const statusEl = card.querySelector('.surah-status');
       const arabicTextEl = card.querySelector('.surah-arabic');
       const translationPreviewEl = card.querySelector('.translation-preview');
@@ -175,6 +183,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const playBothBtn = card.querySelector('.play-both-btn');
       const playBtn = card.querySelector('.play-translation-btn');
       const stopBtn = card.querySelector('.stop-translation-btn');
+
       loadBtn.addEventListener('click', async () => {
         const number = surah.number;
         if (quranState.loadedSurahs.has(number)) {
@@ -187,6 +196,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           statusEl.textContent = 'Loaded from cache.';
           return;
         }
+
         loadBtn.disabled = true;
         statusEl.textContent = 'Loading surah data...';
         try {
@@ -194,11 +204,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             fetch(`https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`),
             fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`)
           ]);
+
           if (!arabicResponse.ok || !englishResponse.ok) {
             throw new Error('API response error');
           }
+
           const arabicJson = await arabicResponse.json();
           const englishJson = await englishResponse.json();
+
           const arabicAyahs = arabicJson?.data?.ayahs || [];
           const arabicAudioAyahs = arabicAyahs.map(ayah => ayah.audio).filter(Boolean);
           const arabicTextHtml = arabicAyahs.map(ayah => ayah.text).join('<br>');
@@ -206,12 +219,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           const translationPreview = ayahTranslations
             ? ayahTranslations.slice(0, 360) + (ayahTranslations.length > 360 ? '...' : '')
             : 'No translation text available.';
+
           quranState.loadedSurahs.set(number, {
             arabicAudioAyahs,
             arabicTextHtml,
             translationText: ayahTranslations,
             translationPreview
           });
+
           audioEl.src = arabicAudioAyahs[0] || '';
           arabicTextEl.innerHTML = arabicTextHtml || 'Arabic text unavailable.';
           translationPreviewEl.textContent = translationPreview;
@@ -226,6 +241,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           loadBtn.disabled = false;
         }
       });
+
       playBothBtn.addEventListener('click', () => {
         const cached = quranState.loadedSurahs.get(surah.number);
         if (!cached || !cached.translationText || !cached.arabicAudioAyahs.length) {
@@ -254,63 +270,42 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         audioEl.onended = playNextAyah;
         playNextAyah();
       });
+
       playBtn.addEventListener('click', () => {
         stopTranslationAudio();
         playEnglishTranslation(card, surah, statusEl);
       });
+
       stopBtn.addEventListener('click', () => {
         stopTranslationAudio();
         statusEl.textContent = 'Translation playback stopped.';
       });
+
       return card;
     }
-    function normalizeForSearch(text) {
-      return String(text || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '')   // strip spaces, hyphens, apostrophes
-        .replace(/(.)\1+/g, '$1');   // collapse repeated letters (aa -> a, ii -> i)
-    }
+
     function renderSurahCards(searchText = '') {
-      const raw = searchText.trim().toLowerCase();
-      const normalizedQuery = normalizeForSearch(searchText);
+      const normalized = searchText.trim().toLowerCase();
       const filtered = quranState.catalog.filter(surah => {
-        if (!raw) return true;
-        if (String(surah.number).includes(raw)) return true;
+        if (!normalized) return true;
         return (
-          normalizeForSearch(surah.englishName).includes(normalizedQuery) ||
-          normalizeForSearch(surah.englishNameTranslation).includes(normalizedQuery)
+          String(surah.number).includes(normalized) ||
+          surah.englishName.toLowerCase().includes(normalized) ||
+          surah.englishNameTranslation.toLowerCase().includes(normalized)
         );
       });
+
       quranSurahsContainer.innerHTML = '';
       if (!filtered.length) {
         quranSurahsContainer.innerHTML = '<p class="surah-status">No surah matched your search.</p>';
         return;
       }
+
       const fragment = document.createDocumentFragment();
       filtered.forEach(surah => fragment.appendChild(buildSurahCard(surah)));
       quranSurahsContainer.appendChild(fragment);
     }
-    async function ensureCatalogLoaded() {
-      if (quranState.catalog.length) return true;
-      loadSurahsBtn.disabled = true;
-      loadSurahsBtn.textContent = 'Loading...';
-      quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
-      try {
-        const response = await fetch('https://api.alquran.cloud/v1/surah');
-        if (!response.ok) throw new Error('Failed to load surah list');
-        const data = await response.json();
-        quranState.catalog = data?.data || [];
-        loadSurahsBtn.textContent = 'All Surahs ▲';
-        return true;
-      } catch (error) {
-        quranSurahsContainer.innerHTML = '<p class="surah-status">Could not load surahs. Check internet and try again.</p>';
-        quranState.catalog = [];
-        loadSurahsBtn.textContent = 'All Surahs ▼';
-        return false;
-      } finally {
-        loadSurahsBtn.disabled = false;
-      }
-    }
+
     loadSurahsBtn.addEventListener('click', async () => {
       // If already loaded, just toggle visibility
       if (quranState.catalog.length) {
@@ -320,20 +315,33 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         return;
       }
       // First click — load from API
-      const loaded = await ensureCatalogLoaded();
-      if (loaded) {
-        quranSurahsContainer.style.display = '';
+      loadSurahsBtn.disabled = true;
+      loadSurahsBtn.textContent = 'Loading...';
+      quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
+
+      try {
+        const response = await fetch('https://api.alquran.cloud/v1/surah');
+        if (!response.ok) throw new Error('Failed to load surah list');
+        const data = await response.json();
+        quranState.catalog = data?.data || [];
         renderSurahCards(surahSearchInput.value);
+        loadSurahsBtn.textContent = 'All Surahs ▲';
+      } catch (error) {
+        quranSurahsContainer.innerHTML = '<p class="surah-status">Could not load surahs. Check internet and try again.</p>';
+        quranState.catalog = [];
+        loadSurahsBtn.textContent = 'All Surahs ▼';
+      } finally {
+        loadSurahsBtn.disabled = false;
       }
     });
-    surahSearchInput.addEventListener('input', async () => {
+
+    surahSearchInput.addEventListener('input', () => {
       if (!quranState.catalog.length) {
-        const loaded = await ensureCatalogLoaded();
-        if (!loaded) return;
+        return;
       }
-      quranSurahsContainer.style.display = '';
       renderSurahCards(surahSearchInput.value);
     });
+
     /* ── Weather Widget ── */
     (function() {
       const weatherWidget = document.getElementById('weather-widget');
@@ -344,6 +352,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const stateSelectEl = document.getElementById('weather-state-select');
       const citySelectEl  = document.getElementById('weather-city-select');
       const addLocationBtn = document.getElementById('weather-add-location-btn');
+
       /* ── US States + major cities ── */
       const US_STATES_CITIES = {
         'Alabama': ['Birmingham','Montgomery','Huntsville','Mobile','Tuscaloosa'],
@@ -397,6 +406,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         'Wisconsin': ['Milwaukee','Madison','Green Bay','Kenosha','Racine','Appleton','Waukesha','Oshkosh','Eau Claire','Janesville'],
         'Wyoming': ['Cheyenne','Casper','Laramie','Gillette','Rock Springs']
       };
+
       /* Populate state dropdown */
       Object.keys(US_STATES_CITIES).sort().forEach(state => {
         const opt = document.createElement('option');
@@ -404,6 +414,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         opt.textContent = state;
         stateSelectEl.appendChild(opt);
       });
+
       /* When state changes, populate city dropdown */
       stateSelectEl.addEventListener('change', () => {
         const state = stateSelectEl.value;
@@ -430,6 +441,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const forecastWrapEl = document.getElementById('weather-forecast-wrap');
       const forecastListEl = document.getElementById('weather-forecast-list');
       const updatedEl = document.getElementById('weather-updated');
+
       const state = {
         lat: null,
         lon: null,
@@ -438,6 +450,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       };
       const WEATHER_LOCATION_STORE = 'ik_weather_location';
       const DEFAULT_LOCATION = { lat: 40.7128, lon: -74.0060, label: 'New York, NY' };
+
       const WEATHER_CODES = {
         0: 'Clear',
         1: 'Mostly clear',
@@ -461,9 +474,11 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         82: 'Violent showers',
         95: 'Thunderstorm'
       };
+
       function weatherText(code) {
         return WEATHER_CODES[code] || 'Unknown';
       }
+
       function weatherIcon(code) {
         if (code === 0) return '☀️';
         if (code === 1 || code === 2) return '🌤️';
@@ -474,6 +489,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (code === 95) return '⛈️';
         return '🌡️';
       }
+
       function persistPreferredLocation(lat, lon, label) {
         try {
           localStorage.setItem(WEATHER_LOCATION_STORE, JSON.stringify({
@@ -485,6 +501,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           // Ignore storage errors so weather loading still works.
         }
       }
+
       function readPreferredLocation() {
         try {
           const raw = localStorage.getItem(WEATHER_LOCATION_STORE);
@@ -505,18 +522,22 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           return null;
         }
       }
+
       function setMenuStatus(message, isError) {
         menuStatusEl.textContent = message || '';
         menuStatusEl.style.color = isError ? '#dc2626' : '#475569';
       }
+
       function setMenuOpen(open) {
         menuEl.hidden = !open;
       }
+
       function setForecastOpen(open) {
         state.forecastOpen = open;
         forecastWrapEl.hidden = !open;
         weatherWidget.classList.toggle('forecast-open', open);
       }
+
       function forecastSummary(daily) {
         if (!daily || !Array.isArray(daily.temperature_2m_min) || daily.temperature_2m_min.length < 2) {
           return 'No trend';
@@ -530,6 +551,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (tomorrowMin > todayMin) return 'Warmer low temps tomorrow';
         return 'Similar temps tomorrow';
       }
+
       function renderForecast(daily) {
         if (!daily || !Array.isArray(daily.time)) {
           forecastListEl.innerHTML = '<li><span class="forecast-day">Unavailable</span><span class="forecast-condition">No data</span><span class="forecast-temp">--</span></li>';
@@ -547,6 +569,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         });
         forecastListEl.innerHTML = days.join('');
       }
+
       function geolocation() {
         return new Promise((resolve, reject) => {
           if (!navigator.geolocation) {
@@ -560,6 +583,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           );
         });
       }
+
       async function getLocationPermissionState() {
         if (!navigator.permissions || !navigator.permissions.query) {
           return 'unknown';
@@ -571,6 +595,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           return 'unknown';
         }
       }
+
       async function ipGeolocate() {
         const services = [
           {
@@ -590,6 +615,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             })
           }
         ];
+
         for (const service of services) {
           try {
             const payload = await fetchJson(service.url, 'IP location request failed.');
@@ -605,12 +631,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             // Try the next service.
           }
         }
+
         return {
           lat: 40.7128,
           lon: -74.0060,
           label: 'New York, NY (default)'
         };
       }
+
       async function fetchJson(url, errorMessage) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 12000);
@@ -625,9 +653,11 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         }
         return response.json();
       }
+
       function canUseBrowserLocation() {
         return Boolean(window.isSecureContext && navigator.geolocation);
       }
+
       async function reverseGeocode(latitude, longitude) {
         const endpoint = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=en&format=json`;
         const payload = await fetchJson(endpoint, 'Reverse geocoding request failed.');
@@ -638,6 +668,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         const region = [result.name, result.admin1].filter(Boolean).join(', ');
         return region || `${Number(latitude).toFixed(3)}, ${Number(longitude).toFixed(3)}`;
       }
+
       async function geocodeCityState(city, stateName) {
         const query = [city, stateName].filter(Boolean).join(', ');
         const endpoint = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
@@ -652,6 +683,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           label: [result.name, result.admin1].filter(Boolean).join(', ')
         };
       }
+
       async function loadWeatherByCoords(latitude, longitude, label) {
         state.lat = Number(latitude);
         state.lon = Number(longitude);
@@ -659,6 +691,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         persistPreferredLocation(state.lat, state.lon, state.locationLabel);
         locationNameEl.textContent = state.locationLabel;
         statusLineEl.textContent = 'Loading weather...';
+
         const endpoint =
           `https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}` +
           '&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min' +
@@ -669,6 +702,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (!current || !currentUnits) {
           throw new Error('Weather data is unavailable right now.');
         }
+
         const statusCode = Number(current.weather_code);
         const temperature = Number(current.temperature_2m);
         const roundedTemp = Number.isFinite(temperature) ? `${Math.round(temperature)}` : '--';
@@ -679,6 +713,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         renderForecast(payload.daily);
         updatedEl.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
       }
+
       async function locateAndLoad() {
         locationNameEl.textContent = 'Detecting...';
         const savedLocation = readPreferredLocation();
@@ -730,12 +765,15 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           }
         }
       }
+
       forecastToggleBtn.addEventListener('click', () => setForecastOpen(!state.forecastOpen));
       forecastLinkBtn.addEventListener('click', () => setForecastOpen(!state.forecastOpen));
+
       menuBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         setMenuOpen(menuEl.hidden);
       });
+
       locationBtn.addEventListener('click', async (event) => {
         event.preventDefault();
         try {
@@ -748,6 +786,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           setMenuStatus(error.message || 'Unable to refresh weather.', true);
         }
       });
+
       addLocationBtn.addEventListener('click', async () => {
         const city = citySelectEl.value.trim();
         const stateName = stateSelectEl.value.trim();
@@ -759,6 +798,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           setMenuStatus('Select a city.', true);
           return;
         }
+
         addLocationBtn.disabled = true;
         setMenuStatus('Searching location...', false);
         try {
@@ -772,16 +812,20 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           addLocationBtn.disabled = false;
         }
       });
+
+
       document.addEventListener('click', (event) => {
         if (!menuEl.hidden && !menuEl.contains(event.target) && event.target !== menuBtn) {
           setMenuOpen(false);
         }
       });
+
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           setMenuOpen(false);
         }
       });
+
       setForecastOpen(false);
       locateAndLoad();
       setInterval(async () => {
@@ -796,6 +840,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         }
       }, 300000);
     })();
+
     /* ── To-Do / Notes Widget ── */
     (function() {
       const input   = document.getElementById('todo-input');
@@ -803,7 +848,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const list    = document.getElementById('todo-list');
       const STORE   = 'ik_todos';
       let todos     = JSON.parse(localStorage.getItem(STORE) || '[]');
+
       function save() { localStorage.setItem(STORE, JSON.stringify(todos)); }
+
       function render() {
         list.innerHTML = '';
         if (!todos.length) {
@@ -832,6 +879,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           });
         });
       }
+
       function addItem() {
         const text = input.value.trim();
         if (!text) return;
@@ -839,10 +887,12 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         input.value = '';
         save(); render();
       }
+
       addBtn.addEventListener('click', addItem);
       input.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
       render();
     })();
+
     /* ── Live Yearly Calendar ── */
     (function() {
       const MONTHS = ['January','February','March','April','May','June',
@@ -851,17 +901,22 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const today  = new Date();
       let viewYear  = today.getFullYear();
       let viewMonth = today.getMonth();
+
       function renderCalendar() {
         const titleEl    = document.getElementById('cal-title');
         const gridEl     = document.getElementById('cal-grid');
         const yearRowEl  = document.getElementById('cal-year-row');
+
         titleEl.textContent = MONTHS[viewMonth] + ' ' + viewYear;
+
         // day-name headers
         gridEl.innerHTML = DAYS.map(d =>
           `<div class="cal-day-name">${d}</div>`).join('');
+
         const firstDay = new Date(viewYear, viewMonth, 1).getDay();
         const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
         const daysInPrev  = new Date(viewYear, viewMonth, 0).getDate();
+
         // prev-month fill
         for (let i = firstDay - 1; i >= 0; i--) {
           gridEl.innerHTML += `<div class="cal-cell other-month">${daysInPrev - i}</div>`;
@@ -879,11 +934,13 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         for (let d = 1; d <= remaining; d++) {
           gridEl.innerHTML += `<div class="cal-cell other-month">${d}</div>`;
         }
+
         // month chips row (all 12 months of the year)
         yearRowEl.innerHTML = MONTHS.map((m, i) =>
           `<span class="cal-month-chip${i === viewMonth ? ' active' : ''}"
                  data-m="${i}">${m.slice(0,3)}</span>`
         ).join('');
+
         yearRowEl.querySelectorAll('.cal-month-chip').forEach(chip => {
           chip.addEventListener('click', () => {
             viewMonth = parseInt(chip.dataset.m);
@@ -891,6 +948,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           });
         });
       }
+
       document.getElementById('cal-prev').addEventListener('click', () => {
         viewMonth--;
         if (viewMonth < 0) { viewMonth = 11; viewYear--; }
@@ -901,6 +959,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (viewMonth > 11) { viewMonth = 0; viewYear++; }
         renderCalendar();
       });
+
       renderCalendar();
       // auto-refresh at midnight
       const msToMidnight = new Date(today.getFullYear(), today.getMonth(),
