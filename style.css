@@ -1,3 +1,4 @@
+
 /* layout and component styles */
     .tabs {
       display: flex;
@@ -335,7 +336,9 @@
     .git-content,
     .surah,
     .translation-preview,
-    .quran-card {
+    .quran-card,
+    .radio-card,
+    .youtube-card {
       background: rgba(255, 255, 255, 0.12) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
@@ -345,7 +348,7 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
     }
     /* text inside cards */
-    .media-card *, .git-content *, .surah *, .translation-preview * {
+    .media-card *, .git-content *, .surah *, .translation-preview *, .radio-card *, .youtube-card * {
       color: #f0f9ff !important;
       text-shadow: 0 1px 3px rgba(0,0,0,0.6);
     }
@@ -924,4 +927,173 @@
       font-size: 11px !important;
       color: #6b7280 !important;
       text-align: right;
+    }
+    /* ── Radio + YouTube entertainment row ── */
+    .entertainment-row {
+      margin: 22px 0;
+    }
+    .widget-subtext {
+      font-size: 13px !important;
+      color: #e0f2fe !important;
+      margin: 4px 0 12px !important;
+    }
+    /* Radio widget */
+    .radio-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .radio-toolbar select,
+    .radio-toolbar input {
+      flex: 1 1 160px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.15) !important;
+      color: #fff !important;
+    }
+    .radio-toolbar select option { color: #111827; }
+    .radio-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
+    .radio-station-list {
+      margin-top: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+    }
+    .radio-station-list::-webkit-scrollbar { width: 6px; }
+    .radio-station-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
+    .radio-station-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+    }
+    .radio-station-btn:hover { background: rgba(255,255,255,0.20); }
+    .radio-station-name {
+      font-weight: 700;
+      font-size: 14px !important;
+    }
+    .radio-station-meta {
+      font-size: 12px !important;
+      color: #cbd5e1 !important;
+    }
+    .radio-now-playing {
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.20);
+      padding-top: 10px;
+    }
+    .radio-now-playing #radio-now-playing-name {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .radio-now-playing audio {
+      width: 100%;
+    }
+    .radio-status {
+      font-size: 12px !important;
+      color: #cbd5e1 !important;
+      margin: 6px 0 0 !important;
+    }
+    /* YouTube widget */
+    .youtube-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .youtube-toolbar input {
+      flex: 1 1 220px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.15) !important;
+      color: #fff !important;
+    }
+    .youtube-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
+    .youtube-api-key-panel {
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.20);
+    }
+    .youtube-api-key-panel label {
+      display: block;
+      font-size: 12px !important;
+      margin-bottom: 6px;
+    }
+    .youtube-api-key-panel input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.15) !important;
+      color: #fff !important;
+      margin-bottom: 8px;
+    }
+    .youtube-api-hint {
+      font-size: 11px !important;
+      color: #cbd5e1 !important;
+      margin: 8px 0 0 !important;
+    }
+    .youtube-results {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .youtube-results::-webkit-scrollbar { width: 6px; }
+    .youtube-results::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
+    .youtube-result-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      padding: 6px;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+      text-align: left;
+    }
+    .youtube-result-card:hover { background: rgba(255,255,255,0.20); }
+    .youtube-result-card img {
+      width: 100%;
+      border-radius: 6px;
+      display: block;
+    }
+    .youtube-result-title {
+      font-size: 12px !important;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .youtube-result-channel {
+      font-size: 11px !important;
+      color: #cbd5e1 !important;
+    }
+    .youtube-screen {
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.20);
+      padding-top: 10px;
+    }
+    .youtube-screen iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: #000;
     }

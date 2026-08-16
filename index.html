@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imran Khan's first website</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 <body>
@@ -167,6 +167,49 @@
     <div id="quran-surahs" class="quran-surahs" aria-live="polite"></div>
   </section>
   </div>
+  <div class="media-row entertainment-row">
+  <section class="media-card radio-card" aria-labelledby="radio-heading">
+    <h3 id="radio-heading">📻 Live AM/FM Radio</h3>
+    <p class="widget-subtext">Real, live AM/FM and internet radio stations from around the world. Pick a country or search by name, then press play.</p>
+    <div class="radio-toolbar">
+      <select id="radio-country-select">
+        <option value="">— Any country —</option>
+      </select>
+      <input id="radio-search-input" type="text" placeholder="Search station name (example: BBC, Hot 97)">
+      <button id="radio-search-btn" class="quran-btn" type="button">Search</button>
+    </div>
+    <div id="radio-station-list" class="radio-station-list">
+      <p class="radio-status">Choose a country or search a station name to get started.</p>
+    </div>
+    <div class="radio-now-playing">
+      <span id="radio-now-playing-name">No station selected</span>
+      <audio id="radio-audio" controls preload="none"></audio>
+      <p id="radio-status-line" class="radio-status"></p>
+    </div>
+  </section>
+  <section class="media-card youtube-card" aria-labelledby="youtube-heading">
+    <h3 id="youtube-heading">🎬 YouTube Music Videos</h3>
+    <p class="widget-subtext">Search for a song or paste a YouTube link to watch music videos right here.</p>
+    <div class="youtube-toolbar">
+      <input id="youtube-search-input" type="text" placeholder="Search a song, or paste a YouTube link/ID…">
+      <button id="youtube-search-btn" class="quran-btn" type="button">Search</button>
+      <button id="youtube-api-key-btn" class="quran-btn" type="button" title="Set YouTube API key">🔑 API Key</button>
+    </div>
+    <div id="youtube-api-key-panel" class="youtube-api-key-panel" hidden>
+      <label for="youtube-api-key-input">YouTube Data API v3 key (saved only in your own browser)</label>
+      <input id="youtube-api-key-input" type="password" placeholder="Paste your API key">
+      <button id="youtube-api-key-save" class="quran-btn" type="button">Save key</button>
+      <button id="youtube-api-key-clear" class="quran-btn" type="button">Clear key</button>
+      <p class="youtube-api-hint">Free key: Google Cloud Console → enable "YouTube Data API v3" → Credentials → Create API key. Search works once a key is saved; pasting a video link/ID always works, no key needed.</p>
+      <p id="youtube-api-key-status"></p>
+    </div>
+    <div id="youtube-results" class="youtube-results"></div>
+    <div class="youtube-screen">
+      <iframe id="youtube-player" src="about:blank" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <p id="youtube-screen-hint" class="radio-status">No video loaded yet — search above or paste a link.</p>
+    </div>
+  </section>
+  </div>
   <div class="dhol-wrapper">
     <h3 class="dhol-title">Pakistani Dhol Playing</h3>
     <iframe width="480" height="270" src="https://www.youtube.com/embed/EjJOYrMnOOk" title="Pakistani Dhol Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -205,13 +248,13 @@
 -heading sizes
 -(br/b/strong/italic/
 underline/emphasis/paragraph/article)
--add a weblite link to the website 
+-add a weblite link to the website
 to open in tab or new tab
 -ordered list (ol)
--ordered list type 
+-ordered list type
 (ol type="1/A/a/I/i")
 -unordered list (ul)
--unordered list type 
+-unordered list type
 (ul type="disc/circle/square")
 -add images to website
 (img src="file name" alt="description")
@@ -432,7 +475,7 @@ git push</pre>
   <hr>
   <h3>Add a website link to Website</h3>
   <ol>
-    a href="https://www.example.com">Example Website</a></li>
+    <li><code>&lt;a href="https://www.example.com"&gt;Example Website&lt;/a&gt;</code></li>
     <li><code>git add index.html</code></li>
     <li><code>git commit -m "add link"</code></li>
     <li><code>git push origin master</code></li>
@@ -450,30 +493,31 @@ git push</pre>
     <li><code>&lt;h5&gt;Heading 5&lt;/h5&gt;</code></li>
     <li><code>&lt;h6&gt;Heading 6&lt;/h6&gt;</code></li>
   </ol>
-  <h3> line break/boldtext/strong text/italic text/empis text/line break/paragraf/article</h3>
+  <h3>Line break / bold text / strong text / italic text / emphasis text / paragraph / article</h3>
   <ol>
-   br>   this is my first paragraph in my second html file-----------("br" IS FOR LINE BREAK)<br>
-<b>b>   Lorem ipsum dolor sit amet consectetur adipisicing elit.</b>-------------------------------(b FOR BOLD)</i><br>
-<strong>strong>  Expedita officia nisi ullam explicabo blanditiis autem deserunt.</strong>------------ (strong FOR STRONG)<br>
-<i>i>   La boriosam minima at magni aperiam dolor veritatis aliquid consectetur, </i>------------------(i FOR ITALIC)<br>
-<u>u>   ducimus magnam exercitationem nulla facere dolorum quos totam quis eligendi </u>--------(u FOR UNDERLINE)<br>
-<em>em>   voluptates praesentium necessitatibus unde omnis temporibus minus corrupti! Odit </em>----- (em FOR EMPHASIS)<br>
-p>       magnam praesentium quisquam harum consequuntur quo!--------------------------------------(p FOR PARAGRAPH)<br>
-article> lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam----------------(article FOR ARTICLE)</p>
+   <li><code>&lt;br&gt;</code> — this is my first paragraph in my second html file (br IS FOR LINE BREAK)<br>
+    <b>&lt;b&gt; Lorem ipsum dolor sit amet consectetur adipisicing elit.&lt;/b&gt;</b> (b FOR BOLD)<br>
+    <strong>&lt;strong&gt; Expedita officia nisi ullam explicabo blanditiis autem deserunt.&lt;/strong&gt;</strong> (strong FOR STRONG)<br>
+    <i>&lt;i&gt; La boriosam minima at magni aperiam dolor veritatis aliquid consectetur, &lt;/i&gt;</i> (i FOR ITALIC)<br>
+    <u>&lt;u&gt; ducimus magnam exercitationem nulla facere dolorum quos totam quis eligendi &lt;/u&gt;</u> (u FOR UNDERLINE)<br>
+    <em>&lt;em&gt; voluptates praesentium necessitatibus unde omnis temporibus minus corrupti! Odit &lt;/em&gt;</em> (em FOR EMPHASIS)<br>
+    &lt;p&gt; magnam praesentium quisquam harum consequuntur quo! (p FOR PARAGRAPH)<br>
+    &lt;article&gt; lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam (article FOR ARTICLE)</li>
 </ol>
-<h3>to add website adress or link to open in the page or new tabs</h3>
+<h3>To add website address or link to open in the page or new tabs</h3>
 <ol>
-  <li>a href="web adress">name of file      (LINK TO OPEN IN THE SAME TAB)/a</li>
-  <li>a href="web adress" target="_blank">name of file (TO OPEN IN A NEW TAB)/a</li><br>
-    <BR>
+  <li><code>&lt;a href="web address"&gt;name of file&lt;/a&gt;</code> (LINK TO OPEN IN THE SAME TAB)</li>
+  <li><code>&lt;a href="web address" target="_blank"&gt;name of file&lt;/a&gt;</code> (TO OPEN IN A NEW TAB)</li>
+</ol>
+<p>
     <a href="https://gim1203-hue.github.io/liverepo/">my profile</a><br>
     <a href="http://127.0.0.1:5501/index4.html">index4</a><br>
     <a href="http://127.0.0.1:5501/index5.html">index5</a><br>
     <a href="view-source:http://127.0.0.1:5501/index5.html">view-source:index5</a><br>
     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" rel="noopener" target="_blank">MDN JavaScript Documentation</a><br>
-    <a href="https://devdocs.io/javascript" rel="noopener" target="_blank">DevDocs JS</a>
-    <a href="https://pythontutor.com/" rel="noopener" target="_blank">Python Tutor</a>
-    <a href="https://compat-table.github.io/compat-table/es6/" rel="noopener" target="_blank">ES6 Compatibility</a>
+    <a href="https://devdocs.io/javascript" rel="noopener" target="_blank">DevDocs JS</a><br>
+    <a href="https://pythontutor.com/" rel="noopener" target="_blank">Python Tutor</a><br>
+    <a href="https://compat-table.github.io/compat-table/es6/" rel="noopener" target="_blank">ES6 Compatibility</a><br>
     <a href="https://validator.w3.org/nu/#textarea" target="_blank" rel="noopener">HTML Validator</a><br>
     <a href="https://dillinger.io" target="_blank" rel="noopener">dillinger.io</a><br>
     <a href="https://www.w3schools.com/html/html_intro.asp" target="_blank" rel="noopener">w3schools HTML Introduction</a><br>
@@ -502,12 +546,11 @@ article> lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam------
     <a href="https://devdocs.io/css" rel="noopener" target="_blank">DevDocs CSS</a><br>
     <a href="https://compat-table.github.io/compat-table/es6/" rel="noopener" target="_blank">ES6 Compatibility</a><br>
     <a href="https://app.diagrams.net/" rel="noopener" target="_blank">Diagrams.net</a><br>
-</ol>
+</p>
 
-<h3>unordered list (ul type="disk/circle/square")</h3>
+<h3>unordered list (ul type="disc/circle/square")</h3>
 <ol>
-    
-  <li>ul type="disk" (default)</li>
+  <li>ul type="disc" (default)</li>
   <li>ul type="circle"</li>
   <li>ul type="square"</li>
 </ol>
@@ -523,93 +566,83 @@ article> lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam------
 
 <h3>to add images to html file</h3>
 <ol>
-  <li>img src="image.jpg" alt="description" (BASIC IMAGE)</li>
-  <li>img src="image.jpg" alt="description" width="100" height="100" (IMAGE WITH SPECIFIED WIDTH AND HEIGHT)</li>
-  <li>img src="image.jpg" alt="description" style="border: 1px solid black;" (IMAGE WITH INLINE STYLE)</li>
+  <li><code>&lt;img src="image.jpg" alt="description"&gt;</code> (BASIC IMAGE)</li>
+  <li><code>&lt;img src="image.jpg" alt="description" width="100" height="100"&gt;</code> (IMAGE WITH SPECIFIED WIDTH AND HEIGHT)</li>
+  <li><code>&lt;img src="image.jpg" alt="description" style="border: 1px solid black;"&gt;</code> (IMAGE WITH INLINE STYLE)</li>
 </ol>
 
 <h3>add table in html file</h3>
 <ol>
-  <li>table border="1"&gt; (BASIC TABLE)</li>
-  <li>tr&gt; (TABLE ROW)</li>
-  <li>th&gt; (TABLE HEADER)</li>
-  <li>td&gt; (TABLE DATA)</li>
+  <li><code>&lt;table border="1"&gt;</code> (BASIC TABLE)</li>
+  <li><code>&lt;tr&gt;</code> (TABLE ROW)</li>
+  <li><code>&lt;th&gt;</code> (TABLE HEADER)</li>
+  <li><code>&lt;td&gt;</code> (TABLE DATA)</li>
 </ol>
-<ul>
-table border="1"><br>
-    tr><br>
-        th>name/th><br>
-        th>age/th><br>
-        th>city/th><br>
-    /tr><br><br>
-
-/table><br>
-    tr><br>
-        td>muhammad khan/td><br>
-        td>40/td><br>
-        td>new york city/td><br>
-    /tr><br>
-</ul>
+<pre>&lt;table border="1"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;name&lt;/th&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;city&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;muhammad khan&lt;/td&gt;
+        &lt;td&gt;40&lt;/td&gt;
+        &lt;td&gt;new york city&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</pre>
 
 <p>Enter prompt: This is what I have done so far for HTML. <br>
     Can you help me to get my code clean and give me some things for form and table?</p>
 
 <h3>to add form in html file</h3>
 <ol>
-    <li>form action="url" method="get/post"&gt; (BASIC FORM)</li>
-    <li>label for="id"&gt; (LABEL FOR INPUT)</li>
-    <li>input type="text" id="id" name="name"&gt; (TEXT INPUT)</li>
-    <li>select&gt; (DROPDOWN SELECT)</li>
-    <li>option value="value"&gt; (OPTION IN SELECT)</li>
-    <li>textarea name="name"&gt; (TEXTAREA)</li>
+    <li><code>&lt;form action="url" method="get/post"&gt;</code> (BASIC FORM)</li>
+    <li><code>&lt;label for="id"&gt;</code> (LABEL FOR INPUT)</li>
+    <li><code>&lt;input type="text" id="id" name="name"&gt;</code> (TEXT INPUT)</li>
+    <li><code>&lt;select&gt;</code> (DROPDOWN SELECT)</li>
+    <li><code>&lt;option value="value"&gt;</code> (OPTION IN SELECT)</li>
+    <li><code>&lt;textarea name="name"&gt;</code> (TEXTAREA)</li>
 </ol>
 <ol>
-    <li>form method="get" action="url"&gt; (FORM WITH GET METHOD)</li>
-    <li>form method="post" action="url"&gt; (FORM WITH POST METHOD)</li>
+    <li><code>&lt;form method="get" action="url"&gt;</code> (FORM WITH GET METHOD)</li>
+    <li><code>&lt;form method="post" action="url"&gt;</code> (FORM WITH POST METHOD)</li>
 </ol>
 <ol>
-    <li>input type="submit" value="Submit"&gt; (SUBMIT BUTTON)</li>
-    <li>input type="reset" value="Reset"&gt; (RESET BUTTON)</li>
+    <li><code>&lt;input type="submit" value="Submit"&gt;</code> (SUBMIT BUTTON)</li>
+    <li><code>&lt;input type="reset" value="Reset"&gt;</code> (RESET BUTTON)</li>
 </ol>
-<ul>
-    form><br>
-    label for="name">Name:/label><br>
-    input type="text" id="name" name="name"><br>
-    br>br><br>
-    label for="email">Email:/label><br>
-    input type="email" id="email" name="email"><br>
-    br>br><br>
-    label for="password">Password:/label><br>
-    input type="password" id="password" name="password"><br>
-    br>br><br>
-    input type="submit" value="Submit"><br>
-    /form><br>
-</ul>
+<pre>&lt;form&gt;
+    &lt;label for="name"&gt;Name:&lt;/label&gt;
+    &lt;input type="text" id="name" name="name"&gt;
+    &lt;br&gt;&lt;br&gt;
+    &lt;label for="email"&gt;Email:&lt;/label&gt;
+    &lt;input type="email" id="email" name="email"&gt;
+    &lt;br&gt;&lt;br&gt;
+    &lt;label for="password"&gt;Password:&lt;/label&gt;
+    &lt;input type="password" id="password" name="password"&gt;
+    &lt;br&gt;&lt;br&gt;
+    &lt;input type="submit" value="Submit"&gt;
+&lt;/form&gt;</pre>
 <p>Enter prompt: This is what I have done so far for HTML. <br>
     Can you help me to get my code clean and give me some things for form and table?</p>
 
-    
-
     <h3>using div and div classes and css</h3>
-  <ul>
-          
-      h1 id="main">muhammad khan/h1><br>
-    
-    div class="first"><br>
-        h1>first job/h1><br>
-        p>I worked in a construction company from 2001 to 2016 as a project manager/p><br>
-    /div><br>
+  <pre>&lt;h1 id="main"&gt;muhammad khan&lt;/h1&gt;
 
-    div class="second"><br>
-        h2>second job/h2><br>
-        p>I work for NYC parks department from 2017 to present/p><br>
-    /div><br>
+&lt;div class="first"&gt;
+    &lt;h1&gt;first job&lt;/h1&gt;
+    &lt;p&gt;I worked in a construction company from 2001 to 2016 as a project manager&lt;/p&gt;
+&lt;/div&gt;
 
-    div class="third"><br>
-        h3>education/h3><br>
-        p>I have an associate degree in electronic engineering/p><br>
-    /div><br>
-</ul><br>
+&lt;div class="second"&gt;
+    &lt;h2&gt;second job&lt;/h2&gt;
+    &lt;p&gt;I work for NYC parks department from 2017 to present&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="third"&gt;
+    &lt;h3&gt;education&lt;/h3&gt;
+    &lt;p&gt;I have an associate degree in electronic engineering&lt;/p&gt;
+&lt;/div&gt;</pre>
   <ul>
   <li>#main { color: rgb(19, 248, 19); text-align: center; }</li>
   <li>.first { <br>
@@ -631,7 +664,7 @@ table border="1"><br>
   <li>h1 { color: rgb(248, 19, 19); }</li>
   <li>h2 { color: rgb(19, 19, 248); text-align: center; }</li>
   <li>h3 { color: rgb(248, 248, 19); text-align: center; }</li>
-</ul><br>
+</ul>
 
 <h3>Build a Student Profile Page using AI.</h3>
   <ol>
@@ -667,12 +700,8 @@ table border="1"><br>
   </li>
 </ol>
 
-
-
-
-
     </div>
-  
+
   </div>
   <div class="cert-modal" id="cert-modal" aria-hidden="true">
     <div class="cert-modal-inner">
@@ -699,6 +728,6 @@ table border="1"><br>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="script.js"></script>
-  
+
 </body>
 </html>

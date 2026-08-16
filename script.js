@@ -907,3 +907,280 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
                                     today.getDate() + 1) - Date.now();
       setTimeout(() => { renderCalendar(); setInterval(renderCalendar, 86400000); }, msToMidnight);
     })();
+    /* ── Live AM/FM Radio (Radio Browser API — no key required) ── */
+    (function() {
+      const countrySelect = document.getElementById('radio-country-select');
+      const searchInput   = document.getElementById('radio-search-input');
+      const searchBtn     = document.getElementById('radio-search-btn');
+      const listEl        = document.getElementById('radio-station-list');
+      const nowPlayingEl  = document.getElementById('radio-now-playing-name');
+      const audioEl       = document.getElementById('radio-audio');
+      const statusEl      = document.getElementById('radio-status-line');
+      if (!countrySelect || !listEl || !audioEl) return;
+
+      // Several mirrors exist; try them in order until one responds.
+      const RADIO_API_MIRRORS = [
+        'https://de1.api.radio-browser.info',
+        'https://de2.api.radio-browser.info',
+        'https://at1.api.radio-browser.info',
+        'https://nl1.api.radio-browser.info'
+      ];
+      let workingMirror = null;
+
+      async function radioFetch(path) {
+        const mirrors = workingMirror ? [workingMirror, ...RADIO_API_MIRRORS] : RADIO_API_MIRRORS;
+        let lastError = null;
+        for (const mirror of mirrors) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const response = await fetch(mirror + path, {
+              signal: controller.signal,
+              headers: { 'User-Agent': 'ImranKhanPersonalSite/1.0' }
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('Radio API error ' + response.status);
+            workingMirror = mirror;
+            return await response.json();
+          } catch (error) {
+            lastError = error;
+          }
+        }
+        throw lastError || new Error('All radio mirrors failed.');
+      }
+
+      function setListStatus(message) {
+        listEl.innerHTML = `<p class="radio-status">${message}</p>`;
+      }
+
+      function renderStations(stations) {
+        if (!stations || !stations.length) {
+          setListStatus('No stations found. Try a different name or country.');
+          return;
+        }
+        listEl.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        stations.slice(0, 40).forEach(station => {
+          if (!station.url_resolved && !station.url) return;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'radio-station-btn';
+          const tags = (station.tags || '').split(',').filter(Boolean).slice(0, 2).join(', ');
+          btn.innerHTML = `
+            <span class="radio-station-name">${station.name || 'Unnamed station'}</span>
+            <span class="radio-station-meta">${[station.country, tags].filter(Boolean).join(' • ')}</span>
+          `;
+          btn.addEventListener('click', () => playStation(station));
+          fragment.appendChild(btn);
+        });
+        listEl.appendChild(fragment);
+      }
+
+      function playStation(station) {
+        const streamUrl = station.url_resolved || station.url;
+        if (!streamUrl) {
+          statusEl.textContent = 'This station has no playable stream.';
+          return;
+        }
+        nowPlayingEl.textContent = station.name || 'Live station';
+        statusEl.textContent = 'Loading stream...';
+        audioEl.src = streamUrl;
+        audioEl.play().then(() => {
+          statusEl.textContent = 'Playing live.';
+        }).catch(() => {
+          statusEl.textContent = 'Could not autoplay — press play on the player.';
+        });
+      }
+
+      async function loadCountries() {
+        try {
+          const countries = await radioFetch('/json/countries');
+          const seen = new Set();
+          countries
+            .filter(c => c.name && c.stationcount > 0)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach(c => {
+              if (seen.has(c.name)) return;
+              seen.add(c.name);
+              const opt = document.createElement('option');
+              opt.value = c.name;
+              opt.textContent = `${c.name} (${c.stationcount})`;
+              countrySelect.appendChild(opt);
+            });
+        } catch (error) {
+          // Country list is a convenience; search by name still works without it.
+        }
+      }
+
+      async function searchStations() {
+        const name = searchInput.value.trim();
+        const country = countrySelect.value;
+        if (!name && !country) {
+          setListStatus('Choose a country or type a station name to search.');
+          return;
+        }
+        setListStatus('Searching stations...');
+        try {
+          const params = new URLSearchParams({
+            limit: '40',
+            hidebroken: 'true',
+            order: 'clickcount',
+            reverse: 'true'
+          });
+          if (name) params.set('name', name);
+          if (country) params.set('country', country);
+          const stations = await radioFetch(`/json/stations/search?${params.toString()}`);
+          renderStations(stations);
+        } catch (error) {
+          setListStatus('Could not reach the radio directory. Check your internet connection and try again.');
+        }
+      }
+
+      searchBtn.addEventListener('click', searchStations);
+      searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') searchStations(); });
+      countrySelect.addEventListener('change', searchStations);
+      loadCountries();
+    })();
+    /* ── YouTube Search + Video Screen ── */
+    (function() {
+      const searchInput   = document.getElementById('youtube-search-input');
+      const searchBtn     = document.getElementById('youtube-search-btn');
+      const apiKeyBtn     = document.getElementById('youtube-api-key-btn');
+      const apiKeyPanel   = document.getElementById('youtube-api-key-panel');
+      const apiKeyInput   = document.getElementById('youtube-api-key-input');
+      const apiKeySaveBtn = document.getElementById('youtube-api-key-save');
+      const apiKeyClearBtn = document.getElementById('youtube-api-key-clear');
+      const apiKeyStatus  = document.getElementById('youtube-api-key-status');
+      const resultsEl     = document.getElementById('youtube-results');
+      const playerEl      = document.getElementById('youtube-player');
+      const screenHintEl  = document.getElementById('youtube-screen-hint');
+      if (!searchInput || !playerEl) return;
+
+      const YT_KEY_STORE = 'ik_youtube_api_key';
+
+      function getApiKey() {
+        try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
+      }
+      function setApiKey(key) {
+        try {
+          if (key) localStorage.setItem(YT_KEY_STORE, key);
+          else localStorage.removeItem(YT_KEY_STORE);
+        } catch (_) { /* ignore storage errors */ }
+      }
+
+      apiKeyBtn.addEventListener('click', () => {
+        apiKeyPanel.hidden = !apiKeyPanel.hidden;
+        if (!apiKeyPanel.hidden) {
+          apiKeyInput.value = getApiKey();
+          apiKeyStatus.textContent = getApiKey() ? 'A key is currently saved.' : 'No key saved yet — search will not work until one is added.';
+        }
+      });
+      apiKeySaveBtn.addEventListener('click', () => {
+        const key = apiKeyInput.value.trim();
+        if (!key) {
+          apiKeyStatus.textContent = 'Enter a key before saving.';
+          return;
+        }
+        setApiKey(key);
+        apiKeyStatus.textContent = 'Key saved. You can search now.';
+      });
+      apiKeyClearBtn.addEventListener('click', () => {
+        setApiKey('');
+        apiKeyInput.value = '';
+        apiKeyStatus.textContent = 'Key cleared.';
+      });
+
+      function extractVideoId(text) {
+        const trimmed = text.trim();
+        if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+        const patterns = [
+          /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+          /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+          /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+          /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+        ];
+        for (const pattern of patterns) {
+          const match = trimmed.match(pattern);
+          if (match) return match[1];
+        }
+        return null;
+      }
+
+      function loadVideo(videoId, title) {
+        if (!videoId) return;
+        playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        screenHintEl.textContent = title ? `Now playing: ${title}` : 'Video loaded.';
+      }
+
+      function renderResults(items) {
+        resultsEl.innerHTML = '';
+        if (!items || !items.length) {
+          resultsEl.innerHTML = '<p class="radio-status">No results. Try a different search.</p>';
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+          const videoId = item.id?.videoId;
+          if (!videoId) return;
+          const title = item.snippet?.title || 'Untitled video';
+          const channel = item.snippet?.channelTitle || '';
+          const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'youtube-result-card';
+          card.innerHTML = `
+            <img src="${thumb}" alt="${title}" loading="lazy">
+            <span class="youtube-result-title">${title}</span>
+            <span class="youtube-result-channel">${channel}</span>
+          `;
+          card.addEventListener('click', () => loadVideo(videoId, title));
+          fragment.appendChild(card);
+        });
+        resultsEl.appendChild(fragment);
+      }
+
+      async function performSearch() {
+        const query = searchInput.value.trim();
+        if (!query) {
+          screenHintEl.textContent = 'Type a search or paste a YouTube link first.';
+          return;
+        }
+        // If the input is a direct video link/ID, just load it — no API key needed.
+        const directId = extractVideoId(query);
+        if (directId) {
+          resultsEl.innerHTML = '';
+          loadVideo(directId, null);
+          return;
+        }
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
+          apiKeyPanel.hidden = false;
+          apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
+          return;
+        }
+        resultsEl.innerHTML = '<p class="radio-status">Searching YouTube...</p>';
+        try {
+          const params = new URLSearchParams({
+            part: 'snippet',
+            type: 'video',
+            videoCategoryId: '10',
+            maxResults: '12',
+            q: query,
+            key: apiKey
+          });
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+          if (!response.ok) {
+            const errorPayload = await response.json().catch(() => null);
+            throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
+          }
+          const data = await response.json();
+          renderResults(data.items || []);
+        } catch (error) {
+          resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
+        }
+      }
+
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+    })();
