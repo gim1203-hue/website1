@@ -1311,7 +1311,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       searchBtn.addEventListener('click', performSearch);
       searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
 })();
-    
+
 /* ---------- Country & language data (worldwide) ---------- */
 const COUNTRIES = [
 ["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],

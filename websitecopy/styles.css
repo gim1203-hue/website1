@@ -1477,3 +1477,257 @@
     .iwatch-app .wrap{padding:18px 12px 40px;}
     .iwatch-app .search-row input[type="text"]{flex-basis:100%;}
 }
+
+/* ============================================================
+   MOBILE RESPONSIVE LAYER
+   Everything above was written for a wide desktop viewport:
+   floating widgets are pinned with `position:absolute; right:Npx`
+   stacked next to each other, several rows use fixed pixel widths,
+   and a couple of elements (the 900px anthem SVG, wide toolbars)
+   can force horizontal scrolling on a phone. Nothing above this
+   comment is edited — this section only adds rules that apply at
+   narrower widths and override earlier ones by cascade order.
+   ============================================================ */
+
+/* Stop ANY element from creating horizontal overflow, site-wide,
+   regardless of viewport width. This is the #1 cause of "mobile
+   site is zoomed out / scrolls sideways" bugs. */
+html, body {
+  overflow-x: hidden;
+}
+* {
+  max-width: 100%;
+}
+img, svg, iframe, video, audio, table, pre {
+  max-width: 100%;
+}
+/* Border-box everywhere: without this, elements given `width:100%`
+   (like the floating widgets below at narrow widths) end up
+   `100% + their own padding + border` wide, which is exactly what
+   was pushing #weather-widget / #todo-widget / #cal-widget past
+   the edge of the screen on phones. */
+html {
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* ── Tablet and down (≤ 1024px): the three floating widgets no
+   longer fit side-by-side above the heading, so let them wrap
+   onto their own line as normal flow instead of being pinned
+   with position:absolute + fixed right offsets. ── */
+@media (max-width: 1024px) {
+  #weather-widget,
+  #todo-widget,
+  #cal-widget {
+    position: static;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 0 14px 0;
+    right: auto;
+    top: auto;
+  }
+  /* Stack the three widgets in a simple flex column above the
+     rest of the page content instead of overlapping it. */
+  body {
+    padding-top: 0;
+  }
+}
+
+/* ── Phones and small tablets (≤ 768px) ── */
+@media (max-width: 768px) {
+  body {
+    margin: 16px auto;
+    padding: 0 14px;
+    line-height: 1.55;
+  }
+
+  /* Floating widgets: full width, comfortably tappable */
+  #weather-widget,
+  #todo-widget,
+  #cal-widget {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  #weather-location-name {
+    max-width: 55vw;
+  }
+
+  /* Big display type on the weather + git-notes sections was tuned
+     for desktop; scale it down so it doesn't dominate a phone screen. */
+  #weather-temp-big { font-size: 42px; }
+  #weather-temp-unit { font-size: 24px; }
+  #weather-main-icon { font-size: 26px; }
+
+  .course-title { font-size: 24px; }
+  .hero-image { max-width: 200px; }
+
+  /* Search form: stack input + button instead of squeezing them */
+  form[action*="google.com/search"] {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  form[action*="google.com/search"] input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 16px; /* 16px+ prevents iOS Safari auto-zoom on focus */
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+  }
+  form[action*="google.com/search"] button {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  /* Quick Links tabs: allow horizontal scroll-by-swipe instead of
+     wrapping into a dozen short rows, and make each tap target
+     touch-sized. */
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 4px;
+  }
+  .tab {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Media / Git Notes rows already collapse to block at 900px via
+     the existing rule above; just tighten spacing further here. */
+  .media-card {
+    padding: 14px;
+  }
+  .anthem-poem {
+    font-size: 15px;
+  }
+
+  .quran-toolbar,
+  .radio-toolbar,
+  .youtube-toolbar,
+  .youtube-country-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .quran-toolbar input,
+  .radio-toolbar select,
+  .radio-toolbar input,
+  .youtube-toolbar input,
+  .youtube-country-row select {
+    flex-basis: auto;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px; /* avoid iOS auto-zoom on inputs/selects */
+  }
+  .quran-btn {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .surah-actions {
+    flex-direction: column;
+  }
+  .surah-actions .quran-btn {
+    width: 100%;
+  }
+
+  .youtube-results {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  /* Git notes: single column already kicks in at 900px; reduce the
+     oversized fixed font-sizes so paragraphs of notes are readable
+     without horizontal scroll on a phone. */
+  .git-content {
+    padding: 14px;
+    gap: 18px;
+  }
+  .git-notes-tab {
+    font-size: 22px !important;
+    padding: 10px 16px;
+  }
+  .git-notes-section * {
+    font-size: 15px !important;
+  }
+  .git-notes-section h2,
+  .git-notes-section h3,
+  .git-notes-section h4 {
+    font-size: 19px !important;
+  }
+  .git-notes-section p,
+  .git-notes-section li,
+  .git-notes-section ol,
+  .git-notes-section ul,
+  .git-notes-section span,
+  .git-notes-section td,
+  .git-notes-section label {
+    font-size: 15px !important;
+  }
+  .git-notes-section pre,
+  .git-notes-section code {
+    font-size: 14px !important;
+    padding: 8px 10px;
+    overflow-x: auto;
+  }
+  .repo-steps-toggle,
+  .git-notes-section .repo-steps-toggle {
+    font-size: 17px !important;
+    padding: 10px;
+  }
+
+  /* I-WATCH movie browser */
+  .iwatch-app .wrap {
+    padding: 16px 12px 36px;
+  }
+  .iwatch-app .search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .iwatch-app .search-row input[type="text"],
+  .iwatch-app .dropdown-select,
+  .iwatch-app .btn {
+    width: 100%;
+    flex: none;
+    font-size: 16px;
+  }
+  .iwatch-app .tabs-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .iwatch-app .iw-tab {
+    flex: 0 0 auto;
+  }
+  .iwatch-app .grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  .iwatch-app .now-playing-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .iwatch-app .now-playing-bar .btn {
+    width: 100%;
+  }
+}
+
+/* ── Small phones (≤ 420px) ── */
+@media (max-width: 420px) {
+  h1 { font-size: 26px; }
+  .course-title { font-size: 20px; }
+  .git-notes-tab { font-size: 19px !important; }
+  .youtube-results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .iwatch-app .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
