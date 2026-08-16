@@ -1,0 +1,109 @@
+ ------------------------------------------------------------------------ 
+    /* Music Library — add this after the existing styles in style.css */
+.right-media-column {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 15px;
+}
+
+.right-media-column .quran-card { width: 100%; }
+
+.music-library {
+  color: #f7fbf5;
+  font-family: Arial, sans-serif;
+}
+
+.music-library-window {
+  overflow: hidden;
+  border: 1px solid rgba(235, 255, 227, .36);
+  border-radius: 14px;
+  background: rgba(20, 31, 21, .82);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(10px);
+}
+
+.music-library-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 19px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.music-library-header::-webkit-details-marker { display: none; }
+.music-library-header small { display: block; color: #bff28e; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.music-library-header strong { display: block; margin-top: 3px; color: #fff; font-size: 23px; }
+.music-window-toggle { color: #c6ef9d; font-size: 12px; }
+.music-library-window:not([open]) .music-window-toggle::after { content: " ▼"; }
+.music-library-window[open] .music-window-toggle::after { content: " ▲"; }
+
+.music-library-content { padding: 0 19px 19px; }
+.country-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 13px; }
+.country-tab {
+  padding: 8px 13px;
+  color: #e7f0e3;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+  cursor: pointer;
+}
+.country-tab:hover, .country-tab.active { color: #142510; border-color: #bdf18d; background: #bdf18d; font-weight: 700; }
+
+.language-filters {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 9px;
+}
+.language-filters legend { padding: 0 5px; color: #d5e4ce; font-size: 12px; }
+.language-filters label { color: #e9f1e5; font-size: 12px; cursor: pointer; }
+.language-filters input { accent-color: #bdf18d; }
+
+.selected-video { margin-bottom: 15px; }
+.selected-video h3 { margin: 0 0 8px; color: #fff; font-size: 17px; }
+.selected-video iframe { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; border-radius: 10px; background: #101510; }
+#selected-video-title { margin: 8px 0 0; color: #cfddc9; font-size: 12px; }
+
+.country-panel h3 { margin: 0; color: #fff; font-size: 19px; }
+.catalog-note { margin: 5px 0 11px; color: #d2dfce; font-size: 12px; }
+.artist-album-list { display: grid; gap: 8px; }
+.artist-album {
+  display: grid;
+  grid-template-columns: 48px minmax(110px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+}
+.artist-album:hover { border-color: rgba(190, 241, 143, .7); background: rgba(190, 241, 143, .11); }
+.artist-photo { width: 48px; height: 48px; border-radius: 9px; object-fit: cover; background: linear-gradient(135deg, #598e4d, #1b3021); }
+.artist-album h4 { margin: 0; color: #fff; font-size: 14px; }
+.artist-album p { margin: 3px 0 0; color: #cddac8; font-size: 11px; }
+.play-artist-video { padding: 7px 9px; color: #16300f; border: 0; border-radius: 7px; background: #bdf18d; font-weight: 700; cursor: pointer; }
+.song-list { grid-column: 2 / -1; margin: 1px 0 1px; padding-left: 18px; color: #d9e6d4; font-size: 11px; line-height: 1.6; }
+.catalog-status { margin: 15px 0 0; color: #c5d6bf; font-size: 11px; }
+
+@media (max-width: 800px) {
+  .media-row { display: block; }
+  .right-media-column { margin-top: 15px; }
+}
+
+@media (max-width: 450px) {
+  .music-library-content { padding: 0 12px 12px; }
+  .music-library-header { padding: 13px; }
+  .artist-album { grid-template-columns: 45px 1fr; }
+  .artist-photo { width: 45px; height: 45px; }
+  .play-artist-video { grid-column: 2; justify-self: start; }
+  .song-list { grid-column: 1 / -1; }
+}
+----------------------------------------------------------------------
+  

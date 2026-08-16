@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+
+
+
+
+
+
+
+
+<section class="music-library" aria-labelledby="music-library-heading">
+  <details class="music-library-window" open>
+    <summary class="music-library-header">
+      <span>
+        <small>WATCH &amp; LISTEN</small>
+        <strong id="music-library-heading">Music Library</strong>
+      </span>
+      <span class="music-window-toggle">Expand / Collapse</span>
+    </summary>
+
+    <div class="music-library-content">
+      <!-- Country tabs -->
+      <div class="country-tabs" role="tablist">
+        <button class="country-tab active" data-country="pakistan">
+          Pakistan
+        </button>
+        <button class="country-tab" data-country="india">
+          India
+        </button>
+        <button class="country-tab" data-country="america">
+          America
+        </button>
+      </div>
+
+      <!-- Language filters -->
+      <fieldset class="language-filters">
+        <legend>Language</legend>
+        <label><input type="checkbox" value="urdu" checked> Urdu</label>
+        <label><input type="checkbox" value="english" checked> English</label>
+        <label><input type="checkbox" value="punjabi" checked> Punjabi</label>
+      </fieldset>
+
+      <!-- Video player -->
+      <section class="selected-video">
+        <h3>Now Playing</h3>
+        <iframe
+          id="selected-music-video"
+          src="https://www.youtube-nocookie.com/embed/dwiaTmTDHWM?rel=0"
+          title="Selected official music video"
+          allowfullscreen>
+        </iframe>
+        <p id="selected-video-title">
+          Bilal Saeed &amp; Bohemia — No Make Up
+        </p>
+      </section>
+
+      <!-- Pakistan tab -->
+      <section id="pakistan-panel" class="country-panel">
+        <h3>Pakistan</h3>
+
+        <article class="artist-album"
+          data-artist="bilal-saeed"
+          data-language="punjabi"
+          data-video-id="dwiaTmTDHWM">
+
+          <img class="artist-photo" src="" alt="Bilal Saeed">
+
+          <div>
+            <h4>Bilal Saeed</h4>
+            <p>Punjabi · 2011–present</p>
+          </div>
+
+          <button class="play-artist-video" type="button">
+            Play video
+          </button>
+
+          <ol class="song-list">
+            <li>No Make Up</li>
+            <li>12 Saal</li>
+            <li>Adhi Adhi Raat</li>
+          </ol>
+        </article>
+      </section>
+       <section id="india-panel" class="country-panel" hidden>
+        <h3>India</h3>
+        <!-- DIVINE, Sidhu Moose Wala, Karan Aujla -->
+      </section>
+
+      <!-- America tab -->
+      <section id="america-panel" class="country-panel" hidden>
+        <h3>America</h3>
+        <!-- Eminem, Lil Wayne, Kendrick Lamar -->
+      </section>
+    </div>
+  </details>
+</section>
+
+
+
+
+
+
+<script scr="script.js"></script>
+</body>
+</html>

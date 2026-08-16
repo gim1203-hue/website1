@@ -316,7 +316,26 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
       renderSurahCards(surahSearchInput.value);
     });
-    /* ── Weather Widget ── */
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+/* ── Weather Widget ── */
     (function() {
       const weatherWidget = document.getElementById('weather-widget');
       const locationNameEl = document.getElementById('weather-location-name');

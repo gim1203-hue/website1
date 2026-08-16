@@ -339,6 +339,7 @@
       background: rgba(255, 255, 255, 0.12) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
+      backdrop-filter: blur(10px) !important;
       border: 1px solid rgba(255,255,255,0.30) !important;
       color: #ffffff !important;
       box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
@@ -374,6 +375,7 @@
     .tabs {
       background: rgba(0,0,0,0.25);
       border-radius: 8px 8px 0 0;
+      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
     }
     .tab {
@@ -402,6 +404,7 @@
       background: transparent !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
       border-color: rgba(255,255,255,0.20) !important;
       box-shadow: none !important;
     }
@@ -457,6 +460,7 @@
       border-radius: 8px !important;
       padding: 10px 14px !important;
       margin-top: 20px !important;
+      -webkit-user-select: none !important;
       user-select: none !important;
     }
     .git-notes-section .content-right .accordion-caret {
@@ -472,6 +476,8 @@
       background: rgba(37,99,235,0.75) !important;
       border-color: rgba(147,197,253,0.5) !important;
       color: #fff !important;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
     }
     .quran-btn:hover { background: rgba(37,99,235,0.95) !important; }
@@ -491,12 +497,14 @@
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 14px;
       padding: 14px 16px 16px;
       color: #fff;
       z-index: 100;
       box-shadow: 0 6px 32px rgba(0,0,0,0.45);
+      -webkit-user-select: none;
       user-select: none;
     }
     #cal-widget .cal-nav {
@@ -577,6 +585,7 @@
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 14px;
       padding: 14px 16px 16px;
