@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Library</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="music-library" aria-labelledby="music-library-heading">
+  <details class="music-library-window" open>
+    <summary class="music-library-header">
+      <span class="music-library-title">
+        <span class="music-library-icon" aria-hidden="true">&#127916;</span>
+        <strong id="music-library-heading">I-LISTEN</strong>
+      </span>
+      <span class="music-window-toggle">Expand / Collapse</span>
+    </summary>
+
+    <div class="music-library-content">
+
+      <p class="music-subtitle">Search for a song, artist or album — or browse by country and artist below.</p>
+
+      <!-- Search -->
+      <div class="music-search-row">
+        <div class="music-search">
+          <span class="music-search-icon" aria-hidden="true">&#128269;</span>
+          <input
+            type="search"
+            id="music-search-input"
+            class="music-search-input"
+            placeholder="Search countries, artists, albums or songs…"
+            aria-label="Search countries, artists, albums or songs"
+            autocomplete="off">
+          <button type="button" class="music-search-clear" id="music-search-clear" aria-label="Clear search" hidden>&times;</button>
+          <kbd class="music-search-hint">/</kbd>
+        </div>
+        <button type="button" class="favorites-button" id="favorites-button" hidden>
+          &#9829; <span id="favorites-badge">0</span>
+        </button>
+      </div>
+
+      <ul class="search-results" id="search-results" hidden></ul>
+      <ul class="search-results" id="favorites-results" hidden></ul>
+
+      <!-- Cascading dropdowns -->
+      <div class="dropdown-row">
+        <div class="custom-dropdown" id="country-dropdown">
+          <button type="button" class="dropdown-toggle" id="country-toggle" aria-haspopup="listbox" aria-expanded="false">
+            <span><span class="dropdown-toggle-label-prefix">Country</span><span id="country-toggle-label">Select a country</span></span>
+            <span class="dropdown-arrow" aria-hidden="true">&#9662;</span>
+          </button>
+          <ul class="dropdown-list" id="country-list" role="listbox" tabindex="-1" hidden></ul>
+        </div>
+
+        <div class="custom-dropdown" id="artist-dropdown" hidden>
+          <button type="button" class="dropdown-toggle" id="artist-toggle" aria-haspopup="listbox" aria-expanded="false">
+            <span><span class="dropdown-toggle-label-prefix">Artist</span><span id="artist-toggle-label">Select an artist</span></span>
+            <span class="dropdown-arrow" aria-hidden="true">&#9662;</span>
+          </button>
+          <ul class="dropdown-list" id="artist-list" role="listbox" tabindex="-1" hidden></ul>
+        </div>
+      </div>
+
+      <!-- Language filter kept functional (still narrows the artist dropdown) but no longer shown in this layout -->
+      <fieldset class="language-filters" id="language-filters" hidden>
+        <legend>Language</legend>
+        <label><input type="checkbox" name="language" value="urdu" checked> Urdu</label>
+        <label><input type="checkbox" name="language" value="english" checked> English</label>
+        <label><input type="checkbox" name="language" value="punjabi" checked> Punjabi</label>
+      </fieldset>
+
+      <!-- Albums for the selected artist — sits directly under the country/artist row -->
+      <section class="albums-panel" id="albums-panel" hidden>
+        <div class="albums-panel-header">
+          <h3 id="albums-heading"></h3>
+          <button type="button" class="shuffle-button" id="shuffle-button">&#128256; Shuffle</button>
+        </div>
+        <div class="album-list" id="album-list"></div>
+      </section>
+
+      <!-- Search YouTube directly, or paste any YouTube link, and play it right here -->
+      <div class="youtube-search-row">
+        <input
+          type="text"
+          id="youtube-search-input"
+          class="youtube-search-input"
+          placeholder="Search YouTube or paste a video link…"
+          aria-label="Search YouTube or paste a video link"
+          autocomplete="off">
+        <button type="button" class="youtube-search-button" id="youtube-search-button">Search</button>
+        <button type="button" class="youtube-api-key-button" id="youtube-api-key-button" title="Set your YouTube Data API key">&#128273; API Key</button>
+      </div>
+      <ul class="search-results youtube-search-results" id="youtube-search-results" hidden></ul>
+
+      <!-- Video screen — always visible; shows a placeholder until something is loaded -->
+      <section class="now-playing" id="now-playing">
+        <div class="video-frame" id="video-frame">
+          <div class="video-placeholder" id="video-placeholder">
+            <span class="video-placeholder-icon" aria-hidden="true">&#127916;</span>
+            <p>No video loaded yet — search above, paste a link, or pick a country and artist below.</p>
+          </div>
+          <iframe id="selected-music-video" title="Selected official music video" hidden
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p id="selected-video-title"></p>
+        <div class="recent-plays" id="recent-plays" hidden>
+          <span class="recent-plays-label">Recently played</span>
+          <div class="recent-plays-list" id="recent-plays-list"></div>
+        </div>
+      </section>
+
+      <p class="empty-hint" id="empty-hint">Pick a country, then an artist, to browse their albums — or just start typing to search.</p>
+
+    </div>
+  </details>
+</section>
+
+<div class="music-toast" id="music-toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
