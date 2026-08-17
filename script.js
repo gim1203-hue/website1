@@ -1310,4 +1310,462 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
 
       searchBtn.addEventListener('click', performSearch);
       searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
-    })();
+})();
+
+/* ---------- Country & language data (worldwide) ---------- */
+const COUNTRIES = [
+["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],
+["AO","Angola"],["AI","Anguilla"],["AG","Antigua and Barbuda"],["AR","Argentina"],["AM","Armenia"],
+["AW","Aruba"],["AU","Australia"],["AT","Austria"],["AZ","Azerbaijan"],["BS","Bahamas"],
+["BH","Bahrain"],["BD","Bangladesh"],["BB","Barbados"],["BY","Belarus"],["BE","Belgium"],
+["BZ","Belize"],["BJ","Benin"],["BM","Bermuda"],["BT","Bhutan"],["BO","Bolivia"],
+["BA","Bosnia and Herzegovina"],["BW","Botswana"],["BR","Brazil"],["BN","Brunei"],["BG","Bulgaria"],
+["BF","Burkina Faso"],["BI","Burundi"],["KH","Cambodia"],["CM","Cameroon"],["CA","Canada"],
+["CV","Cape Verde"],["KY","Cayman Islands"],["CF","Central African Republic"],["TD","Chad"],["CL","Chile"],
+["CN","China"],["CO","Colombia"],["KM","Comoros"],["CG","Congo"],["CD","Congo (DRC)"],
+["CR","Costa Rica"],["CI","Côte d'Ivoire"],["HR","Croatia"],["CU","Cuba"],["CY","Cyprus"],
+["CZ","Czech Republic"],["DK","Denmark"],["DJ","Djibouti"],["DM","Dominica"],["DO","Dominican Republic"],
+["EC","Ecuador"],["EG","Egypt"],["SV","El Salvador"],["GQ","Equatorial Guinea"],["ER","Eritrea"],
+["EE","Estonia"],["SZ","Eswatini"],["ET","Ethiopia"],["FJ","Fiji"],["FI","Finland"],
+["FR","France"],["GA","Gabon"],["GM","Gambia"],["GE","Georgia"],["DE","Germany"],
+["GH","Ghana"],["GI","Gibraltar"],["GR","Greece"],["GL","Greenland"],["GD","Grenada"],
+["GU","Guam"],["GT","Guatemala"],["GN","Guinea"],["GW","Guinea-Bissau"],["GY","Guyana"],
+["HT","Haiti"],["HN","Honduras"],["HK","Hong Kong"],["HU","Hungary"],["IS","Iceland"],
+["IN","India"],["ID","Indonesia"],["IR","Iran"],["IQ","Iraq"],["IE","Ireland"],
+["IL","Israel"],["IT","Italy"],["JM","Jamaica"],["JP","Japan"],["JO","Jordan"],
+["KZ","Kazakhstan"],["KE","Kenya"],["KI","Kiribati"],["KP","North Korea"],["KR","South Korea"],
+["KW","Kuwait"],["KG","Kyrgyzstan"],["LA","Laos"],["LV","Latvia"],["LB","Lebanon"],
+["LS","Lesotho"],["LR","Liberia"],["LY","Libya"],["LI","Liechtenstein"],["LT","Lithuania"],
+["LU","Luxembourg"],["MO","Macau"],["MG","Madagascar"],["MW","Malawi"],["MY","Malaysia"],
+["MV","Maldives"],["ML","Mali"],["MT","Malta"],["MH","Marshall Islands"],["MR","Mauritania"],
+["MU","Mauritius"],["MX","Mexico"],["FM","Micronesia"],["MD","Moldova"],["MC","Monaco"],
+["MN","Mongolia"],["ME","Montenegro"],["MA","Morocco"],["MZ","Mozambique"],["MM","Myanmar"],
+["NA","Namibia"],["NR","Nauru"],["NP","Nepal"],["NL","Netherlands"],["NZ","New Zealand"],
+["NI","Nicaragua"],["NE","Niger"],["NG","Nigeria"],["MK","North Macedonia"],["NO","Norway"],
+["OM","Oman"],["PK","Pakistan"],["PW","Palau"],["PS","Palestine"],["PA","Panama"],
+["PG","Papua New Guinea"],["PY","Paraguay"],["PE","Peru"],["PH","Philippines"],["PL","Poland"],
+["PT","Portugal"],["PR","Puerto Rico"],["QA","Qatar"],["RO","Romania"],["RU","Russia"],
+["RW","Rwanda"],["KN","Saint Kitts and Nevis"],["LC","Saint Lucia"],["VC","Saint Vincent and the Grenadines"],["WS","Samoa"],
+["SM","San Marino"],["ST","Sao Tome and Principe"],["SA","Saudi Arabia"],["SN","Senegal"],["RS","Serbia"],
+["SC","Seychelles"],["SL","Sierra Leone"],["SG","Singapore"],["SK","Slovakia"],["SI","Slovenia"],
+["SB","Solomon Islands"],["SO","Somalia"],["ZA","South Africa"],["SS","South Sudan"],["ES","Spain"],
+["LK","Sri Lanka"],["SD","Sudan"],["SR","Suriname"],["SE","Sweden"],["CH","Switzerland"],
+["SY","Syria"],["TW","Taiwan"],["TJ","Tajikistan"],["TZ","Tanzania"],["TH","Thailand"],
+["TL","Timor-Leste"],["TG","Togo"],["TO","Tonga"],["TT","Trinidad and Tobago"],["TN","Tunisia"],
+["TR","Turkey"],["TM","Turkmenistan"],["TV","Tuvalu"],["UG","Uganda"],["UA","Ukraine"],
+["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["UY","Uruguay"],["UZ","Uzbekistan"],
+["VU","Vanuatu"],["VA","Vatican City"],["VE","Venezuela"],["VN","Vietnam"],["YE","Yemen"],
+["ZM","Zambia"],["ZW","Zimbabwe"]
+].sort((a,b)=> a[1].localeCompare(b[1]));
+
+const LANGUAGES = [
+["ab","Abkhazian"],["aa","Afar"],["af","Afrikaans"],["ak","Akan"],["sq","Albanian"],
+["am","Amharic"],["ar","Arabic"],["an","Aragonese"],["hy","Armenian"],["as","Assamese"],
+["av","Avaric"],["ae","Avestan"],["ay","Aymara"],["az","Azerbaijani"],["bm","Bambara"],
+["ba","Bashkir"],["eu","Basque"],["be","Belarusian"],["bn","Bengali"],["bi","Bislama"],
+["bs","Bosnian"],["br","Breton"],["bg","Bulgarian"],["my","Burmese"],["ca","Catalan"],
+["ch","Chamorro"],["ce","Chechen"],["ny","Chichewa"],["zh","Chinese"],["cv","Chuvash"],
+["kw","Cornish"],["co","Corsican"],["cr","Cree"],["hr","Croatian"],["cs","Czech"],
+["da","Danish"],["dv","Divehi"],["nl","Dutch"],["dz","Dzongkha"],["en","English"],
+["eo","Esperanto"],["et","Estonian"],["ee","Ewe"],["fo","Faroese"],["fj","Fijian"],
+["fi","Finnish"],["fr","French"],["ff","Fulah"],["gl","Galician"],["ka","Georgian"],
+["de","German"],["el","Greek"],["gn","Guarani"],["gu","Gujarati"],["ht","Haitian"],
+["ha","Hausa"],["he","Hebrew"],["hz","Herero"],["hi","Hindi"],["ho","Hiri Motu"],
+["hu","Hungarian"],["ia","Interlingua"],["id","Indonesian"],["ie","Interlingue"],["ga","Irish"],
+["ig","Igbo"],["ik","Inupiaq"],["io","Ido"],["is","Icelandic"],["it","Italian"],
+["iu","Inuktitut"],["ja","Japanese"],["jv","Javanese"],["kl","Kalaallisut"],["kn","Kannada"],
+["kr","Kanuri"],["ks","Kashmiri"],["kk","Kazakh"],["km","Khmer"],["ki","Kikuyu"],
+["rw","Kinyarwanda"],["ky","Kyrgyz"],["kv","Komi"],["kg","Kongo"],["ko","Korean"],
+["ku","Kurdish"],["kj","Kwanyama"],["la","Latin"],["lb","Luxembourgish"],["lg","Ganda"],
+["li","Limburgish"],["ln","Lingala"],["lo","Lao"],["lt","Lithuanian"],["lu","Luba-Katanga"],
+["lv","Latvian"],["gv","Manx"],["mk","Macedonian"],["mg","Malagasy"],["ms","Malay"],
+["ml","Malayalam"],["mt","Maltese"],["mi","Maori"],["mr","Marathi"],["mh","Marshallese"],
+["mn","Mongolian"],["na","Nauru"],["nv","Navajo"],["nd","North Ndebele"],["ne","Nepali"],
+["ng","Ndonga"],["nb","Norwegian Bokmål"],["nn","Norwegian Nynorsk"],["no","Norwegian"],["ii","Sichuan Yi"],
+["nr","South Ndebele"],["oc","Occitan"],["oj","Ojibwa"],["cu","Church Slavic"],["om","Oromo"],
+["or","Oriya"],["os","Ossetian"],["pa","Punjabi"],["pi","Pali"],["fa","Persian"],
+["pl","Polish"],["ps","Pashto"],["pt","Portuguese"],["qu","Quechua"],["rm","Romansh"],
+["rn","Rundi"],["ro","Romanian"],["ru","Russian"],["sa","Sanskrit"],["sc","Sardinian"],
+["sd","Sindhi"],["se","Northern Sami"],["sm","Samoan"],["sg","Sango"],["sr","Serbian"],
+["gd","Gaelic"],["sn","Shona"],["si","Sinhala"],["sk","Slovak"],["sl","Slovenian"],
+["so","Somali"],["st","Southern Sotho"],["es","Spanish"],["su","Sundanese"],["sw","Swahili"],
+["ss","Swati"],["sv","Swedish"],["ta","Tamil"],["te","Telugu"],["tg","Tajik"],
+["th","Thai"],["ti","Tigrinya"],["bo","Tibetan"],["tk","Turkmen"],["tl","Tagalog"],
+["tn","Tswana"],["to","Tonga"],["tr","Turkish"],["ts","Tsonga"],["tt","Tatar"],
+["tw","Twi"],["ty","Tahitian"],["ug","Uyghur"],["uk","Ukrainian"],["ur","Urdu"],
+["uz","Uzbek"],["ve","Venda"],["vi","Vietnamese"],["vo","Volapük"],["wa","Walloon"],
+["cy","Welsh"],["wo","Wolof"],["fy","Western Frisian"],["xh","Xhosa"],["yi","Yiddish"],
+["yo","Yoruba"],["za","Zhuang"],["zu","Zulu"]
+].sort((a,b)=> a[1].localeCompare(b[1]));
+
+(function(){
+  const state = {
+    apiKey: "",
+    activeTab: "theaters",
+    country: "",
+    language: "",
+    ytPlayer: null,
+    ytReady: false,
+    pendingVideoId: null,
+    muted: false,
+    ccOn: false
+  };
+
+  const els = {
+    tvScreen: document.getElementById('tvScreen'),
+    tabsRow: document.getElementById('tabsRow'),
+    searchInput: document.getElementById('searchInput'),
+    searchBtn: document.getElementById('searchBtn'),
+    apiKeyBtn: document.getElementById('apiKeyBtn'),
+    modalBackdrop: document.getElementById('modalBackdrop'),
+    apiKeyInput: document.getElementById('apiKeyInput'),
+    modalSave: document.getElementById('modalSave'),
+    modalCancel: document.getElementById('modalCancel'),
+    npBar: document.getElementById('npBar'),
+    npTitle: document.getElementById('npTitle'),
+    npBackBtn: document.getElementById('npBackBtn'),
+    countrySelect: document.getElementById('countrySelect'),
+    languageSelect: document.getElementById('languageSelect'),
+    filterHint: document.getElementById('filterHint'),
+  };
+
+  const IMG = (path, size='w342') => path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
+
+  /* ---------- Populate dropdowns ---------- */
+  function populateDropdowns(){
+    const cFrag = document.createDocumentFragment();
+    const optAllC = document.createElement('option');
+    optAllC.value=''; optAllC.textContent='🌍 All Countries';
+    cFrag.appendChild(optAllC);
+    COUNTRIES.forEach(([code,name])=>{
+      const o = document.createElement('option');
+      o.value = code; o.textContent = name;
+      cFrag.appendChild(o);
+    });
+    els.countrySelect.appendChild(cFrag);
+
+    const lFrag = document.createDocumentFragment();
+    const optAllL = document.createElement('option');
+    optAllL.value=''; optAllL.textContent='🌐 All Languages';
+    lFrag.appendChild(optAllL);
+    LANGUAGES.forEach(([code,name])=>{
+      const o = document.createElement('option');
+      o.value = code; o.textContent = name;
+      lFrag.appendChild(o);
+    });
+    els.languageSelect.appendChild(lFrag);
+  }
+  populateDropdowns();
+
+  function updateFilterHint(){
+    const cName = state.country ? (COUNTRIES.find(c=>c[0]===state.country)||[,state.country])[1] : 'all countries';
+    const lName = state.language ? (LANGUAGES.find(l=>l[0]===state.language)||[,state.language])[1] : 'all languages';
+    els.filterHint.textContent = `Showing movies from ${cName}, ${lName}.`;
+  }
+
+  els.countrySelect.addEventListener('change', ()=>{
+    state.country = els.countrySelect.value;
+    updateFilterHint();
+    refreshCurrentView();
+  });
+  els.languageSelect.addEventListener('change', ()=>{
+    state.language = els.languageSelect.value;
+    updateFilterHint();
+    refreshCurrentView();
+  });
+
+  function refreshCurrentView(){
+    if(els.searchInput.value.trim()){ doSearch(); }
+    else { loadTab(state.activeTab); }
+  }
+
+  /* ---------- YouTube IFrame API (for volume + enlarge controls) ---------- */
+  let ytApiInjected = false;
+  function ensureYTApi(){
+    if(ytApiInjected) return;
+    ytApiInjected = true;
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
+  window.onYouTubeIframeAPIReady = function(){
+    state.ytReady = true;
+    if(state.pendingVideoId){
+      const id = state.pendingVideoId;
+      state.pendingVideoId = null;
+      mountPlayer(id);
+    }
+  };
+
+  function mountPlayer(videoId){
+    if(!state.ytReady){ state.pendingVideoId = videoId; ensureYTApi(); return; }
+    els.tvScreen.innerHTML = `
+      <div id="ytHolder" style="position:absolute;inset:0;"></div>
+      <div class="player-controls pinned" id="playerControls">
+        <button class="ctrl-btn" id="muteBtn" title="Mute / Unmute">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volume">
+        <button class="ctrl-btn" id="ccBtn" title="Toggle captions">CC</button>
+        <div class="ctrl-spacer"></div>
+        <button class="ctrl-btn" id="fullscreenBtn" title="Enlarge / fullscreen">⤢</button>
+      </div>`;
+    // Always build a fresh player: innerHTML above just destroyed any previous
+    // player's DOM node, so reusing the old YT.Player instance is unsafe.
+    state.ytPlayer = new YT.Player('ytHolder', {
+      width:'100%',
+      height:'100%',
+      videoId: videoId,
+      playerVars:{ autoplay:1, rel:0, modestbranding:1, playsinline:1 },
+      events:{
+        onReady:(e)=>{
+          e.target.setVolume(100);
+          state.muted = e.target.isMuted();
+          updateMuteIcon();
+        }
+      }
+    });
+    wireControls();
+  }
+
+  function updateMuteIcon(){
+    const btn = document.getElementById('muteBtn');
+    if(!btn) return;
+    btn.textContent = state.muted ? '🔇' : '🔊';
+    btn.classList.toggle('on', state.muted);
+  }
+
+  function wireControls(){
+    const muteBtn = document.getElementById('muteBtn');
+    const volSlider = document.getElementById('volumeSlider');
+    const ccBtn = document.getElementById('ccBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    if(muteBtn) muteBtn.addEventListener('click', ()=>{
+      if(!state.ytPlayer) return;
+      if(state.muted){ state.ytPlayer.unMute(); state.muted=false; }
+      else { state.ytPlayer.mute(); state.muted=true; }
+      updateMuteIcon();
+    });
+
+    if(volSlider) volSlider.addEventListener('input', (e)=>{
+      if(!state.ytPlayer) return;
+      const v = Number(e.target.value);
+      state.ytPlayer.setVolume(v);
+      if(v===0){ state.ytPlayer.mute(); state.muted=true; }
+      else { state.ytPlayer.unMute(); state.muted=false; }
+      updateMuteIcon();
+    });
+
+    if(ccBtn) ccBtn.addEventListener('click', ()=>{
+      if(!state.ytPlayer) return;
+      state.ccOn = !state.ccOn;
+      try{
+        if(state.ccOn) state.ytPlayer.loadModule('captions');
+        else state.ytPlayer.unloadModule('captions');
+      } catch(err){ /* captions module not available for this video - ignore */ }
+      ccBtn.classList.toggle('on', state.ccOn);
+    });
+
+    if(fsBtn) fsBtn.addEventListener('click', ()=>{
+      const target = els.tvScreen;
+      if(document.fullscreenElement){
+        document.exitFullscreen();
+      } else if(target.requestFullscreen){
+        target.requestFullscreen().catch(()=>{ /* fullscreen blocked by browser - ignore */ });
+      }
+    });
+  }
+
+  function openModal(){
+    els.apiKeyInput.value = state.apiKey;
+    els.modalBackdrop.classList.add('open');
+    els.apiKeyInput.focus();
+  }
+  function closeModal(){ els.modalBackdrop.classList.remove('open'); }
+
+  els.apiKeyBtn.addEventListener('click', openModal);
+  els.modalCancel.addEventListener('click', closeModal);
+  els.modalBackdrop.addEventListener('click', (e)=>{ if(e.target===els.modalBackdrop) closeModal(); });
+  els.modalSave.addEventListener('click', ()=>{
+    state.apiKey = els.apiKeyInput.value.trim();
+    closeModal();
+    if(state.apiKey){ loadTab(state.activeTab); }
+  });
+  els.apiKeyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') els.modalSave.click(); });
+
+  els.tabsRow.addEventListener('click', (e)=>{
+    const tab = e.target.closest('.iw-tab');
+    if(!tab) return;
+    [...els.tabsRow.children].forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    state.activeTab = tab.dataset.tab;
+    els.searchInput.value = "";
+    loadTab(state.activeTab);
+  });
+
+  els.searchBtn.addEventListener('click', doSearch);
+  els.searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doSearch(); });
+
+  els.npBackBtn.addEventListener('click', ()=>{
+    els.npBar.style.display = 'none';
+    state.ytPlayer = null;
+    if(els.searchInput.value.trim()){ doSearch(); } else { loadTab(state.activeTab); }
+  });
+
+  function showIdle(msg, sub){
+    els.tvScreen.innerHTML = `
+      <div class="screen-idle">
+        <div class="static-bars"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="big">${msg}</div>
+        <div class="small">${sub}</div>
+      </div>`;
+    els.npBar.style.display = 'none';
+    state.ytPlayer = null;
+  }
+
+  function showLoading(){
+    els.tvScreen.innerHTML = `<div class="screen-idle"><div class="big">Tuning in…</div><div class="small">Loading movies</div></div>`;
+    state.ytPlayer = null;
+  }
+
+  function requireKey(){
+    if(!state.apiKey){
+      showIdle("No signal", "Add your TMDB API key to start browsing");
+      return false;
+    }
+    return true;
+  }
+
+  async function tmdb(path, params={}){
+    const url = new URL(`https://api.themoviedb.org/3${path}`);
+    url.searchParams.set('api_key', state.apiKey);
+    Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!=='') url.searchParams.set(k, v); });
+    const res = await fetch(url.toString());
+    if(!res.ok){
+      const body = await res.json().catch(()=>({}));
+      throw new Error(body.status_message || `Request failed (${res.status})`);
+    }
+    return res.json();
+  }
+
+  function applyLanguageFilter(movies){
+    if(!state.language) return movies;
+    return movies.filter(m => (m.original_language||'').toLowerCase() === state.language);
+  }
+
+  function renderGrid(movies, emptyMsg){
+    if(!movies || movies.length===0){
+      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">${emptyMsg||'No movies found.'}</div></div>`;
+      return;
+    }
+    const cards = movies.map(m=>{
+      const poster = IMG(m.poster_path);
+      const title = (m.title || m.name || 'Untitled').replace(/</g,'&lt;');
+      const date = m.release_date ? m.release_date.slice(0,4) : '—';
+      return `
+        <div class="card" data-id="${m.id}" data-title="${title.replace(/"/g,'&quot;')}">
+          <div class="poster-wrap">
+            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a5c52;font-size:11px;">No image</div>`}
+          </div>
+          <div class="card-meta">
+            <div class="card-title">${title}</div>
+            <div class="card-date">${date}</div>
+          </div>
+        </div>`;
+    }).join('');
+    els.tvScreen.innerHTML = `<div class="screen-inner"><div class="grid">${cards}</div></div>`;
+    els.tvScreen.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('click', ()=> playMovie(card.dataset.id, card.dataset.title));
+    });
+  }
+
+  async function playMovie(id, title){
+    showLoading();
+    ensureYTApi();
+    try{
+      const vids = await tmdb(`/movie/${id}/videos`);
+      const trailer = (vids.results||[]).find(v=> v.site==='YouTube' && v.type==='Trailer')
+                    || (vids.results||[]).find(v=> v.site==='YouTube');
+      if(trailer){
+        mountPlayer(trailer.key);
+      } else {
+        const details = await tmdb(`/movie/${id}`);
+        const backdrop = IMG(details.backdrop_path, 'original');
+        els.tvScreen.innerHTML = `
+          <div class="screen-inner" style="padding:0;">
+            <div style="position:relative;width:100%;height:100%;">
+              ${backdrop ? `<img src="${backdrop}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.75));display:flex;align-items:flex-end;padding:16px;">
+                <div>
+                  <div style="font-weight:700;font-size:16px;">${title}</div>
+                  <div style="font-size:12px;color:#c8d6cf;margin-top:4px;">${(details.overview||'No trailer available.').slice(0,180)}${details.overview && details.overview.length>180 ? '…' : ''}</div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }
+      els.npTitle.textContent = title;
+      els.npBar.style.display = 'flex';
+    } catch(err){
+      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">Couldn't load "${title}": ${err.message}</div></div>`;
+    }
+  }
+
+  async function loadTab(tab){
+    if(!requireKey()) return;
+    showLoading();
+    els.npBar.style.display = 'none';
+    const year = new Date().getFullYear();
+    const today = new Date().toISOString().slice(0,10);
+    try{
+      let data, movies;
+      if(tab==='theaters'){
+        data = await tmdb('/movie/now_playing', { language:'en-US', page:1, region: state.country });
+        movies = applyLanguageFilter(data.results||[]);
+        renderGrid(movies, 'Nothing currently in theaters for this filter.');
+      } else if(tab==='new'){
+        data = await tmdb('/discover/movie', {
+          sort_by:'primary_release_date.desc',
+          'primary_release_date.lte': today,
+          'primary_release_year': year,
+          'vote_count.gte': 1,
+          language:'en-US', page:1,
+          region: state.country,
+          with_original_language: state.language
+        });
+        movies = data.results||[];
+        renderGrid(movies, 'No new releases found for this filter.');
+      } else if(tab==='recent'){
+        data = await tmdb('/discover/movie', {
+          sort_by:'popularity.desc',
+          primary_release_year: year,
+          language:'en-US', page:1,
+          region: state.country,
+          with_original_language: state.language
+        });
+        movies = data.results||[];
+        renderGrid(movies, 'Nothing popular found for this filter.');
+      }
+    } catch(err){
+      showIdle("Signal lost", err.message);
+    }
+  }
+
+  async function doSearch(){
+    const q = els.searchInput.value.trim();
+    if(!q){ loadTab(state.activeTab); return; }
+    if(!requireKey()) return;
+    showLoading();
+    els.npBar.style.display = 'none';
+    try{
+      const data = await tmdb('/search/movie', { query:q, language:'en-US', page:1, include_adult:false, region: state.country });
+      const movies = applyLanguageFilter(data.results||[]);
+      renderGrid(movies, `No movies found for "${q}" with this filter.`);
+    } catch(err){
+      showIdle("Signal lost", err.message);
+    }
+  }
+
+  // initial state
+  updateFilterHint();
+  showIdle("No signal", "Add your TMDB API key to start browsing");
+})();
