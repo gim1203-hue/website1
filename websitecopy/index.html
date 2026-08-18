@@ -178,7 +178,8 @@
     <h3 id="radio-heading">📻 Live AM/FM Radio</h3>
     <p class="widget-subtext">Real, live AM/FM and internet radio stations from around the world. Pick a country or search by name, then press play.</p>
     <div class="radio-toolbar">
-      <select id="radio-country-select">
+      <label for="radio-country-select" class="sr-only">Select country</label>
+      <select id="radio-country-select" title="Select country">
         <option value="">— Any country —</option>
       </select>
       <input id="radio-search-input" type="text" placeholder="Search station name (example: BBC, Hot 97)">
@@ -260,7 +261,7 @@
         <div class="tv-base"></div>
       </div>
 
-      <div class="now-playing-bar" id="npBar" style="display:none;">
+      <div class="now-playing-bar" id="npBar" hidden>
         <div class="np-info">Now showing: <b id="npTitle">—</b></div>
         <button class="btn btn-ghost" id="npBackBtn">◀ Back to browsing</button>
       </div>
