@@ -639,4 +639,3 @@
 
   renderLibraryButton();
 })();
-const YOUTUBE_API_KEY = "AIzaSyB0J5bv6BP3KPpRXGyfiFUbJhPFu02qvLU";

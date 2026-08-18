@@ -1770,4 +1770,3 @@ const LANGUAGES = [
   showIdle("No signal", "Add your TMDB API key to start browsing");
 })();
 
-const YOUTUBE_API_KEY = "AIzaSyB0J5bv6BP3KPpRXGyfiFUbJhPFu02qvLU";
