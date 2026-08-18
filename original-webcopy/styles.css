@@ -201,8 +201,16 @@
       overflow-y: auto;
       overscroll-behavior: contain;
       padding-right: 8px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.45) rgba(0,0,0,0.20);
+    }
+    @supports (scrollbar-color: auto) {
+      .quran-surahs:has(.surah) {
+        scrollbar-color: rgba(255,255,255,0.45) rgba(0,0,0,0.20);
+      }
+    }
+    @supports (scrollbar-width: thin) {
+      .quran-surahs:has(.surah) {
+        scrollbar-width: thin;
+      }
     }
     .quran-surahs:has(.surah)::-webkit-scrollbar {
       width: 8px;
@@ -1214,6 +1222,7 @@
     border:1px solid var(--glass-brd);
     padding:10px 16px;border-radius:12px;
     width:fit-content;margin-bottom:22px;
+    -webkit-backdrop-filter:blur(6px);
     backdrop-filter:blur(6px);
 }
 .iwatch-app .app-title .emoji{font-size:18px;}
@@ -1250,8 +1259,8 @@
     font-size:13.5px;
     outline:none;
     cursor:pointer;
-    appearance:none;
     -webkit-appearance:none;
+    appearance:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239fb3a8' stroke-width='2'><polyline points='6 9 12 15 18 9'></polyline></svg>");
     background-repeat:no-repeat;
     background-position:right 10px center;
@@ -1390,7 +1399,7 @@
 .iwatch-app .poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .iwatch-app .card-meta{padding:8px 9px 10px;}
 .iwatch-app .card-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.25;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .iwatch-app .card-date{font-size:11px;color:var(--text-dim);margin-top:3px;}
 .iwatch-app .now-playing-bar{
     display:flex;align-items:center;justify-content:space-between;
@@ -1434,6 +1443,7 @@
     border:1px solid rgba(255,255,255,0.15);
     color:#fff;padding:7px 12px;border-radius:8px;
     font-size:12.5px;cursor:pointer;margin-bottom:10px;
+    -webkit-backdrop-filter:blur(4px);
     backdrop-filter:blur(4px);
 }
 .iwatch-app .back-btn:hover{background:rgba(0,0,0,0.75);}
@@ -1590,7 +1600,6 @@ html {
   .tabs {
     flex-wrap: nowrap;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     scroll-snap-type: x proximity;
     padding-bottom: 4px;
   }
@@ -1702,7 +1711,6 @@ html {
   .iwatch-app .tabs-row {
     flex-wrap: nowrap;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
   .iwatch-app .iw-tab {
     flex: 0 0 auto;
