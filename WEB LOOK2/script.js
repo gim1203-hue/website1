@@ -1,6 +1,13 @@
+/* ============================================================
+   SECTION: PAGE HEADER — today's date text
+   ============================================================ */
 document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    /* ============================================================
+       SECTION: GIT NOTES — "Steps to create a repository" toggle
+       ============================================================ */
     (function() {
       const toggleBtn = document.getElementById('repo-steps-toggle');
       const panel = document.getElementById('repo-steps-panel');
@@ -13,6 +20,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         caret.textContent = willOpen ? '▲' : '▼';
       });
     })();
+
+    /* ============================================================
+       SECTION: GIT NOTES — accordion (collapsible h3 sub-sections)
+       ============================================================ */
     (function() {
       const contentRight = document.querySelector('.git-notes-section .content-right');
       if (!contentRight) return;
@@ -55,6 +66,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         });
       });
     })();
+
+    /* ============================================================
+       SECTION: CERTIFICATE ZOOM MODAL
+       ============================================================ */
     (function() {
       const modal = document.getElementById('cert-modal');
       const modalInner = document.querySelector('.cert-modal-inner');
@@ -94,6 +109,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
     })();
+
+    /* ============================================================
+       SECTION: QURAN WIDGET (surah list, audio, live translation)
+       ============================================================ */
     const quranState = {
       catalog: [],
       loadedSurahs: new Map(),
@@ -334,7 +353,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       quranSurahsContainer.style.display = '';
       renderSurahCards(surahSearchInput.value);
     });
-    /* ── Weather Widget ── */
+    /* ============================================================
+       SECTION: WEATHER WIDGET
+       ============================================================ */
     (function() {
       const weatherWidget = document.getElementById('weather-widget');
       const locationNameEl = document.getElementById('weather-location-name');
@@ -796,7 +817,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         }
       }, 300000);
     })();
-    /* ── To-Do / Notes Widget ── */
+    /* ============================================================
+       SECTION: TO-DO / NOTES WIDGET
+       ============================================================ */
     (function() {
       const input   = document.getElementById('todo-input');
       const addBtn  = document.getElementById('todo-add-btn');
@@ -843,7 +866,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       input.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
       render();
     })();
-    /* ── Live Yearly Calendar ── */
+    /* ============================================================
+       SECTION: CALENDAR WIDGET
+       ============================================================ */
     (function() {
       const MONTHS = ['January','February','March','April','May','June',
                       'July','August','September','October','November','December'];
@@ -907,7 +932,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
                                     today.getDate() + 1) - Date.now();
       setTimeout(() => { renderCalendar(); setInterval(renderCalendar, 86400000); }, msToMidnight);
     })();
-    /* ── Live AM/FM Radio (Radio Browser API — no key required) ── */
+    /* ============================================================
+       SECTION: RADIO WIDGET (Radio Browser API — no key required)
+       ============================================================ */
     (function() {
       const countrySelect = document.getElementById('radio-country-select');
       const searchInput   = document.getElementById('radio-search-input');
@@ -1042,38 +1069,143 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       loadCountries();
     })();
     /* ============================================================
-       I-WATCH — search any song, movie, show, or news clip on
-       YouTube and watch it right here. This is the old I-LISTEN
-       widget, renamed, with three things added on top:
-         1. a live drop-down of suggestions as you type
-         2. a horizontal slider (between the search bar and the
-            screen) of at least 40 related results, newest first
-         3. general search (not just music) so it plays whatever
-            YouTube plays — songs, movies, shows, trailers, news…
-       Playback still happens the same way as I-LISTEN: picking a
-       result loads it straight into the on-page video screen.
+       SECTION: I-LISTEN WIDGET (YouTube search + video player)
        ============================================================ */
     (function() {
-      const searchInput    = document.getElementById('youtube-search-input');
-      const searchBtn      = document.getElementById('youtube-search-btn');
-      const apiKeyBtn      = document.getElementById('youtube-api-key-btn');
-      const apiKeyPanel    = document.getElementById('youtube-api-key-panel');
-      const apiKeyInput    = document.getElementById('youtube-api-key-input');
-      const apiKeySaveBtn  = document.getElementById('youtube-api-key-save');
+      const searchInput   = document.getElementById('youtube-search-input');
+      const searchBtn     = document.getElementById('youtube-search-btn');
+      const apiKeyBtn     = document.getElementById('youtube-api-key-btn');
+      const apiKeyPanel   = document.getElementById('youtube-api-key-panel');
+      const apiKeyInput   = document.getElementById('youtube-api-key-input');
+      const apiKeySaveBtn = document.getElementById('youtube-api-key-save');
       const apiKeyClearBtn = document.getElementById('youtube-api-key-clear');
-      const apiKeyStatus   = document.getElementById('youtube-api-key-status');
-      const resultsEl      = document.getElementById('youtube-results');
-      const suggestionsEl  = document.getElementById('youtube-suggestions');
-      const sliderLabelEl  = document.getElementById('youtube-slider-label');
-      const sliderPrevBtn  = document.getElementById('youtube-slider-prev');
-      const sliderNextBtn  = document.getElementById('youtube-slider-next');
-      const playerEl       = document.getElementById('youtube-player');
-      const screenHintEl   = document.getElementById('youtube-screen-hint');
+      const apiKeyStatus  = document.getElementById('youtube-api-key-status');
+      const resultsEl     = document.getElementById('youtube-results');
+      const playerEl      = document.getElementById('youtube-player');
+      const screenHintEl  = document.getElementById('youtube-screen-hint');
+      const countrySelect = document.getElementById('youtube-country-select');
+      const relatedSelect = document.getElementById('youtube-related-select');
+      const suggestionsEl = document.getElementById('youtube-suggestions');
       if (!searchInput || !playerEl) return;
 
       const YT_KEY_STORE = 'ik_youtube_api_key';
-      let suggestTimer = null;
-      let requestToken = 0;
+
+      /* All countries in the world (ISO 3166-1 codes) mapped to their
+         primary spoken language (ISO 639-1), so picking a country biases
+         search results to videos/audio in that country's language. */
+      const YOUTUBE_COUNTRIES = [
+        { code: 'AF', name: 'Afghanistan', lang: 'ps' }, { code: 'AL', name: 'Albania', lang: 'sq' },
+        { code: 'DZ', name: 'Algeria', lang: 'ar' }, { code: 'AD', name: 'Andorra', lang: 'ca' },
+        { code: 'AO', name: 'Angola', lang: 'pt' }, { code: 'AG', name: 'Antigua and Barbuda', lang: 'en' },
+        { code: 'AR', name: 'Argentina', lang: 'es' }, { code: 'AM', name: 'Armenia', lang: 'hy' },
+        { code: 'AU', name: 'Australia', lang: 'en' }, { code: 'AT', name: 'Austria', lang: 'de' },
+        { code: 'AZ', name: 'Azerbaijan', lang: 'az' }, { code: 'BS', name: 'Bahamas', lang: 'en' },
+        { code: 'BH', name: 'Bahrain', lang: 'ar' }, { code: 'BD', name: 'Bangladesh', lang: 'bn' },
+        { code: 'BB', name: 'Barbados', lang: 'en' }, { code: 'BY', name: 'Belarus', lang: 'be' },
+        { code: 'BE', name: 'Belgium', lang: 'nl' }, { code: 'BZ', name: 'Belize', lang: 'en' },
+        { code: 'BJ', name: 'Benin', lang: 'fr' }, { code: 'BT', name: 'Bhutan', lang: 'dz' },
+        { code: 'BO', name: 'Bolivia', lang: 'es' }, { code: 'BA', name: 'Bosnia and Herzegovina', lang: 'bs' },
+        { code: 'BW', name: 'Botswana', lang: 'en' }, { code: 'BR', name: 'Brazil', lang: 'pt' },
+        { code: 'BN', name: 'Brunei', lang: 'ms' }, { code: 'BG', name: 'Bulgaria', lang: 'bg' },
+        { code: 'BF', name: 'Burkina Faso', lang: 'fr' }, { code: 'BI', name: 'Burundi', lang: 'fr' },
+        { code: 'CV', name: 'Cabo Verde', lang: 'pt' }, { code: 'KH', name: 'Cambodia', lang: 'km' },
+        { code: 'CM', name: 'Cameroon', lang: 'fr' }, { code: 'CA', name: 'Canada', lang: 'en' },
+        { code: 'CF', name: 'Central African Republic', lang: 'fr' }, { code: 'TD', name: 'Chad', lang: 'fr' },
+        { code: 'CL', name: 'Chile', lang: 'es' }, { code: 'CN', name: 'China', lang: 'zh' },
+        { code: 'CO', name: 'Colombia', lang: 'es' }, { code: 'KM', name: 'Comoros', lang: 'ar' },
+        { code: 'CG', name: 'Congo (Republic of)', lang: 'fr' }, { code: 'CD', name: 'Congo (DR)', lang: 'fr' },
+        { code: 'CR', name: 'Costa Rica', lang: 'es' }, { code: 'CI', name: "Côte d'Ivoire", lang: 'fr' },
+        { code: 'HR', name: 'Croatia', lang: 'hr' }, { code: 'CU', name: 'Cuba', lang: 'es' },
+        { code: 'CY', name: 'Cyprus', lang: 'el' }, { code: 'CZ', name: 'Czechia', lang: 'cs' },
+        { code: 'DK', name: 'Denmark', lang: 'da' }, { code: 'DJ', name: 'Djibouti', lang: 'fr' },
+        { code: 'DM', name: 'Dominica', lang: 'en' }, { code: 'DO', name: 'Dominican Republic', lang: 'es' },
+        { code: 'EC', name: 'Ecuador', lang: 'es' }, { code: 'EG', name: 'Egypt', lang: 'ar' },
+        { code: 'SV', name: 'El Salvador', lang: 'es' }, { code: 'GQ', name: 'Equatorial Guinea', lang: 'es' },
+        { code: 'ER', name: 'Eritrea', lang: 'ti' }, { code: 'EE', name: 'Estonia', lang: 'et' },
+        { code: 'SZ', name: 'Eswatini', lang: 'en' }, { code: 'ET', name: 'Ethiopia', lang: 'am' },
+        { code: 'FJ', name: 'Fiji', lang: 'en' }, { code: 'FI', name: 'Finland', lang: 'fi' },
+        { code: 'FR', name: 'France', lang: 'fr' }, { code: 'GA', name: 'Gabon', lang: 'fr' },
+        { code: 'GM', name: 'Gambia', lang: 'en' }, { code: 'GE', name: 'Georgia', lang: 'ka' },
+        { code: 'DE', name: 'Germany', lang: 'de' }, { code: 'GH', name: 'Ghana', lang: 'en' },
+        { code: 'GR', name: 'Greece', lang: 'el' }, { code: 'GD', name: 'Grenada', lang: 'en' },
+        { code: 'GT', name: 'Guatemala', lang: 'es' }, { code: 'GN', name: 'Guinea', lang: 'fr' },
+        { code: 'GW', name: 'Guinea-Bissau', lang: 'pt' }, { code: 'GY', name: 'Guyana', lang: 'en' },
+        { code: 'HT', name: 'Haiti', lang: 'fr' }, { code: 'HN', name: 'Honduras', lang: 'es' },
+        { code: 'HK', name: 'Hong Kong', lang: 'zh' }, { code: 'HU', name: 'Hungary', lang: 'hu' },
+        { code: 'IS', name: 'Iceland', lang: 'is' }, { code: 'IN', name: 'India', lang: 'hi' },
+        { code: 'ID', name: 'Indonesia', lang: 'id' }, { code: 'IR', name: 'Iran', lang: 'fa' },
+        { code: 'IQ', name: 'Iraq', lang: 'ar' }, { code: 'IE', name: 'Ireland', lang: 'en' },
+        { code: 'IL', name: 'Israel', lang: 'he' }, { code: 'IT', name: 'Italy', lang: 'it' },
+        { code: 'JM', name: 'Jamaica', lang: 'en' }, { code: 'JP', name: 'Japan', lang: 'ja' },
+        { code: 'JO', name: 'Jordan', lang: 'ar' }, { code: 'KZ', name: 'Kazakhstan', lang: 'kk' },
+        { code: 'KE', name: 'Kenya', lang: 'sw' }, { code: 'KI', name: 'Kiribati', lang: 'en' },
+        { code: 'KW', name: 'Kuwait', lang: 'ar' }, { code: 'KG', name: 'Kyrgyzstan', lang: 'ky' },
+        { code: 'LA', name: 'Laos', lang: 'lo' }, { code: 'LV', name: 'Latvia', lang: 'lv' },
+        { code: 'LB', name: 'Lebanon', lang: 'ar' }, { code: 'LS', name: 'Lesotho', lang: 'en' },
+        { code: 'LR', name: 'Liberia', lang: 'en' }, { code: 'LY', name: 'Libya', lang: 'ar' },
+        { code: 'LI', name: 'Liechtenstein', lang: 'de' }, { code: 'LT', name: 'Lithuania', lang: 'lt' },
+        { code: 'LU', name: 'Luxembourg', lang: 'fr' }, { code: 'MO', name: 'Macao', lang: 'zh' },
+        { code: 'MG', name: 'Madagascar', lang: 'mg' }, { code: 'MW', name: 'Malawi', lang: 'en' },
+        { code: 'MY', name: 'Malaysia', lang: 'ms' }, { code: 'MV', name: 'Maldives', lang: 'dv' },
+        { code: 'ML', name: 'Mali', lang: 'fr' }, { code: 'MT', name: 'Malta', lang: 'mt' },
+        { code: 'MH', name: 'Marshall Islands', lang: 'en' }, { code: 'MR', name: 'Mauritania', lang: 'ar' },
+        { code: 'MU', name: 'Mauritius', lang: 'en' }, { code: 'MX', name: 'Mexico', lang: 'es' },
+        { code: 'FM', name: 'Micronesia', lang: 'en' }, { code: 'MD', name: 'Moldova', lang: 'ro' },
+        { code: 'MC', name: 'Monaco', lang: 'fr' }, { code: 'MN', name: 'Mongolia', lang: 'mn' },
+        { code: 'ME', name: 'Montenegro', lang: 'sr' }, { code: 'MA', name: 'Morocco', lang: 'ar' },
+        { code: 'MZ', name: 'Mozambique', lang: 'pt' }, { code: 'MM', name: 'Myanmar', lang: 'my' },
+        { code: 'NA', name: 'Namibia', lang: 'en' }, { code: 'NR', name: 'Nauru', lang: 'en' },
+        { code: 'NP', name: 'Nepal', lang: 'ne' }, { code: 'NL', name: 'Netherlands', lang: 'nl' },
+        { code: 'NZ', name: 'New Zealand', lang: 'en' }, { code: 'NI', name: 'Nicaragua', lang: 'es' },
+        { code: 'NE', name: 'Niger', lang: 'fr' }, { code: 'NG', name: 'Nigeria', lang: 'en' },
+        { code: 'KP', name: 'North Korea', lang: 'ko' }, { code: 'MK', name: 'North Macedonia', lang: 'mk' },
+        { code: 'NO', name: 'Norway', lang: 'no' }, { code: 'OM', name: 'Oman', lang: 'ar' },
+        { code: 'PK', name: 'Pakistan', lang: 'ur' }, { code: 'PW', name: 'Palau', lang: 'en' },
+        { code: 'PS', name: 'Palestine', lang: 'ar' }, { code: 'PA', name: 'Panama', lang: 'es' },
+        { code: 'PG', name: 'Papua New Guinea', lang: 'en' }, { code: 'PY', name: 'Paraguay', lang: 'es' },
+        { code: 'PE', name: 'Peru', lang: 'es' }, { code: 'PH', name: 'Philippines', lang: 'tl' },
+        { code: 'PL', name: 'Poland', lang: 'pl' }, { code: 'PT', name: 'Portugal', lang: 'pt' },
+        { code: 'QA', name: 'Qatar', lang: 'ar' }, { code: 'RO', name: 'Romania', lang: 'ro' },
+        { code: 'RU', name: 'Russia', lang: 'ru' }, { code: 'RW', name: 'Rwanda', lang: 'rw' },
+        { code: 'KN', name: 'Saint Kitts and Nevis', lang: 'en' }, { code: 'LC', name: 'Saint Lucia', lang: 'en' },
+        { code: 'VC', name: 'Saint Vincent and the Grenadines', lang: 'en' }, { code: 'WS', name: 'Samoa', lang: 'sm' },
+        { code: 'SM', name: 'San Marino', lang: 'it' }, { code: 'ST', name: 'Sao Tome and Principe', lang: 'pt' },
+        { code: 'SA', name: 'Saudi Arabia', lang: 'ar' }, { code: 'SN', name: 'Senegal', lang: 'fr' },
+        { code: 'RS', name: 'Serbia', lang: 'sr' }, { code: 'SC', name: 'Seychelles', lang: 'fr' },
+        { code: 'SL', name: 'Sierra Leone', lang: 'en' }, { code: 'SG', name: 'Singapore', lang: 'en' },
+        { code: 'SK', name: 'Slovakia', lang: 'sk' }, { code: 'SI', name: 'Slovenia', lang: 'sl' },
+        { code: 'SB', name: 'Solomon Islands', lang: 'en' }, { code: 'SO', name: 'Somalia', lang: 'so' },
+        { code: 'ZA', name: 'South Africa', lang: 'en' }, { code: 'KR', name: 'South Korea', lang: 'ko' },
+        { code: 'SS', name: 'South Sudan', lang: 'en' }, { code: 'ES', name: 'Spain', lang: 'es' },
+        { code: 'LK', name: 'Sri Lanka', lang: 'si' }, { code: 'SD', name: 'Sudan', lang: 'ar' },
+        { code: 'SR', name: 'Suriname', lang: 'nl' }, { code: 'SE', name: 'Sweden', lang: 'sv' },
+        { code: 'CH', name: 'Switzerland', lang: 'de' }, { code: 'SY', name: 'Syria', lang: 'ar' },
+        { code: 'TW', name: 'Taiwan', lang: 'zh' }, { code: 'TJ', name: 'Tajikistan', lang: 'tg' },
+        { code: 'TZ', name: 'Tanzania', lang: 'sw' }, { code: 'TH', name: 'Thailand', lang: 'th' },
+        { code: 'TL', name: 'Timor-Leste', lang: 'pt' }, { code: 'TG', name: 'Togo', lang: 'fr' },
+        { code: 'TO', name: 'Tonga', lang: 'to' }, { code: 'TT', name: 'Trinidad and Tobago', lang: 'en' },
+        { code: 'TN', name: 'Tunisia', lang: 'ar' }, { code: 'TR', name: 'Turkey', lang: 'tr' },
+        { code: 'TM', name: 'Turkmenistan', lang: 'tk' }, { code: 'TV', name: 'Tuvalu', lang: 'en' },
+        { code: 'UG', name: 'Uganda', lang: 'en' }, { code: 'UA', name: 'Ukraine', lang: 'uk' },
+        { code: 'AE', name: 'United Arab Emirates', lang: 'ar' }, { code: 'GB', name: 'United Kingdom', lang: 'en' },
+        { code: 'US', name: 'United States', lang: 'en' }, { code: 'UY', name: 'Uruguay', lang: 'es' },
+        { code: 'UZ', name: 'Uzbekistan', lang: 'uz' }, { code: 'VU', name: 'Vanuatu', lang: 'en' },
+        { code: 'VA', name: 'Vatican City', lang: 'it' }, { code: 'VE', name: 'Venezuela', lang: 'es' },
+        { code: 'VN', name: 'Vietnam', lang: 'vi' }, { code: 'YE', name: 'Yemen', lang: 'ar' },
+        { code: 'ZM', name: 'Zambia', lang: 'en' }, { code: 'ZW', name: 'Zimbabwe', lang: 'en' }
+      ];
+      if (countrySelect) {
+        YOUTUBE_COUNTRIES
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach(country => {
+            const opt = document.createElement('option');
+            opt.value = country.code;
+            opt.dataset.lang = country.lang;
+            opt.textContent = country.name;
+            countrySelect.appendChild(opt);
+          });
+      }
 
       function getApiKey() {
         try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
@@ -1127,98 +1259,63 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (!videoId) return;
         playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         screenHintEl.textContent = title ? `Now playing: ${title}` : 'Video loaded.';
+        loadRelatedVideos(videoId, title);
       }
 
-      function detectRelevanceLanguage() {
-        const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-        return nav.split('-')[0] || 'en';
-      }
-
-      function timeAgo(dateStr) {
-        const then = new Date(dateStr).getTime();
-        if (!Number.isFinite(then)) return '';
-        const diffDays = Math.floor((Date.now() - then) / 86400000);
-        if (diffDays < 1) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 30) return `${diffDays}d ago`;
-        if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
-        return `${Math.floor(diffDays / 365)}y ago`;
-      }
-
-      function hideSuggestions() {
-        suggestionsEl.hidden = true;
-        suggestionsEl.innerHTML = '';
-      }
-
-      function renderSuggestions(items) {
-        if (!items || !items.length) { hideSuggestions(); return; }
-        suggestionsEl.innerHTML = '';
-        const fragment = document.createDocumentFragment();
-        items.slice(0, 8).forEach(item => {
-          const videoId = item.id?.videoId;
-          if (!videoId) return;
-          const title = item.snippet?.title || 'Untitled';
-          const channel = item.snippet?.channelTitle || '';
-          const thumb = item.snippet?.thumbnails?.default?.url || '';
-          const row = document.createElement('button');
-          row.type = 'button';
-          row.className = 'youtube-suggest-row';
-          row.innerHTML = `
-            <img src="${thumb}" alt="" loading="lazy">
-            <span><b>${title}</b><small>${channel}</small></span>
-          `;
-          row.addEventListener('click', () => {
-            searchInput.value = title;
-            hideSuggestions();
-            loadVideo(videoId, title);
-            performSearch({ autoplayFirst: false });
-          });
-          fragment.appendChild(row);
-        });
-        suggestionsEl.appendChild(fragment);
-        suggestionsEl.hidden = false;
-      }
-
-      async function fetchSuggestions(query) {
+      /* ── "Related content" dropdown: uses the loaded video's title
+         (fetching it first via videos.list when we only have an ID,
+         e.g. a pasted link) to search YouTube for similar videos and
+         lets the user jump straight to one from a <select>. ── */
+      async function loadRelatedVideos(videoId, title) {
+        if (!relatedSelect) return;
         const apiKey = getApiKey();
-        if (!apiKey || query.trim().length < 2) { hideSuggestions(); return; }
-        const token = ++requestToken;
+        if (!apiKey) {
+          relatedSelect.hidden = true;
+          return;
+        }
         try {
+          let queryTitle = title;
+          if (!queryTitle) {
+            const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
+            const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+            if (infoRes.ok) {
+              const infoData = await infoRes.json();
+              queryTitle = infoData.items?.[0]?.snippet?.title || '';
+            }
+          }
+          if (!queryTitle) {
+            relatedSelect.hidden = true;
+            return;
+          }
           const params = new URLSearchParams({
-            part: 'snippet',
-            type: 'video',
-            maxResults: '8',
-            order: 'relevance',
-            q: query,
-            key: apiKey,
-            relevanceLanguage: detectRelevanceLanguage()
+            part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
+            videoEmbeddable: 'true', videoSyndicated: 'true'
           });
           const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
-          if (!response.ok) throw new Error('suggestion request failed');
+          if (!response.ok) throw new Error('related fetch failed');
           const data = await response.json();
-          if (token !== requestToken) return; // a newer keystroke already fired
-          renderSuggestions(data.items || []);
+          const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
+          if (!items.length) {
+            relatedSelect.hidden = true;
+            return;
+          }
+          relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
+            items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+          relatedSelect.hidden = false;
         } catch (_) {
-          if (token === requestToken) hideSuggestions();
+          relatedSelect.hidden = true;
         }
       }
+      if (relatedSelect) {
+        relatedSelect.addEventListener('change', () => {
+          const id = relatedSelect.value;
+          if (!id) return;
+          const chosenOption = relatedSelect.options[relatedSelect.selectedIndex];
+          loadVideo(id, chosenOption.textContent);
+        });
+      }
 
-      searchInput.addEventListener('input', () => {
-        clearTimeout(suggestTimer);
-        const value = searchInput.value;
-        suggestTimer = setTimeout(() => fetchSuggestions(value), 350);
-      });
-      searchInput.addEventListener('focus', () => {
-        if (suggestionsEl.children.length) suggestionsEl.hidden = false;
-      });
-      document.addEventListener('click', (event) => {
-        if (!suggestionsEl.hidden && !suggestionsEl.contains(event.target) && event.target !== searchInput) {
-          hideSuggestions();
-        }
-      });
-
-      function renderResults(items, label) {
-        if (sliderLabelEl && label) sliderLabelEl.textContent = label;
+      function renderResults(items) {
         resultsEl.innerHTML = '';
         if (!items || !items.length) {
           resultsEl.innerHTML = '<p class="radio-status">No results. Try a different search.</p>';
@@ -1231,84 +1328,520 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           const title = item.snippet?.title || 'Untitled video';
           const channel = item.snippet?.channelTitle || '';
           const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
-          const published = item.snippet?.publishedAt ? timeAgo(item.snippet.publishedAt) : '';
           const card = document.createElement('button');
           card.type = 'button';
           card.className = 'youtube-result-card';
           card.innerHTML = `
             <img src="${thumb}" alt="${title}" loading="lazy">
             <span class="youtube-result-title">${title}</span>
-            <span class="youtube-result-channel">${channel}${published ? ' • ' + published : ''}</span>
+            <span class="youtube-result-channel">${channel}</span>
           `;
           card.addEventListener('click', () => loadVideo(videoId, title));
           fragment.appendChild(card);
         });
         resultsEl.appendChild(fragment);
-        resultsEl.scrollLeft = 0;
       }
 
-      if (sliderPrevBtn) sliderPrevBtn.addEventListener('click', () => resultsEl.scrollBy({ left: -600, behavior: 'smooth' }));
-      if (sliderNextBtn) sliderNextBtn.addEventListener('click', () => resultsEl.scrollBy({ left: 600, behavior: 'smooth' }));
-
-      async function performSearch({ autoplayFirst = true } = {}) {
+      async function performSearch() {
+        hideSuggestions();
         const query = searchInput.value.trim();
         if (!query) {
           screenHintEl.textContent = 'Type a search or paste a YouTube link first.';
           return;
         }
-        hideSuggestions();
-
         // If the input is a direct video link/ID, just load it — no API key needed.
         const directId = extractVideoId(query);
         if (directId) {
+          resultsEl.innerHTML = '';
           loadVideo(directId, null);
-        }
-
-        const apiKey = getApiKey();
-        if (!apiKey) {
-          if (!directId) {
-            resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
-            apiKeyPanel.hidden = false;
-            apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
-          } else if (sliderLabelEl) {
-            sliderLabelEl.textContent = 'Add a YouTube API key to see up to 40 related results here.';
-          }
           return;
         }
-
-        if (sliderLabelEl) sliderLabelEl.textContent = `Searching for "${query}"...`;
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
+          apiKeyPanel.hidden = false;
+          apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
+          return;
+        }
         resultsEl.innerHTML = '<p class="radio-status">Searching YouTube...</p>';
         try {
           const params = new URLSearchParams({
             part: 'snippet',
             type: 'video',
-            maxResults: '40',
-            order: 'date',
+            videoCategoryId: '10',
+            maxResults: '12',
             q: query,
             key: apiKey,
-            relevanceLanguage: detectRelevanceLanguage()
+            // Only return videos YouTube itself reports as embeddable on
+            // other sites and playable outside youtube.com — this is what
+            // guarantees every result shown here will actually play in
+            // this page's embedded player instead of erroring out.
+            videoEmbeddable: 'true',
+            videoSyndicated: 'true'
           });
+          // If a country is selected, bias results to that country's
+          // region and primary language (e.g. Pakistan → Urdu results).
+          const selectedOption = countrySelect && countrySelect.selectedOptions[0];
+          if (selectedOption && selectedOption.value) {
+            params.set('regionCode', selectedOption.value);
+            if (selectedOption.dataset.lang) {
+              params.set('relevanceLanguage', selectedOption.dataset.lang);
+            }
+          }
           const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
           if (!response.ok) {
             const errorPayload = await response.json().catch(() => null);
             throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
           }
           const data = await response.json();
-          const items = data.items || [];
-          renderResults(items, `Results for "${query}" — newest first`);
-          if (autoplayFirst && !directId) {
-            const first = items.find(item => item.id?.videoId);
-            if (first) loadVideo(first.id.videoId, first.snippet?.title);
-          }
+          renderResults(data.items || []);
         } catch (error) {
-          if (sliderLabelEl) sliderLabelEl.textContent = 'Search failed';
           resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
         }
       }
 
-      searchBtn.addEventListener('click', () => performSearch());
+      searchBtn.addEventListener('click', performSearch);
       searchInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { hideSuggestions(); performSearch(); }
-        if (e.key === 'Escape') hideSuggestions();
+        if (e.key === 'Enter') performSearch();
+        else if (e.key === 'Escape') hideSuggestions();
       });
-    })();
+
+      /* ── Live "as you type" suggestions dropdown ──
+         Debounced on every keystroke; only ever shows videos YouTube
+         reports as embeddable + syndicated, so everything listed is
+         guaranteed to actually play in this page's own player. ── */
+      let suggestDebounceTimer = null;
+      let suggestAbortController = null;
+
+      function hideSuggestions() {
+        if (!suggestionsEl) return;
+        suggestionsEl.hidden = true;
+        suggestionsEl.innerHTML = '';
+      }
+
+      function renderSuggestions(items) {
+        if (!suggestionsEl) return;
+        const playable = (items || []).filter(it => it.id?.videoId);
+        if (!playable.length) {
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">No playable videos found.</div>';
+          suggestionsEl.hidden = false;
+          return;
+        }
+        suggestionsEl.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        playable.forEach(item => {
+          const videoId = item.id.videoId;
+          const title = item.snippet?.title || 'Untitled video';
+          const channel = item.snippet?.channelTitle || '';
+          const thumb = item.snippet?.thumbnails?.default?.url || item.snippet?.thumbnails?.medium?.url || '';
+          const row = document.createElement('button');
+          row.type = 'button';
+          row.className = 'suggestion-item';
+          row.setAttribute('role', 'option');
+          row.innerHTML = `
+            <img src="${thumb}" alt="" loading="lazy">
+            <span class="sug-text">
+              <span class="sug-title">${title}</span>
+              <span class="sug-channel">${channel}</span>
+            </span>`;
+          row.addEventListener('click', () => {
+            searchInput.value = title;
+            hideSuggestions();
+            resultsEl.innerHTML = '';
+            loadVideo(videoId, title);
+          });
+          fragment.appendChild(row);
+        });
+        suggestionsEl.appendChild(fragment);
+        suggestionsEl.hidden = false;
+      }
+
+      async function fetchSuggestions(query) {
+        if (!suggestionsEl) return;
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">Add a YouTube API key (🔑 API Key) to see live suggestions.</div>';
+          suggestionsEl.hidden = false;
+          return;
+        }
+        suggestionsEl.innerHTML = '<div class="suggestion-loading">Searching…</div>';
+        suggestionsEl.hidden = false;
+        if (suggestAbortController) suggestAbortController.abort();
+        suggestAbortController = new AbortController();
+        try {
+          const params = new URLSearchParams({
+            part: 'snippet',
+            type: 'video',
+            maxResults: '8',
+            q: query,
+            key: apiKey,
+            videoEmbeddable: 'true',
+            videoSyndicated: 'true'
+          });
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+          if (!response.ok) throw new Error('suggestion request failed');
+          const data = await response.json();
+          renderSuggestions(data.items || []);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
+          suggestionsEl.hidden = false;
+        }
+      }
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        clearTimeout(suggestDebounceTimer);
+        if (!query || extractVideoId(query)) {
+          hideSuggestions();
+          return;
+        }
+        suggestDebounceTimer = setTimeout(() => fetchSuggestions(query), 350);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (suggestionsEl && !suggestionsEl.hidden &&
+            !suggestionsEl.contains(event.target) && event.target !== searchInput) {
+          hideSuggestions();
+        }
+      });
+})();
+
+
+/* ============================================================
+   SECTION: I-WATCH WIDGET
+   Duplicate of the I-LISTEN YouTube Search + Video widget above
+   (same display, same functions, same behavior — including the
+   "related content" dropdown), wired to its own element IDs but
+   SHARING I-LISTEN's YouTube API key (same localStorage key), so
+   saving a key in either widget's API Key panel unlocks search in
+   both. Only the outer TV-console shell (.iwatch-app / .tv-outer /
+   .tv-screen) is the original I-WATCH markup, kept so the section's
+   size/shape is unchanged from the original movie browser.
+   ============================================================ */
+(function() {
+  const searchInput    = document.getElementById('iwatch-search-input');
+  const searchBtn      = document.getElementById('iwatch-search-btn');
+  const apiKeyBtn       = document.getElementById('iwatch-api-key-btn');
+  const apiKeyPanel     = document.getElementById('iwatch-api-key-panel');
+  const apiKeyInput     = document.getElementById('iwatch-api-key-input');
+  const apiKeySaveBtn   = document.getElementById('iwatch-api-key-save');
+  const apiKeyClearBtn  = document.getElementById('iwatch-api-key-clear');
+  const apiKeyStatus    = document.getElementById('iwatch-api-key-status');
+  const resultsEl       = document.getElementById('iwatch-results');
+  const playerEl        = document.getElementById('iwatch-player');
+  const screenIdleEl    = document.getElementById('iwatchScreenIdle');
+  const npBarEl         = document.getElementById('iwatch-np-bar');
+  const npTitleEl       = document.getElementById('iwatch-np-title');
+  const npBackBtn       = document.getElementById('iwatch-np-back-btn');
+  const filterHintEl    = document.getElementById('iwatch-filter-hint');
+  const relatedSelect   = document.getElementById('iwatch-related-select');
+  const suggestionsEl   = document.getElementById('iwatch-suggestions');
+  if (!searchInput || !playerEl) return;
+
+  const YT_KEY_STORE = 'ik_youtube_api_key';
+
+  function getApiKey() {
+    try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
+  }
+  function setApiKey(key) {
+    try {
+      if (key) localStorage.setItem(YT_KEY_STORE, key);
+      else localStorage.removeItem(YT_KEY_STORE);
+    } catch (_) { /* ignore storage errors */ }
+  }
+
+  apiKeyBtn.addEventListener('click', () => {
+    apiKeyPanel.hidden = !apiKeyPanel.hidden;
+    if (!apiKeyPanel.hidden) {
+      apiKeyInput.value = getApiKey();
+      apiKeyStatus.textContent = getApiKey() ? 'A key is currently saved.' : 'No key saved yet — search will not work until one is added.';
+    }
+  });
+  apiKeySaveBtn.addEventListener('click', () => {
+    const key = apiKeyInput.value.trim();
+    if (!key) {
+      apiKeyStatus.textContent = 'Enter a key before saving.';
+      return;
+    }
+    setApiKey(key);
+    apiKeyStatus.textContent = 'Key saved. You can search now.';
+  });
+  apiKeyClearBtn.addEventListener('click', () => {
+    setApiKey('');
+    apiKeyInput.value = '';
+    apiKeyStatus.textContent = 'Key cleared.';
+  });
+
+  function extractVideoId(text) {
+    const trimmed = text.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+      /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+    ];
+    for (const pattern of patterns) {
+      const match = trimmed.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  function showIdle() {
+    playerEl.style.display = 'none';
+    playerEl.src = 'about:blank';
+    screenIdleEl.style.display = '';
+    npBarEl.hidden = true;
+    if (relatedSelect) relatedSelect.hidden = true;
+  }
+
+  function loadVideo(videoId, title) {
+    if (!videoId) return;
+    playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    screenIdleEl.style.display = 'none';
+    playerEl.style.display = 'block';
+    npTitleEl.textContent = title || 'Now playing';
+    npBarEl.hidden = false;
+    loadRelatedVideos(videoId, title);
+  }
+
+  /* ── "Related content" dropdown — same behavior as I-LISTEN's:
+     resolve a title for the loaded video (fetching it when only an
+     ID is known, e.g. a pasted link), search for similar videos, and
+     let the user jump to one straight from the dropdown. ── */
+  async function loadRelatedVideos(videoId, title) {
+    if (!relatedSelect) return;
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      relatedSelect.hidden = true;
+      return;
+    }
+    try {
+      let queryTitle = title;
+      if (!queryTitle) {
+        const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
+        const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+        if (infoRes.ok) {
+          const infoData = await infoRes.json();
+          queryTitle = infoData.items?.[0]?.snippet?.title || '';
+        }
+      }
+      if (!queryTitle) {
+        relatedSelect.hidden = true;
+        return;
+      }
+      const params = new URLSearchParams({
+        part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
+        videoEmbeddable: 'true', videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      if (!response.ok) throw new Error('related fetch failed');
+      const data = await response.json();
+      const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
+      if (!items.length) {
+        relatedSelect.hidden = true;
+        return;
+      }
+      relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
+        items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+      relatedSelect.hidden = false;
+    } catch (_) {
+      relatedSelect.hidden = true;
+    }
+  }
+  if (relatedSelect) {
+    relatedSelect.addEventListener('change', () => {
+      const id = relatedSelect.value;
+      if (!id) return;
+      const chosenOption = relatedSelect.options[relatedSelect.selectedIndex];
+      loadVideo(id, chosenOption.textContent);
+    });
+  }
+
+  function renderResults(items) {
+    resultsEl.innerHTML = '';
+    if (!items || !items.length) {
+      resultsEl.innerHTML = '<p class="radio-status">No results. Try a different search.</p>';
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    items.forEach(item => {
+      const videoId = item.id?.videoId;
+      if (!videoId) return;
+      const title = item.snippet?.title || 'Untitled video';
+      const channel = item.snippet?.channelTitle || '';
+      const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'youtube-result-card';
+      card.innerHTML = `
+        <img src="${thumb}" alt="${title}" loading="lazy">
+        <span class="youtube-result-title">${title}</span>
+        <span class="youtube-result-channel">${channel}</span>
+      `;
+      card.addEventListener('click', () => loadVideo(videoId, title));
+      fragment.appendChild(card);
+    });
+    resultsEl.appendChild(fragment);
+  }
+
+  async function performSearch() {
+    hideSuggestions();
+    const query = searchInput.value.trim();
+    if (!query) {
+      if (filterHintEl) filterHintEl.textContent = 'Type a search or paste a YouTube link first.';
+      return;
+    }
+    // If the input is a direct video link/ID, just load it — no API key needed.
+    const directId = extractVideoId(query);
+    if (directId) {
+      resultsEl.innerHTML = '';
+      loadVideo(directId, null);
+      return;
+    }
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
+      apiKeyPanel.hidden = false;
+      apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
+      return;
+    }
+    resultsEl.innerHTML = '<p class="radio-status">Searching YouTube...</p>';
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet',
+        type: 'video',
+        maxResults: '12',
+        q: query,
+        key: apiKey,
+        // Only return videos YouTube itself reports as embeddable on other
+        // sites and playable outside youtube.com, so everything shown here
+        // is guaranteed to actually play in this page's player.
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
+      }
+      const data = await response.json();
+      renderResults(data.items || []);
+    } catch (error) {
+      resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
+    }
+  }
+
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') performSearch();
+    else if (e.key === 'Escape') hideSuggestions();
+  });
+  if (npBackBtn) {
+    npBackBtn.addEventListener('click', showIdle);
+  }
+
+  /* ── Live "as you type" suggestions dropdown — same behavior as
+     I-LISTEN's: debounced, only shows embeddable + syndicated
+     (guaranteed-playable) videos. ── */
+  let suggestDebounceTimer = null;
+  let suggestAbortController = null;
+
+  function hideSuggestions() {
+    if (!suggestionsEl) return;
+    suggestionsEl.hidden = true;
+    suggestionsEl.innerHTML = '';
+  }
+
+  function renderSuggestions(items) {
+    if (!suggestionsEl) return;
+    const playable = (items || []).filter(it => it.id?.videoId);
+    if (!playable.length) {
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">No playable videos found.</div>';
+      suggestionsEl.hidden = false;
+      return;
+    }
+    suggestionsEl.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    playable.forEach(item => {
+      const videoId = item.id.videoId;
+      const title = item.snippet?.title || 'Untitled video';
+      const channel = item.snippet?.channelTitle || '';
+      const thumb = item.snippet?.thumbnails?.default?.url || item.snippet?.thumbnails?.medium?.url || '';
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'suggestion-item';
+      row.setAttribute('role', 'option');
+      row.innerHTML = `
+        <img src="${thumb}" alt="" loading="lazy">
+        <span class="sug-text">
+          <span class="sug-title">${title}</span>
+          <span class="sug-channel">${channel}</span>
+        </span>`;
+      row.addEventListener('click', () => {
+        searchInput.value = title;
+        hideSuggestions();
+        resultsEl.innerHTML = '';
+        loadVideo(videoId, title);
+      });
+      fragment.appendChild(row);
+    });
+    suggestionsEl.appendChild(fragment);
+    suggestionsEl.hidden = false;
+  }
+
+  async function fetchSuggestions(query) {
+    if (!suggestionsEl) return;
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">Add a YouTube API key (🔑 API Key) to see live suggestions.</div>';
+      suggestionsEl.hidden = false;
+      return;
+    }
+    suggestionsEl.innerHTML = '<div class="suggestion-loading">Searching…</div>';
+    suggestionsEl.hidden = false;
+    if (suggestAbortController) suggestAbortController.abort();
+    suggestAbortController = new AbortController();
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet',
+        type: 'video',
+        maxResults: '8',
+        q: query,
+        key: apiKey,
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+      if (!response.ok) throw new Error('suggestion request failed');
+      const data = await response.json();
+      renderSuggestions(data.items || []);
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
+      suggestionsEl.hidden = false;
+    }
+  }
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    clearTimeout(suggestDebounceTimer);
+    if (!query || extractVideoId(query)) {
+      hideSuggestions();
+      return;
+    }
+    suggestDebounceTimer = setTimeout(() => fetchSuggestions(query), 350);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (suggestionsEl && !suggestionsEl.hidden &&
+        !suggestionsEl.contains(event.target) && event.target !== searchInput) {
+      hideSuggestions();
+    }
+  });
+
+  // initial state
+  showIdle();
+})();

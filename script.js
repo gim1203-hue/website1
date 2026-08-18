@@ -1,6 +1,13 @@
+/* ============================================================
+   SECTION: PAGE HEADER — today's date text
+   ============================================================ */
 document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    /* ============================================================
+       SECTION: GIT NOTES — "Steps to create a repository" toggle
+       ============================================================ */
     (function() {
       const toggleBtn = document.getElementById('repo-steps-toggle');
       const panel = document.getElementById('repo-steps-panel');
@@ -13,6 +20,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         caret.textContent = willOpen ? '▲' : '▼';
       });
     })();
+
+    /* ============================================================
+       SECTION: GIT NOTES — accordion (collapsible h3 sub-sections)
+       ============================================================ */
     (function() {
       const contentRight = document.querySelector('.git-notes-section .content-right');
       if (!contentRight) return;
@@ -55,6 +66,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         });
       });
     })();
+
+    /* ============================================================
+       SECTION: CERTIFICATE ZOOM MODAL
+       ============================================================ */
     (function() {
       const modal = document.getElementById('cert-modal');
       const modalInner = document.querySelector('.cert-modal-inner');
@@ -94,6 +109,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
     })();
+
+    /* ============================================================
+       SECTION: QURAN WIDGET (surah list, audio, live translation)
+       ============================================================ */
     const quranState = {
       catalog: [],
       loadedSurahs: new Map(),
@@ -334,7 +353,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       quranSurahsContainer.style.display = '';
       renderSurahCards(surahSearchInput.value);
     });
-    /* ── Weather Widget ── */
+    /* ============================================================
+       SECTION: WEATHER WIDGET
+       ============================================================ */
     (function() {
       const weatherWidget = document.getElementById('weather-widget');
       const locationNameEl = document.getElementById('weather-location-name');
@@ -796,7 +817,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         }
       }, 300000);
     })();
-    /* ── To-Do / Notes Widget ── */
+    /* ============================================================
+       SECTION: TO-DO / NOTES WIDGET
+       ============================================================ */
     (function() {
       const input   = document.getElementById('todo-input');
       const addBtn  = document.getElementById('todo-add-btn');
@@ -843,7 +866,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       input.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
       render();
     })();
-    /* ── Live Yearly Calendar ── */
+    /* ============================================================
+       SECTION: CALENDAR WIDGET
+       ============================================================ */
     (function() {
       const MONTHS = ['January','February','March','April','May','June',
                       'July','August','September','October','November','December'];
@@ -907,7 +932,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
                                     today.getDate() + 1) - Date.now();
       setTimeout(() => { renderCalendar(); setInterval(renderCalendar, 86400000); }, msToMidnight);
     })();
-    /* ── Live AM/FM Radio (Radio Browser API — no key required) ── */
+    /* ============================================================
+       SECTION: RADIO WIDGET (Radio Browser API — no key required)
+       ============================================================ */
     (function() {
       const countrySelect = document.getElementById('radio-country-select');
       const searchInput   = document.getElementById('radio-search-input');
@@ -1041,7 +1068,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       countrySelect.addEventListener('change', searchStations);
       loadCountries();
     })();
-    /* ── YouTube Search + Video Screen ── */
+    /* ============================================================
+       SECTION: I-LISTEN WIDGET (YouTube search + video player)
+       ============================================================ */
     (function() {
       const searchInput   = document.getElementById('youtube-search-input');
       const searchBtn     = document.getElementById('youtube-search-btn');
@@ -1055,6 +1084,8 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const playerEl      = document.getElementById('youtube-player');
       const screenHintEl  = document.getElementById('youtube-screen-hint');
       const countrySelect = document.getElementById('youtube-country-select');
+      const relatedSelect = document.getElementById('youtube-related-select');
+      const suggestionsEl = document.getElementById('youtube-suggestions');
       if (!searchInput || !playerEl) return;
 
       const YT_KEY_STORE = 'ik_youtube_api_key';
@@ -1228,6 +1259,60 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         if (!videoId) return;
         playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         screenHintEl.textContent = title ? `Now playing: ${title}` : 'Video loaded.';
+        loadRelatedVideos(videoId, title);
+      }
+
+      /* ── "Related content" dropdown: uses the loaded video's title
+         (fetching it first via videos.list when we only have an ID,
+         e.g. a pasted link) to search YouTube for similar videos and
+         lets the user jump straight to one from a <select>. ── */
+      async function loadRelatedVideos(videoId, title) {
+        if (!relatedSelect) return;
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          relatedSelect.hidden = true;
+          return;
+        }
+        try {
+          let queryTitle = title;
+          if (!queryTitle) {
+            const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
+            const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+            if (infoRes.ok) {
+              const infoData = await infoRes.json();
+              queryTitle = infoData.items?.[0]?.snippet?.title || '';
+            }
+          }
+          if (!queryTitle) {
+            relatedSelect.hidden = true;
+            return;
+          }
+          const params = new URLSearchParams({
+            part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
+            videoEmbeddable: 'true', videoSyndicated: 'true'
+          });
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+          if (!response.ok) throw new Error('related fetch failed');
+          const data = await response.json();
+          const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
+          if (!items.length) {
+            relatedSelect.hidden = true;
+            return;
+          }
+          relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
+            items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+          relatedSelect.hidden = false;
+        } catch (_) {
+          relatedSelect.hidden = true;
+        }
+      }
+      if (relatedSelect) {
+        relatedSelect.addEventListener('change', () => {
+          const id = relatedSelect.value;
+          if (!id) return;
+          const chosenOption = relatedSelect.options[relatedSelect.selectedIndex];
+          loadVideo(id, chosenOption.textContent);
+        });
       }
 
       function renderResults(items) {
@@ -1258,6 +1343,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
 
       async function performSearch() {
+        hideSuggestions();
         const query = searchInput.value.trim();
         if (!query) {
           screenHintEl.textContent = 'Type a search or paste a YouTube link first.';
@@ -1285,7 +1371,13 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             videoCategoryId: '10',
             maxResults: '12',
             q: query,
-            key: apiKey
+            key: apiKey,
+            // Only return videos YouTube itself reports as embeddable on
+            // other sites and playable outside youtube.com — this is what
+            // guarantees every result shown here will actually play in
+            // this page's embedded player instead of erroring out.
+            videoEmbeddable: 'true',
+            videoSyndicated: 'true'
           });
           // If a country is selected, bias results to that country's
           // region and primary language (e.g. Pakistan → Urdu results).
@@ -1309,463 +1401,447 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
 
       searchBtn.addEventListener('click', performSearch);
-      searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
-})();
+      searchInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') performSearch();
+        else if (e.key === 'Escape') hideSuggestions();
+      });
 
-/* ---------- Country & language data (worldwide) ---------- */
-const COUNTRIES = [
-["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],
-["AO","Angola"],["AI","Anguilla"],["AG","Antigua and Barbuda"],["AR","Argentina"],["AM","Armenia"],
-["AW","Aruba"],["AU","Australia"],["AT","Austria"],["AZ","Azerbaijan"],["BS","Bahamas"],
-["BH","Bahrain"],["BD","Bangladesh"],["BB","Barbados"],["BY","Belarus"],["BE","Belgium"],
-["BZ","Belize"],["BJ","Benin"],["BM","Bermuda"],["BT","Bhutan"],["BO","Bolivia"],
-["BA","Bosnia and Herzegovina"],["BW","Botswana"],["BR","Brazil"],["BN","Brunei"],["BG","Bulgaria"],
-["BF","Burkina Faso"],["BI","Burundi"],["KH","Cambodia"],["CM","Cameroon"],["CA","Canada"],
-["CV","Cape Verde"],["KY","Cayman Islands"],["CF","Central African Republic"],["TD","Chad"],["CL","Chile"],
-["CN","China"],["CO","Colombia"],["KM","Comoros"],["CG","Congo"],["CD","Congo (DRC)"],
-["CR","Costa Rica"],["CI","Côte d'Ivoire"],["HR","Croatia"],["CU","Cuba"],["CY","Cyprus"],
-["CZ","Czech Republic"],["DK","Denmark"],["DJ","Djibouti"],["DM","Dominica"],["DO","Dominican Republic"],
-["EC","Ecuador"],["EG","Egypt"],["SV","El Salvador"],["GQ","Equatorial Guinea"],["ER","Eritrea"],
-["EE","Estonia"],["SZ","Eswatini"],["ET","Ethiopia"],["FJ","Fiji"],["FI","Finland"],
-["FR","France"],["GA","Gabon"],["GM","Gambia"],["GE","Georgia"],["DE","Germany"],
-["GH","Ghana"],["GI","Gibraltar"],["GR","Greece"],["GL","Greenland"],["GD","Grenada"],
-["GU","Guam"],["GT","Guatemala"],["GN","Guinea"],["GW","Guinea-Bissau"],["GY","Guyana"],
-["HT","Haiti"],["HN","Honduras"],["HK","Hong Kong"],["HU","Hungary"],["IS","Iceland"],
-["IN","India"],["ID","Indonesia"],["IR","Iran"],["IQ","Iraq"],["IE","Ireland"],
-["IL","Israel"],["IT","Italy"],["JM","Jamaica"],["JP","Japan"],["JO","Jordan"],
-["KZ","Kazakhstan"],["KE","Kenya"],["KI","Kiribati"],["KP","North Korea"],["KR","South Korea"],
-["KW","Kuwait"],["KG","Kyrgyzstan"],["LA","Laos"],["LV","Latvia"],["LB","Lebanon"],
-["LS","Lesotho"],["LR","Liberia"],["LY","Libya"],["LI","Liechtenstein"],["LT","Lithuania"],
-["LU","Luxembourg"],["MO","Macau"],["MG","Madagascar"],["MW","Malawi"],["MY","Malaysia"],
-["MV","Maldives"],["ML","Mali"],["MT","Malta"],["MH","Marshall Islands"],["MR","Mauritania"],
-["MU","Mauritius"],["MX","Mexico"],["FM","Micronesia"],["MD","Moldova"],["MC","Monaco"],
-["MN","Mongolia"],["ME","Montenegro"],["MA","Morocco"],["MZ","Mozambique"],["MM","Myanmar"],
-["NA","Namibia"],["NR","Nauru"],["NP","Nepal"],["NL","Netherlands"],["NZ","New Zealand"],
-["NI","Nicaragua"],["NE","Niger"],["NG","Nigeria"],["MK","North Macedonia"],["NO","Norway"],
-["OM","Oman"],["PK","Pakistan"],["PW","Palau"],["PS","Palestine"],["PA","Panama"],
-["PG","Papua New Guinea"],["PY","Paraguay"],["PE","Peru"],["PH","Philippines"],["PL","Poland"],
-["PT","Portugal"],["PR","Puerto Rico"],["QA","Qatar"],["RO","Romania"],["RU","Russia"],
-["RW","Rwanda"],["KN","Saint Kitts and Nevis"],["LC","Saint Lucia"],["VC","Saint Vincent and the Grenadines"],["WS","Samoa"],
-["SM","San Marino"],["ST","Sao Tome and Principe"],["SA","Saudi Arabia"],["SN","Senegal"],["RS","Serbia"],
-["SC","Seychelles"],["SL","Sierra Leone"],["SG","Singapore"],["SK","Slovakia"],["SI","Slovenia"],
-["SB","Solomon Islands"],["SO","Somalia"],["ZA","South Africa"],["SS","South Sudan"],["ES","Spain"],
-["LK","Sri Lanka"],["SD","Sudan"],["SR","Suriname"],["SE","Sweden"],["CH","Switzerland"],
-["SY","Syria"],["TW","Taiwan"],["TJ","Tajikistan"],["TZ","Tanzania"],["TH","Thailand"],
-["TL","Timor-Leste"],["TG","Togo"],["TO","Tonga"],["TT","Trinidad and Tobago"],["TN","Tunisia"],
-["TR","Turkey"],["TM","Turkmenistan"],["TV","Tuvalu"],["UG","Uganda"],["UA","Ukraine"],
-["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["UY","Uruguay"],["UZ","Uzbekistan"],
-["VU","Vanuatu"],["VA","Vatican City"],["VE","Venezuela"],["VN","Vietnam"],["YE","Yemen"],
-["ZM","Zambia"],["ZW","Zimbabwe"]
-].sort((a,b)=> a[1].localeCompare(b[1]));
+      /* ── Live "as you type" suggestions dropdown ──
+         Debounced on every keystroke; only ever shows videos YouTube
+         reports as embeddable + syndicated, so everything listed is
+         guaranteed to actually play in this page's own player. ── */
+      let suggestDebounceTimer = null;
+      let suggestAbortController = null;
 
-const LANGUAGES = [
-["ab","Abkhazian"],["aa","Afar"],["af","Afrikaans"],["ak","Akan"],["sq","Albanian"],
-["am","Amharic"],["ar","Arabic"],["an","Aragonese"],["hy","Armenian"],["as","Assamese"],
-["av","Avaric"],["ae","Avestan"],["ay","Aymara"],["az","Azerbaijani"],["bm","Bambara"],
-["ba","Bashkir"],["eu","Basque"],["be","Belarusian"],["bn","Bengali"],["bi","Bislama"],
-["bs","Bosnian"],["br","Breton"],["bg","Bulgarian"],["my","Burmese"],["ca","Catalan"],
-["ch","Chamorro"],["ce","Chechen"],["ny","Chichewa"],["zh","Chinese"],["cv","Chuvash"],
-["kw","Cornish"],["co","Corsican"],["cr","Cree"],["hr","Croatian"],["cs","Czech"],
-["da","Danish"],["dv","Divehi"],["nl","Dutch"],["dz","Dzongkha"],["en","English"],
-["eo","Esperanto"],["et","Estonian"],["ee","Ewe"],["fo","Faroese"],["fj","Fijian"],
-["fi","Finnish"],["fr","French"],["ff","Fulah"],["gl","Galician"],["ka","Georgian"],
-["de","German"],["el","Greek"],["gn","Guarani"],["gu","Gujarati"],["ht","Haitian"],
-["ha","Hausa"],["he","Hebrew"],["hz","Herero"],["hi","Hindi"],["ho","Hiri Motu"],
-["hu","Hungarian"],["ia","Interlingua"],["id","Indonesian"],["ie","Interlingue"],["ga","Irish"],
-["ig","Igbo"],["ik","Inupiaq"],["io","Ido"],["is","Icelandic"],["it","Italian"],
-["iu","Inuktitut"],["ja","Japanese"],["jv","Javanese"],["kl","Kalaallisut"],["kn","Kannada"],
-["kr","Kanuri"],["ks","Kashmiri"],["kk","Kazakh"],["km","Khmer"],["ki","Kikuyu"],
-["rw","Kinyarwanda"],["ky","Kyrgyz"],["kv","Komi"],["kg","Kongo"],["ko","Korean"],
-["ku","Kurdish"],["kj","Kwanyama"],["la","Latin"],["lb","Luxembourgish"],["lg","Ganda"],
-["li","Limburgish"],["ln","Lingala"],["lo","Lao"],["lt","Lithuanian"],["lu","Luba-Katanga"],
-["lv","Latvian"],["gv","Manx"],["mk","Macedonian"],["mg","Malagasy"],["ms","Malay"],
-["ml","Malayalam"],["mt","Maltese"],["mi","Maori"],["mr","Marathi"],["mh","Marshallese"],
-["mn","Mongolian"],["na","Nauru"],["nv","Navajo"],["nd","North Ndebele"],["ne","Nepali"],
-["ng","Ndonga"],["nb","Norwegian Bokmål"],["nn","Norwegian Nynorsk"],["no","Norwegian"],["ii","Sichuan Yi"],
-["nr","South Ndebele"],["oc","Occitan"],["oj","Ojibwa"],["cu","Church Slavic"],["om","Oromo"],
-["or","Oriya"],["os","Ossetian"],["pa","Punjabi"],["pi","Pali"],["fa","Persian"],
-["pl","Polish"],["ps","Pashto"],["pt","Portuguese"],["qu","Quechua"],["rm","Romansh"],
-["rn","Rundi"],["ro","Romanian"],["ru","Russian"],["sa","Sanskrit"],["sc","Sardinian"],
-["sd","Sindhi"],["se","Northern Sami"],["sm","Samoan"],["sg","Sango"],["sr","Serbian"],
-["gd","Gaelic"],["sn","Shona"],["si","Sinhala"],["sk","Slovak"],["sl","Slovenian"],
-["so","Somali"],["st","Southern Sotho"],["es","Spanish"],["su","Sundanese"],["sw","Swahili"],
-["ss","Swati"],["sv","Swedish"],["ta","Tamil"],["te","Telugu"],["tg","Tajik"],
-["th","Thai"],["ti","Tigrinya"],["bo","Tibetan"],["tk","Turkmen"],["tl","Tagalog"],
-["tn","Tswana"],["to","Tonga"],["tr","Turkish"],["ts","Tsonga"],["tt","Tatar"],
-["tw","Twi"],["ty","Tahitian"],["ug","Uyghur"],["uk","Ukrainian"],["ur","Urdu"],
-["uz","Uzbek"],["ve","Venda"],["vi","Vietnamese"],["vo","Volapük"],["wa","Walloon"],
-["cy","Welsh"],["wo","Wolof"],["fy","Western Frisian"],["xh","Xhosa"],["yi","Yiddish"],
-["yo","Yoruba"],["za","Zhuang"],["zu","Zulu"]
-].sort((a,b)=> a[1].localeCompare(b[1]));
+      function hideSuggestions() {
+        if (!suggestionsEl) return;
+        suggestionsEl.hidden = true;
+        suggestionsEl.innerHTML = '';
+      }
 
-(function(){
-  const state = {
-    apiKey: "",
-    activeTab: "theaters",
-    country: "",
-    language: "",
-    ytPlayer: null,
-    ytReady: false,
-    pendingVideoId: null,
-    muted: false,
-    ccOn: false
-  };
+      function renderSuggestions(items) {
+        if (!suggestionsEl) return;
+        const playable = (items || []).filter(it => it.id?.videoId);
+        if (!playable.length) {
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">No playable videos found.</div>';
+          suggestionsEl.hidden = false;
+          return;
+        }
+        suggestionsEl.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        playable.forEach(item => {
+          const videoId = item.id.videoId;
+          const title = item.snippet?.title || 'Untitled video';
+          const channel = item.snippet?.channelTitle || '';
+          const thumb = item.snippet?.thumbnails?.default?.url || item.snippet?.thumbnails?.medium?.url || '';
+          const row = document.createElement('button');
+          row.type = 'button';
+          row.className = 'suggestion-item';
+          row.setAttribute('role', 'option');
+          row.innerHTML = `
+            <img src="${thumb}" alt="" loading="lazy">
+            <span class="sug-text">
+              <span class="sug-title">${title}</span>
+              <span class="sug-channel">${channel}</span>
+            </span>`;
+          row.addEventListener('click', () => {
+            searchInput.value = title;
+            hideSuggestions();
+            resultsEl.innerHTML = '';
+            loadVideo(videoId, title);
+          });
+          fragment.appendChild(row);
+        });
+        suggestionsEl.appendChild(fragment);
+        suggestionsEl.hidden = false;
+      }
 
-  const els = {
-    tvScreen: document.getElementById('tvScreen'),
-    tabsRow: document.getElementById('tabsRow'),
-    searchInput: document.getElementById('searchInput'),
-    searchBtn: document.getElementById('searchBtn'),
-    apiKeyBtn: document.getElementById('apiKeyBtn'),
-    modalBackdrop: document.getElementById('modalBackdrop'),
-    apiKeyInput: document.getElementById('apiKeyInput'),
-    modalSave: document.getElementById('modalSave'),
-    modalCancel: document.getElementById('modalCancel'),
-    npBar: document.getElementById('npBar'),
-    npTitle: document.getElementById('npTitle'),
-    npBackBtn: document.getElementById('npBackBtn'),
-    countrySelect: document.getElementById('countrySelect'),
-    languageSelect: document.getElementById('languageSelect'),
-    filterHint: document.getElementById('filterHint'),
-  };
-
-  const IMG = (path, size='w342') => path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
-
-  /* ---------- Populate dropdowns ---------- */
-  function populateDropdowns(){
-    const cFrag = document.createDocumentFragment();
-    const optAllC = document.createElement('option');
-    optAllC.value=''; optAllC.textContent='🌍 All Countries';
-    cFrag.appendChild(optAllC);
-    COUNTRIES.forEach(([code,name])=>{
-      const o = document.createElement('option');
-      o.value = code; o.textContent = name;
-      cFrag.appendChild(o);
-    });
-    els.countrySelect.appendChild(cFrag);
-
-    const lFrag = document.createDocumentFragment();
-    const optAllL = document.createElement('option');
-    optAllL.value=''; optAllL.textContent='🌐 All Languages';
-    lFrag.appendChild(optAllL);
-    LANGUAGES.forEach(([code,name])=>{
-      const o = document.createElement('option');
-      o.value = code; o.textContent = name;
-      lFrag.appendChild(o);
-    });
-    els.languageSelect.appendChild(lFrag);
-  }
-  populateDropdowns();
-
-  function updateFilterHint(){
-    const cName = state.country ? (COUNTRIES.find(c=>c[0]===state.country)||[,state.country])[1] : 'all countries';
-    const lName = state.language ? (LANGUAGES.find(l=>l[0]===state.language)||[,state.language])[1] : 'all languages';
-    els.filterHint.textContent = `Showing movies from ${cName}, ${lName}.`;
-  }
-
-  els.countrySelect.addEventListener('change', ()=>{
-    state.country = els.countrySelect.value;
-    updateFilterHint();
-    refreshCurrentView();
-  });
-  els.languageSelect.addEventListener('change', ()=>{
-    state.language = els.languageSelect.value;
-    updateFilterHint();
-    refreshCurrentView();
-  });
-
-  function refreshCurrentView(){
-    if(els.searchInput.value.trim()){ doSearch(); }
-    else { loadTab(state.activeTab); }
-  }
-
-  /* ---------- YouTube IFrame API (for volume + enlarge controls) ---------- */
-  let ytApiInjected = false;
-  function ensureYTApi(){
-    if(ytApiInjected) return;
-    ytApiInjected = true;
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-  }
-  window.onYouTubeIframeAPIReady = function(){
-    state.ytReady = true;
-    if(state.pendingVideoId){
-      const id = state.pendingVideoId;
-      state.pendingVideoId = null;
-      mountPlayer(id);
-    }
-  };
-
-  function mountPlayer(videoId){
-    if(!state.ytReady){ state.pendingVideoId = videoId; ensureYTApi(); return; }
-    els.tvScreen.innerHTML = `
-      <div id="ytHolder" style="position:absolute;inset:0;"></div>
-      <div class="player-controls pinned" id="playerControls">
-        <button class="ctrl-btn" id="muteBtn" title="Mute / Unmute">🔊</button>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volume">
-        <button class="ctrl-btn" id="ccBtn" title="Toggle captions">CC</button>
-        <div class="ctrl-spacer"></div>
-        <button class="ctrl-btn" id="fullscreenBtn" title="Enlarge / fullscreen">⤢</button>
-      </div>`;
-    // Always build a fresh player: innerHTML above just destroyed any previous
-    // player's DOM node, so reusing the old YT.Player instance is unsafe.
-    state.ytPlayer = new YT.Player('ytHolder', {
-      width:'100%',
-      height:'100%',
-      videoId: videoId,
-      playerVars:{ autoplay:1, rel:0, modestbranding:1, playsinline:1 },
-      events:{
-        onReady:(e)=>{
-          e.target.setVolume(100);
-          state.muted = e.target.isMuted();
-          updateMuteIcon();
+      async function fetchSuggestions(query) {
+        if (!suggestionsEl) return;
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">Add a YouTube API key (🔑 API Key) to see live suggestions.</div>';
+          suggestionsEl.hidden = false;
+          return;
+        }
+        suggestionsEl.innerHTML = '<div class="suggestion-loading">Searching…</div>';
+        suggestionsEl.hidden = false;
+        if (suggestAbortController) suggestAbortController.abort();
+        suggestAbortController = new AbortController();
+        try {
+          const params = new URLSearchParams({
+            part: 'snippet',
+            type: 'video',
+            maxResults: '8',
+            q: query,
+            key: apiKey,
+            videoEmbeddable: 'true',
+            videoSyndicated: 'true'
+          });
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+          if (!response.ok) throw new Error('suggestion request failed');
+          const data = await response.json();
+          renderSuggestions(data.items || []);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
+          suggestionsEl.hidden = false;
         }
       }
-    });
-    wireControls();
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        clearTimeout(suggestDebounceTimer);
+        if (!query || extractVideoId(query)) {
+          hideSuggestions();
+          return;
+        }
+        suggestDebounceTimer = setTimeout(() => fetchSuggestions(query), 350);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (suggestionsEl && !suggestionsEl.hidden &&
+            !suggestionsEl.contains(event.target) && event.target !== searchInput) {
+          hideSuggestions();
+        }
+      });
+})();
+
+
+/* ============================================================
+   SECTION: I-WATCH WIDGET
+   Duplicate of the I-LISTEN YouTube Search + Video widget above
+   (same display, same functions, same behavior — including the
+   "related content" dropdown), wired to its own element IDs but
+   SHARING I-LISTEN's YouTube API key (same localStorage key), so
+   saving a key in either widget's API Key panel unlocks search in
+   both. Only the outer TV-console shell (.iwatch-app / .tv-outer /
+   .tv-screen) is the original I-WATCH markup, kept so the section's
+   size/shape is unchanged from the original movie browser.
+   ============================================================ */
+(function() {
+  const searchInput    = document.getElementById('iwatch-search-input');
+  const searchBtn      = document.getElementById('iwatch-search-btn');
+  const apiKeyBtn       = document.getElementById('iwatch-api-key-btn');
+  const apiKeyPanel     = document.getElementById('iwatch-api-key-panel');
+  const apiKeyInput     = document.getElementById('iwatch-api-key-input');
+  const apiKeySaveBtn   = document.getElementById('iwatch-api-key-save');
+  const apiKeyClearBtn  = document.getElementById('iwatch-api-key-clear');
+  const apiKeyStatus    = document.getElementById('iwatch-api-key-status');
+  const resultsEl       = document.getElementById('iwatch-results');
+  const playerEl        = document.getElementById('iwatch-player');
+  const screenIdleEl    = document.getElementById('iwatchScreenIdle');
+  const npBarEl         = document.getElementById('iwatch-np-bar');
+  const npTitleEl       = document.getElementById('iwatch-np-title');
+  const npBackBtn       = document.getElementById('iwatch-np-back-btn');
+  const filterHintEl    = document.getElementById('iwatch-filter-hint');
+  const relatedSelect   = document.getElementById('iwatch-related-select');
+  const suggestionsEl   = document.getElementById('iwatch-suggestions');
+  if (!searchInput || !playerEl) return;
+
+  const YT_KEY_STORE = 'ik_youtube_api_key';
+
+  function getApiKey() {
+    try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
+  }
+  function setApiKey(key) {
+    try {
+      if (key) localStorage.setItem(YT_KEY_STORE, key);
+      else localStorage.removeItem(YT_KEY_STORE);
+    } catch (_) { /* ignore storage errors */ }
   }
 
-  function updateMuteIcon(){
-    const btn = document.getElementById('muteBtn');
-    if(!btn) return;
-    btn.textContent = state.muted ? '🔇' : '🔊';
-    btn.classList.toggle('on', state.muted);
-  }
-
-  function wireControls(){
-    const muteBtn = document.getElementById('muteBtn');
-    const volSlider = document.getElementById('volumeSlider');
-    const ccBtn = document.getElementById('ccBtn');
-    const fsBtn = document.getElementById('fullscreenBtn');
-
-    if(muteBtn) muteBtn.addEventListener('click', ()=>{
-      if(!state.ytPlayer) return;
-      if(state.muted){ state.ytPlayer.unMute(); state.muted=false; }
-      else { state.ytPlayer.mute(); state.muted=true; }
-      updateMuteIcon();
-    });
-
-    if(volSlider) volSlider.addEventListener('input', (e)=>{
-      if(!state.ytPlayer) return;
-      const v = Number(e.target.value);
-      state.ytPlayer.setVolume(v);
-      if(v===0){ state.ytPlayer.mute(); state.muted=true; }
-      else { state.ytPlayer.unMute(); state.muted=false; }
-      updateMuteIcon();
-    });
-
-    if(ccBtn) ccBtn.addEventListener('click', ()=>{
-      if(!state.ytPlayer) return;
-      state.ccOn = !state.ccOn;
-      try{
-        if(state.ccOn) state.ytPlayer.loadModule('captions');
-        else state.ytPlayer.unloadModule('captions');
-      } catch(err){ /* captions module not available for this video - ignore */ }
-      ccBtn.classList.toggle('on', state.ccOn);
-    });
-
-    if(fsBtn) fsBtn.addEventListener('click', ()=>{
-      const target = els.tvScreen;
-      if(document.fullscreenElement){
-        document.exitFullscreen();
-      } else if(target.requestFullscreen){
-        target.requestFullscreen().catch(()=>{ /* fullscreen blocked by browser - ignore */ });
-      }
-    });
-  }
-
-  function openModal(){
-    els.apiKeyInput.value = state.apiKey;
-    els.modalBackdrop.classList.add('open');
-    els.apiKeyInput.focus();
-  }
-  function closeModal(){ els.modalBackdrop.classList.remove('open'); }
-
-  els.apiKeyBtn.addEventListener('click', openModal);
-  els.modalCancel.addEventListener('click', closeModal);
-  els.modalBackdrop.addEventListener('click', (e)=>{ if(e.target===els.modalBackdrop) closeModal(); });
-  els.modalSave.addEventListener('click', ()=>{
-    state.apiKey = els.apiKeyInput.value.trim();
-    closeModal();
-    if(state.apiKey){ loadTab(state.activeTab); }
-  });
-  els.apiKeyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') els.modalSave.click(); });
-
-  els.tabsRow.addEventListener('click', (e)=>{
-    const tab = e.target.closest('.iw-tab');
-    if(!tab) return;
-    [...els.tabsRow.children].forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    state.activeTab = tab.dataset.tab;
-    els.searchInput.value = "";
-    loadTab(state.activeTab);
-  });
-
-  els.searchBtn.addEventListener('click', doSearch);
-  els.searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doSearch(); });
-
-  els.npBackBtn.addEventListener('click', ()=>{
-    els.npBar.style.display = 'none';
-    state.ytPlayer = null;
-    if(els.searchInput.value.trim()){ doSearch(); } else { loadTab(state.activeTab); }
-  });
-
-  function showIdle(msg, sub){
-    els.tvScreen.innerHTML = `
-      <div class="screen-idle">
-        <div class="static-bars"><span></span><span></span><span></span><span></span><span></span></div>
-        <div class="big">${msg}</div>
-        <div class="small">${sub}</div>
-      </div>`;
-    els.npBar.style.display = 'none';
-    state.ytPlayer = null;
-  }
-
-  function showLoading(){
-    els.tvScreen.innerHTML = `<div class="screen-idle"><div class="big">Tuning in…</div><div class="small">Loading movies</div></div>`;
-    state.ytPlayer = null;
-  }
-
-  function requireKey(){
-    if(!state.apiKey){
-      showIdle("No signal", "Add your TMDB API key to start browsing");
-      return false;
+  apiKeyBtn.addEventListener('click', () => {
+    apiKeyPanel.hidden = !apiKeyPanel.hidden;
+    if (!apiKeyPanel.hidden) {
+      apiKeyInput.value = getApiKey();
+      apiKeyStatus.textContent = getApiKey() ? 'A key is currently saved.' : 'No key saved yet — search will not work until one is added.';
     }
-    return true;
-  }
-
-  async function tmdb(path, params={}){
-    const url = new URL(`https://api.themoviedb.org/3${path}`);
-    url.searchParams.set('api_key', state.apiKey);
-    Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!=='') url.searchParams.set(k, v); });
-    const res = await fetch(url.toString());
-    if(!res.ok){
-      const body = await res.json().catch(()=>({}));
-      throw new Error(body.status_message || `Request failed (${res.status})`);
-    }
-    return res.json();
-  }
-
-  function applyLanguageFilter(movies){
-    if(!state.language) return movies;
-    return movies.filter(m => (m.original_language||'').toLowerCase() === state.language);
-  }
-
-  function renderGrid(movies, emptyMsg){
-    if(!movies || movies.length===0){
-      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">${emptyMsg||'No movies found.'}</div></div>`;
+  });
+  apiKeySaveBtn.addEventListener('click', () => {
+    const key = apiKeyInput.value.trim();
+    if (!key) {
+      apiKeyStatus.textContent = 'Enter a key before saving.';
       return;
     }
-    const cards = movies.map(m=>{
-      const poster = IMG(m.poster_path);
-      const title = (m.title || m.name || 'Untitled').replace(/</g,'&lt;');
-      const date = m.release_date ? m.release_date.slice(0,4) : '—';
-      return `
-        <div class="card" data-id="${m.id}" data-title="${title.replace(/"/g,'&quot;')}">
-          <div class="poster-wrap">
-            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a5c52;font-size:11px;">No image</div>`}
-          </div>
-          <div class="card-meta">
-            <div class="card-title">${title}</div>
-            <div class="card-date">${date}</div>
-          </div>
-        </div>`;
-    }).join('');
-    els.tvScreen.innerHTML = `<div class="screen-inner"><div class="grid">${cards}</div></div>`;
-    els.tvScreen.querySelectorAll('.card').forEach(card=>{
-      card.addEventListener('click', ()=> playMovie(card.dataset.id, card.dataset.title));
+    setApiKey(key);
+    apiKeyStatus.textContent = 'Key saved. You can search now.';
+  });
+  apiKeyClearBtn.addEventListener('click', () => {
+    setApiKey('');
+    apiKeyInput.value = '';
+    apiKeyStatus.textContent = 'Key cleared.';
+  });
+
+  function extractVideoId(text) {
+    const trimmed = text.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+      /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+    ];
+    for (const pattern of patterns) {
+      const match = trimmed.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  function showIdle() {
+    playerEl.style.display = 'none';
+    playerEl.src = 'about:blank';
+    screenIdleEl.style.display = '';
+    npBarEl.hidden = true;
+    if (relatedSelect) relatedSelect.hidden = true;
+  }
+
+  function loadVideo(videoId, title) {
+    if (!videoId) return;
+    playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    screenIdleEl.style.display = 'none';
+    playerEl.style.display = 'block';
+    npTitleEl.textContent = title || 'Now playing';
+    npBarEl.hidden = false;
+    loadRelatedVideos(videoId, title);
+  }
+
+  /* ── "Related content" dropdown — same behavior as I-LISTEN's:
+     resolve a title for the loaded video (fetching it when only an
+     ID is known, e.g. a pasted link), search for similar videos, and
+     let the user jump to one straight from the dropdown. ── */
+  async function loadRelatedVideos(videoId, title) {
+    if (!relatedSelect) return;
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      relatedSelect.hidden = true;
+      return;
+    }
+    try {
+      let queryTitle = title;
+      if (!queryTitle) {
+        const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
+        const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+        if (infoRes.ok) {
+          const infoData = await infoRes.json();
+          queryTitle = infoData.items?.[0]?.snippet?.title || '';
+        }
+      }
+      if (!queryTitle) {
+        relatedSelect.hidden = true;
+        return;
+      }
+      const params = new URLSearchParams({
+        part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
+        videoEmbeddable: 'true', videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      if (!response.ok) throw new Error('related fetch failed');
+      const data = await response.json();
+      const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
+      if (!items.length) {
+        relatedSelect.hidden = true;
+        return;
+      }
+      relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
+        items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+      relatedSelect.hidden = false;
+    } catch (_) {
+      relatedSelect.hidden = true;
+    }
+  }
+  if (relatedSelect) {
+    relatedSelect.addEventListener('change', () => {
+      const id = relatedSelect.value;
+      if (!id) return;
+      const chosenOption = relatedSelect.options[relatedSelect.selectedIndex];
+      loadVideo(id, chosenOption.textContent);
     });
   }
 
-  async function playMovie(id, title){
-    showLoading();
-    ensureYTApi();
-    try{
-      const vids = await tmdb(`/movie/${id}/videos`);
-      const trailer = (vids.results||[]).find(v=> v.site==='YouTube' && v.type==='Trailer')
-                    || (vids.results||[]).find(v=> v.site==='YouTube');
-      if(trailer){
-        mountPlayer(trailer.key);
-      } else {
-        const details = await tmdb(`/movie/${id}`);
-        const backdrop = IMG(details.backdrop_path, 'original');
-        els.tvScreen.innerHTML = `
-          <div class="screen-inner" style="padding:0;">
-            <div style="position:relative;width:100%;height:100%;">
-              ${backdrop ? `<img src="${backdrop}" style="width:100%;height:100%;object-fit:cover;">` : ''}
-              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.75));display:flex;align-items:flex-end;padding:16px;">
-                <div>
-                  <div style="font-weight:700;font-size:16px;">${title}</div>
-                  <div style="font-size:12px;color:#c8d6cf;margin-top:4px;">${(details.overview||'No trailer available.').slice(0,180)}${details.overview && details.overview.length>180 ? '…' : ''}</div>
-                </div>
-              </div>
-            </div>
-          </div>`;
+  function renderResults(items) {
+    resultsEl.innerHTML = '';
+    if (!items || !items.length) {
+      resultsEl.innerHTML = '<p class="radio-status">No results. Try a different search.</p>';
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    items.forEach(item => {
+      const videoId = item.id?.videoId;
+      if (!videoId) return;
+      const title = item.snippet?.title || 'Untitled video';
+      const channel = item.snippet?.channelTitle || '';
+      const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'youtube-result-card';
+      card.innerHTML = `
+        <img src="${thumb}" alt="${title}" loading="lazy">
+        <span class="youtube-result-title">${title}</span>
+        <span class="youtube-result-channel">${channel}</span>
+      `;
+      card.addEventListener('click', () => loadVideo(videoId, title));
+      fragment.appendChild(card);
+    });
+    resultsEl.appendChild(fragment);
+  }
+
+  async function performSearch() {
+    hideSuggestions();
+    const query = searchInput.value.trim();
+    if (!query) {
+      if (filterHintEl) filterHintEl.textContent = 'Type a search or paste a YouTube link first.';
+      return;
+    }
+    // If the input is a direct video link/ID, just load it — no API key needed.
+    const directId = extractVideoId(query);
+    if (directId) {
+      resultsEl.innerHTML = '';
+      loadVideo(directId, null);
+      return;
+    }
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      resultsEl.innerHTML = '<p class="radio-status">Add a free YouTube API key (🔑 API Key button) to search by keyword, or paste a direct YouTube video link/ID instead.</p>';
+      apiKeyPanel.hidden = false;
+      apiKeyStatus.textContent = 'No key saved yet — search will not work until one is added.';
+      return;
+    }
+    resultsEl.innerHTML = '<p class="radio-status">Searching YouTube...</p>';
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet',
+        type: 'video',
+        maxResults: '12',
+        q: query,
+        key: apiKey,
+        // Only return videos YouTube itself reports as embeddable on other
+        // sites and playable outside youtube.com, so everything shown here
+        // is guaranteed to actually play in this page's player.
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
       }
-      els.npTitle.textContent = title;
-      els.npBar.style.display = 'flex';
-    } catch(err){
-      els.tvScreen.innerHTML = `<div class="screen-inner"><div class="status-msg">Couldn't load "${title}": ${err.message}</div></div>`;
+      const data = await response.json();
+      renderResults(data.items || []);
+    } catch (error) {
+      resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
     }
   }
 
-  async function loadTab(tab){
-    if(!requireKey()) return;
-    showLoading();
-    els.npBar.style.display = 'none';
-    const year = new Date().getFullYear();
-    const today = new Date().toISOString().slice(0,10);
-    try{
-      let data, movies;
-      if(tab==='theaters'){
-        data = await tmdb('/movie/now_playing', { language:'en-US', page:1, region: state.country });
-        movies = applyLanguageFilter(data.results||[]);
-        renderGrid(movies, 'Nothing currently in theaters for this filter.');
-      } else if(tab==='new'){
-        data = await tmdb('/discover/movie', {
-          sort_by:'primary_release_date.desc',
-          'primary_release_date.lte': today,
-          'primary_release_year': year,
-          'vote_count.gte': 1,
-          language:'en-US', page:1,
-          region: state.country,
-          with_original_language: state.language
-        });
-        movies = data.results||[];
-        renderGrid(movies, 'No new releases found for this filter.');
-      } else if(tab==='recent'){
-        data = await tmdb('/discover/movie', {
-          sort_by:'popularity.desc',
-          primary_release_year: year,
-          language:'en-US', page:1,
-          region: state.country,
-          with_original_language: state.language
-        });
-        movies = data.results||[];
-        renderGrid(movies, 'Nothing popular found for this filter.');
-      }
-    } catch(err){
-      showIdle("Signal lost", err.message);
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') performSearch();
+    else if (e.key === 'Escape') hideSuggestions();
+  });
+  if (npBackBtn) {
+    npBackBtn.addEventListener('click', showIdle);
+  }
+
+  /* ── Live "as you type" suggestions dropdown — same behavior as
+     I-LISTEN's: debounced, only shows embeddable + syndicated
+     (guaranteed-playable) videos. ── */
+  let suggestDebounceTimer = null;
+  let suggestAbortController = null;
+
+  function hideSuggestions() {
+    if (!suggestionsEl) return;
+    suggestionsEl.hidden = true;
+    suggestionsEl.innerHTML = '';
+  }
+
+  function renderSuggestions(items) {
+    if (!suggestionsEl) return;
+    const playable = (items || []).filter(it => it.id?.videoId);
+    if (!playable.length) {
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">No playable videos found.</div>';
+      suggestionsEl.hidden = false;
+      return;
+    }
+    suggestionsEl.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    playable.forEach(item => {
+      const videoId = item.id.videoId;
+      const title = item.snippet?.title || 'Untitled video';
+      const channel = item.snippet?.channelTitle || '';
+      const thumb = item.snippet?.thumbnails?.default?.url || item.snippet?.thumbnails?.medium?.url || '';
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'suggestion-item';
+      row.setAttribute('role', 'option');
+      row.innerHTML = `
+        <img src="${thumb}" alt="" loading="lazy">
+        <span class="sug-text">
+          <span class="sug-title">${title}</span>
+          <span class="sug-channel">${channel}</span>
+        </span>`;
+      row.addEventListener('click', () => {
+        searchInput.value = title;
+        hideSuggestions();
+        resultsEl.innerHTML = '';
+        loadVideo(videoId, title);
+      });
+      fragment.appendChild(row);
+    });
+    suggestionsEl.appendChild(fragment);
+    suggestionsEl.hidden = false;
+  }
+
+  async function fetchSuggestions(query) {
+    if (!suggestionsEl) return;
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">Add a YouTube API key (🔑 API Key) to see live suggestions.</div>';
+      suggestionsEl.hidden = false;
+      return;
+    }
+    suggestionsEl.innerHTML = '<div class="suggestion-loading">Searching…</div>';
+    suggestionsEl.hidden = false;
+    if (suggestAbortController) suggestAbortController.abort();
+    suggestAbortController = new AbortController();
+    try {
+      const params = new URLSearchParams({
+        part: 'snippet',
+        type: 'video',
+        maxResults: '8',
+        q: query,
+        key: apiKey,
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true'
+      });
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+      if (!response.ok) throw new Error('suggestion request failed');
+      const data = await response.json();
+      renderSuggestions(data.items || []);
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
+      suggestionsEl.hidden = false;
     }
   }
 
-  async function doSearch(){
-    const q = els.searchInput.value.trim();
-    if(!q){ loadTab(state.activeTab); return; }
-    if(!requireKey()) return;
-    showLoading();
-    els.npBar.style.display = 'none';
-    try{
-      const data = await tmdb('/search/movie', { query:q, language:'en-US', page:1, include_adult:false, region: state.country });
-      const movies = applyLanguageFilter(data.results||[]);
-      renderGrid(movies, `No movies found for "${q}" with this filter.`);
-    } catch(err){
-      showIdle("Signal lost", err.message);
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    clearTimeout(suggestDebounceTimer);
+    if (!query || extractVideoId(query)) {
+      hideSuggestions();
+      return;
     }
-  }
+    suggestDebounceTimer = setTimeout(() => fetchSuggestions(query), 350);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (suggestionsEl && !suggestionsEl.hidden &&
+        !suggestionsEl.contains(event.target) && event.target !== searchInput) {
+      hideSuggestions();
+    }
+  });
 
   // initial state
-  updateFilterHint();
-  showIdle("No signal", "Add your TMDB API key to start browsing");
+  showIdle();
 })();

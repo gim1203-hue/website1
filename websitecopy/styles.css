@@ -1,7 +1,9 @@
 /* ============================================================
    EXISTING SITE STYLES — unchanged, verbatim
    ============================================================ */
-/* layout and component styles */
+/* ============================================================
+   SECTION: QUICK LINKS TABS
+   ============================================================ */
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -22,6 +24,9 @@
     .tab:hover {
       background: #e6e600;
     }
+    /* ============================================================
+       SECTION: CODE / <pre> BLOCKS (Git Notes reference material)
+       ============================================================ */
     pre, code {
       background: #f4f4f4;
       border-radius: 6px;
@@ -38,6 +43,9 @@
     code {
       padding: 2px 6px;
     }
+    /* ============================================================
+       SECTION: HEADINGS (h3) + PAGE HEADER TEXT
+       ============================================================ */
     h3 {
       color: red;
       background-color: black;
@@ -56,6 +64,9 @@
     .left-block {
       text-align: left;
     }
+    /* ============================================================
+       SECTION: GIT NOTES (layout, tab, accordion, cert modal)
+       ============================================================ */
     .git-notes-section {
       margin-top: 40px;
       min-height: 900px;
@@ -153,6 +164,9 @@
       line-height: 1;
       cursor: pointer;
     }
+    /* ============================================================
+       SECTION: MEDIA CARDS (anthem, Quran, radio, I-LISTEN layout)
+       ============================================================ */
     .media-row {
       display: flex;
       align-items: stretch;
@@ -352,7 +366,9 @@
       margin: 15px 0;
       border-radius: 10px;
     }
-    /* ── Lake wallpaper background ── */
+    /* ============================================================
+       SECTION: PAGE BACKGROUND (lake wallpaper + overlay)
+       ============================================================ */
     html {
       background:
         url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&auto=format&fit=crop')
@@ -384,7 +400,9 @@
       color: #ffffff;
       text-shadow: 0 2px 8px rgba(0,0,0,0.75);
     }
-    /* ── Glass-morphism cards — lake visible through every card ── */
+    /* ============================================================
+       SECTION: GLASS-MORPHISM CARD THEME (overrides for all cards)
+       ============================================================ */
     .media-card,
     .git-content,
     .surah,
@@ -544,7 +562,9 @@
       color: #fff !important;
     }
     .quran-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
-    /* ── Floating yearly calendar (top-right) ── */
+    /* ============================================================
+       SECTION: CALENDAR WIDGET (floating, top-right)
+       ============================================================ */
     #cal-widget {
       position: absolute;
       top: 10px;
@@ -632,7 +652,9 @@
       font-weight: 700;
     }
     #cal-widget .cal-month-chip:hover { background: rgba(255,255,255,0.25); }
-    /* ── To-Do / Notes widget (left of calendar) ── */
+    /* ============================================================
+       SECTION: TO-DO / NOTES WIDGET (floating, left of calendar)
+       ============================================================ */
     #todo-widget {
       position: absolute;
       top: 10px;
@@ -728,7 +750,9 @@
       text-align: center;
       padding: 10px 0;
     }
-    /* ── Weather widget (left of To-Do / Notes) ── */
+    /* ============================================================
+       SECTION: WEATHER WIDGET (floating, left of To-Do / Notes)
+       ============================================================ */
     #weather-widget {
       position: absolute;
       top: 10px;
@@ -981,7 +1005,11 @@
       color: #6b7280 !important;
       text-align: right;
     }
-    /* ── Radio + YouTube entertainment row ── */
+    /* ============================================================
+       SECTION: RADIO + I-LISTEN ENTERTAINMENT ROW
+       (shared styles below cover both .radio-card and .youtube-card,
+       incl. I-LISTEN's toolbar/results/screen used by I-WATCH too)
+       ============================================================ */
     .entertainment-row {
       margin: 22px 0;
     }
@@ -990,7 +1018,7 @@
       color: #e0f2fe !important;
       margin: 4px 0 12px !important;
     }
-    /* Radio widget */
+    /* ── SUBSECTION: Radio widget ── */
     .radio-toolbar {
       display: flex;
       gap: 10px;
@@ -1058,7 +1086,8 @@
       color: #cbd5e1 !important;
       margin: 6px 0 0 !important;
     }
-    /* YouTube widget */
+    /* ── SUBSECTION: I-LISTEN widget (YouTube search/player — also
+       used, via the same classes, by the I-WATCH widget below) ── */
     .youtube-country-row {
       display: flex;
       align-items: center;
@@ -1088,8 +1117,14 @@
       flex-wrap: wrap;
       margin-top: 6px;
     }
-    .youtube-toolbar input {
+    .youtube-toolbar .search-field {
       flex: 1 1 220px;
+      position: relative;
+      min-width: 0;
+    }
+    .youtube-toolbar input {
+      width: 100%;
+      box-sizing: border-box;
       border: 1px solid rgba(255,255,255,0.35);
       border-radius: 8px;
       padding: 8px 10px;
@@ -1174,19 +1209,22 @@
     }
 
 /* ============================================================
-   I-WATCH MOVIE BROWSER STYLES
+   SECTION: I-WATCH APP SHELL (TV-console chrome)
    Scoped under .iwatch-app so nothing here can collide with the
    rules above — this site already uses a class named ".tab" for
-   its Quick Links bar (with an !important rule), so I-WATCH's own
-   tab buttons are renamed to ".iw-tab" to stay completely separate.
+   its Quick Links bar (with an !important rule), so anything under
+   .iwatch-app that still uses tab-style buttons is named ".iw-tab"
+   to stay completely separate.
 
-   Wrap the ported I-WATCH markup like this:
-     <div class="iwatch-app">
-       <div class="wrap"> ... existing I-WATCH markup ...
-         <!-- change class="tab" to class="iw-tab" on the
-              In Theaters / New Releases / Recent buttons -->
-       </div>
-     </div>
+   I-WATCH's actual widget (search box, API key panel, results,
+   related-videos dropdown, video screen) is a duplicate of the
+   I-LISTEN widget and reuses I-LISTEN's own classes (.youtube-*,
+   .quran-btn, .related-select, etc.) defined further up this file —
+   only the surrounding TV-console shell below (.iwatch-app / .wrap /
+   .section / .tv-outer / .tv-frame / .tv-screen / .tv-stand /
+   .tv-base / .now-playing-bar) is unique to I-WATCH, kept so the
+   section's overall size/shape stays the same as the original
+   I-WATCH movie browser it replaced.
    ============================================================ */
 :root{
     --bg-1:#0b1410;
@@ -1236,8 +1274,13 @@
 }
 /* Search row */
 .iwatch-app .search-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
-.iwatch-app .search-row input[type="text"]{
+.iwatch-app .search-row .search-field{
     flex:2;min-width:180px;
+    position:relative;
+}
+.iwatch-app .search-row input[type="text"]{
+    width:100%;
+    box-sizing:border-box;
     background:var(--panel-2);
     border:1px solid var(--glass-brd);
     color:var(--text);
@@ -1405,6 +1448,7 @@
     display:flex;align-items:center;justify-content:space-between;
     margin-top:14px;flex-wrap:wrap;gap:10px;
 }
+.iwatch-app .now-playing-bar[hidden]{ display:none; }
 .iwatch-app .np-info{font-size:13px;color:var(--text-dim);}
 .iwatch-app .np-info b{color:var(--text);}
 /* Player controls overlay - volume/mute, captions, enlarge */
@@ -1485,7 +1529,7 @@
 .iwatch-app .modal-actions{display:flex;justify-content:flex-end;gap:8px;}
 @media(max-width:560px){
     .iwatch-app .wrap{padding:18px 12px 40px;}
-    .iwatch-app .search-row input[type="text"]{flex-basis:100%;}
+    .iwatch-app .search-row .search-field{flex-basis:100%;}
 }
 
 /* ============================================================
@@ -1693,7 +1737,7 @@ html {
     padding: 10px;
   }
 
-  /* I-WATCH movie browser */
+  /* I-WATCH app shell */
   .iwatch-app .wrap {
     padding: 16px 12px 36px;
   }
@@ -1725,6 +1769,104 @@ html {
   .iwatch-app .now-playing-bar .btn {
     width: 100%;
   }
+}
+
+/* ── "Related content" dropdown (I-LISTEN + I-WATCH) ── */
+.related-select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.related-select[hidden] { display: none; }
+.related-select option { color: #111827; }
+.iwatch-app .related-select {
+  background: var(--panel-2);
+  border-color: var(--glass-brd);
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+/* ============================================================
+   SECTION: LIVE SEARCH SUGGESTIONS DROPDOWN (I-LISTEN + I-WATCH)
+   Appears under the search box as the user types, listing only
+   videos YouTube reports as embeddable + syndicated (i.e. videos
+   that will actually play inside this site's own player).
+   ============================================================ */
+.search-field {
+  position: relative;
+}
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  background: rgba(8,12,10,0.97);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.search-suggestions[hidden] { display: none; }
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover,
+.suggestion-item:focus-visible { background: rgba(255,255,255,0.12); }
+.suggestion-item img {
+  width: 52px;
+  height: 39px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #000;
+}
+.suggestion-item .sug-text { min-width: 0; }
+.suggestion-item .sug-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.suggestion-item .sug-channel {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 2px;
+}
+.suggestion-empty,
+.suggestion-loading {
+  padding: 12px 10px;
+  font-size: 12.5px;
+  color: #cbd5e1;
+  text-align: center;
 }
 
 /* ── Small phones (≤ 420px) ── */

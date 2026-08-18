@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Weather widget -->
+  <!-- ============================================================
+       SECTION: WEATHER WIDGET (floating, top-right)
+       ============================================================ -->
   <div id="weather-widget" aria-live="polite">
     <div class="weather-top">
       <div class="weather-location-row">
@@ -53,7 +55,9 @@
     </div>
     <p id="weather-updated">Updated: --</p>
   </div>
-  <!-- To-Do / Notes widget -->
+  <!-- ============================================================
+       SECTION: TO-DO / NOTES WIDGET (floating, top-right)
+       ============================================================ -->
   <div id="todo-widget">
     <h4>📝 Notes &amp; To-Do</h4>
     <div id="todo-input-row">
@@ -62,7 +66,9 @@
     </div>
     <ul id="todo-list"><li id="todo-empty">No items yet</li></ul>
   </div>
-  <!-- Live yearly calendar widget -->
+  <!-- ============================================================
+       SECTION: CALENDAR WIDGET (floating, top-right)
+       ============================================================ -->
   <div id="cal-widget" aria-label="Calendar">
     <div class="cal-nav">
       <button id="cal-prev" aria-label="Previous month">&#8249;</button>
@@ -72,6 +78,9 @@
     <div class="cal-grid" id="cal-grid"></div>
     <div class="cal-year-row" id="cal-year-row"></div>
   </div>
+  <!-- ============================================================
+       SECTION: PAGE HEADER (name, date, hero flag, hello world)
+       ============================================================ -->
   <h1 class="left-block">Imran Khan</h1>
   <p id="today-date" class="left-block"></p>
   <p class="course-title">Software Engineering Course</p>
@@ -87,10 +96,16 @@
     </g>
   </svg>
   <h1>hello world</h1>
+  <!-- ============================================================
+       SECTION: GOOGLE SEARCH FORM
+       ============================================================ -->
   <form action="https://www.google.com/search" method="get">
     <input type="text" name="q" placeholder="Search Google..." required>
     <button type="submit">Search</button>
   </form>
+  <!-- ============================================================
+       SECTION: QUICK LINKS TABS
+       ============================================================ -->
   <div class="tabs" role="tablist" aria-label="Quick Links">
     <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener" class="tab" role="tab"><BR>
       The Movie Database</a>
@@ -131,6 +146,9 @@
     <a href="https://codepen.io/zsolt555/pen/orePqg" target="_blank" rel="noopener" class="tab" role="tab">CodePen Example 3</a>
   </div>
   <hr>
+  <!-- ============================================================
+       SECTION: ANTHEM + QURAN MEDIA ROW
+       ============================================================ -->
   <div class="media-row">
   <section class="media-card" aria-labelledby="anthem-heading">
     <h3 id="anthem-heading" class="anthem-heading">Qaumi Taranah — National Anthem of Pakistan</h3>
@@ -173,6 +191,9 @@
     <div id="quran-surahs" class="quran-surahs" aria-live="polite"></div>
   </section>
   </div>
+  <!-- ============================================================
+       SECTION: RADIO + I-LISTEN MEDIA ROW
+       ============================================================ -->
   <div class="media-row entertainment-row">
   <section class="media-card radio-card" aria-labelledby="radio-heading">
     <h3 id="radio-heading">📻 Live AM/FM Radio</h3>
@@ -194,12 +215,16 @@
       <p id="radio-status-line" class="radio-status"></p>
     </div>
   </section>
+  <!-- SUBSECTION: I-LISTEN — YouTube search + player widget -->
   <section class="media-card youtube-card" aria-labelledby="youtube-heading">
     <h3 id="youtube-heading">🎬 I-LISTEN</h3>
     <p class="widget-subtext">Search for a song or paste a YouTube link to watch music videos right here.</p>
     
     <div class="youtube-toolbar">
-      <input id="youtube-search-input" type="text" placeholder="Search a song, or paste a YouTube link/ID…">
+      <div class="search-field">
+        <input id="youtube-search-input" type="text" autocomplete="off" placeholder="Search a song, or paste a YouTube link/ID…">
+        <div id="youtube-suggestions" class="search-suggestions" hidden role="listbox" aria-label="Related search suggestions"></div>
+      </div>
       <button id="youtube-search-btn" class="quran-btn" type="button">Search</button>
       <button id="youtube-api-key-btn" class="quran-btn" type="button" title="Set YouTube API key">🔑 API Key</button>
     </div>
@@ -212,6 +237,7 @@
       <p id="youtube-api-key-status"></p>
     </div>
     <div id="youtube-results" class="youtube-results"></div>
+    <select id="youtube-related-select" class="related-select" hidden aria-label="Related videos"></select>
     <div class="youtube-screen">
       <iframe id="youtube-player" src="about:blank" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <p id="youtube-screen-hint" class="radio-status">No video loaded yet — search above or paste a link.</p>
@@ -221,79 +247,75 @@
 
 
   <!-- ============================================================
-       I-WATCH movie browser (ported from the first webpage)
-       Scoped under .iwatch-app; tab buttons use .iw-tab instead of
-       .tab so they don't collide with the Quick Links .tab styling.
+       I-WATCH — duplicated from the I-LISTEN YouTube widget (same
+       search box, API key panel, result thumbnails, and video
+       player logic), kept inside the ORIGINAL I-WATCH TV-console
+       shell (.iwatch-app / .wrap / .section / .tv-outer) so the
+       section keeps its original size and shape. Only the name
+       "I-WATCH" is kept — everything else is I-LISTEN's widget.
        ============================================================ -->
   <div class="iwatch-app">
   <div class="wrap">
-    <div class="app-title"><span class="emoji">📺</span> <b>I-WATCH</b></div>
+    <div class="app-title"><span class="emoji">🎬</span> <b>I-WATCH</b></div>
 
     <div class="section">
       <div class="search-row">
-        <input type="text" id="searchInput" placeholder="Search any movie, worldwide…">
-        <select class="dropdown-select" id="countrySelect" aria-label="Country"></select>
-        <select class="dropdown-select" id="languageSelect" aria-label="Language"></select>
-        <button class="btn btn-primary" id="searchBtn">🔍 Search</button>
-        <button class="btn btn-ghost" id="apiKeyBtn">🔑 API Key</button>
+        <div class="search-field">
+          <input type="text" id="iwatch-search-input" autocomplete="off" placeholder="Search a song, or paste a YouTube link/ID…">
+          <div id="iwatch-suggestions" class="search-suggestions" hidden role="listbox" aria-label="Related search suggestions"></div>
+        </div>
+        <button class="btn btn-primary" id="iwatch-search-btn">🔍 Search</button>
+        <button class="btn btn-ghost" id="iwatch-api-key-btn">🔑 API Key</button>
       </div>
-      <div class="filter-hint" id="filterHint">Showing movies from all countries, all languages.</div>
+      <div class="filter-hint" id="iwatch-filter-hint">Search for a song or paste a YouTube link to watch music videos right here.</div>
 
-      <div class="tabs-row" id="tabsRow">
-        <button class="iw-tab active" data-tab="theaters">🎟️ In Theaters</button>
-        <button class="iw-tab" data-tab="new">🆕 New Releases</button>
-        <button class="iw-tab" data-tab="recent">⏱️ Recent (This Year)</button>
+      <div id="iwatch-api-key-panel" class="youtube-api-key-panel" hidden>
+        <label for="iwatch-api-key-input">YouTube Data API v3 key (saved only in your own browser)</label>
+        <input id="iwatch-api-key-input" type="password" placeholder="Paste your API key">
+        <button id="iwatch-api-key-save" class="quran-btn" type="button">Save key</button>
+        <button id="iwatch-api-key-clear" class="quran-btn" type="button">Clear key</button>
+        <p class="youtube-api-hint">Free key: Google Cloud Console → enable "YouTube Data API v3" → Credentials → Create API key. Search works once a key is saved; pasting a video link/ID always works, no key needed.</p>
+        <p id="iwatch-api-key-status"></p>
       </div>
+
+      <div id="iwatch-results" class="youtube-results"></div>
+      <select id="iwatch-related-select" class="related-select" hidden aria-label="Related videos"></select>
 
       <div class="tv-outer">
         <div class="tv-frame">
-          <div class="tv-screen" id="tvScreen">
-            <div class="screen-idle" id="screenIdle">
+          <div class="tv-screen" id="iwatchTvScreen">
+            <div class="screen-idle" id="iwatchScreenIdle">
               <div class="static-bars">
                 <span></span><span></span><span></span><span></span><span></span>
               </div>
               <div class="big">No signal</div>
-              <div class="small">Add your TMDB API key to start browsing</div>
+              <div class="small">No video loaded yet — search above or paste a link</div>
             </div>
+            <iframe id="iwatch-player" src="about:blank" title="I-WATCH video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;display:none;"></iframe>
           </div>
         </div>
         <div class="tv-stand"></div>
         <div class="tv-base"></div>
       </div>
 
-      <div class="now-playing-bar" id="npBar" hidden>
-        <div class="np-info">Now showing: <b id="npTitle">—</b></div>
-        <button class="btn btn-ghost" id="npBackBtn">◀ Back to browsing</button>
+      <div class="now-playing-bar" id="iwatch-np-bar" hidden>
+        <div class="np-info">Now playing: <b id="iwatch-np-title">—</b></div>
+        <button class="btn btn-ghost" id="iwatch-np-back-btn">◀ Back to search</button>
       </div>
 
       <div class="attribution">
-        Movie data provided by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a>.
-        This product uses the TMDB API but is not endorsed or certified by TMDB.
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <h3>TMDB API Key</h3>
-      <p>
-        I-WATCH pulls movie data from the worldwide TMDB database. Get a free key at
-        <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org/settings/api</a>,
-        then paste the "API Key (v3 auth)" value below. The key is kept only in this page's memory
-        for the current session — it's not saved anywhere.
-      </p>
-      <input type="text" id="apiKeyInput" placeholder="Paste your TMDB API key…">
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="modalCancel">Cancel</button>
-        <button class="btn btn-primary" id="modalSave">Save Key</button>
+        Video search powered by <a href="https://developers.google.com/youtube/v3" target="_blank" rel="noopener">YouTube Data API</a>.
       </div>
     </div>
   </div>
   </div>
   <!-- ============================================================
-       end I-WATCH movie browser
+       end I-WATCH
        ============================================================ -->
 
+  <!-- ============================================================
+       SECTION: GIT NOTES (course reference material)
+       ============================================================ -->
   <p class="left-block"><a href="#git-notes">Jump to Git notes ↓</a></p>
   <div class="git-notes-section" id="git-notes">
   <div class="git-notes-header">
@@ -812,6 +834,9 @@ Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3
 
 
   </div>
+  <!-- ============================================================
+       SECTION: CERTIFICATE ZOOM MODAL
+       ============================================================ -->
   <div class="cert-modal" id="cert-modal" aria-hidden="true">
     <div class="cert-modal-inner">
       <button type="button" class="cert-modal-close" id="cert-modal-close" aria-label="Close certificate image">×</button>
@@ -819,6 +844,9 @@ Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3
       <p class="cert-modal-hint" id="cert-modal-hint">Click the image to zoom in</p>
     </div>
   </div>
+  <!-- ============================================================
+       SECTION: SCRIPTS
+       ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="script.js"></script>

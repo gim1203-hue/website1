@@ -1,7 +1,9 @@
 /* ============================================================
    EXISTING SITE STYLES — unchanged, verbatim
    ============================================================ */
-/* layout and component styles */
+/* ============================================================
+   SECTION: QUICK LINKS TABS
+   ============================================================ */
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -22,6 +24,9 @@
     .tab:hover {
       background: #e6e600;
     }
+    /* ============================================================
+       SECTION: CODE / <pre> BLOCKS (Git Notes reference material)
+       ============================================================ */
     pre, code {
       background: #f4f4f4;
       border-radius: 6px;
@@ -38,6 +43,9 @@
     code {
       padding: 2px 6px;
     }
+    /* ============================================================
+       SECTION: HEADINGS (h3) + PAGE HEADER TEXT
+       ============================================================ */
     h3 {
       color: red;
       background-color: black;
@@ -56,6 +64,9 @@
     .left-block {
       text-align: left;
     }
+    /* ============================================================
+       SECTION: GIT NOTES (layout, tab, accordion, cert modal)
+       ============================================================ */
     .git-notes-section {
       margin-top: 40px;
       min-height: 900px;
@@ -153,6 +164,9 @@
       line-height: 1;
       cursor: pointer;
     }
+    /* ============================================================
+       SECTION: MEDIA CARDS (anthem, Quran, radio, I-LISTEN layout)
+       ============================================================ */
     .media-row {
       display: flex;
       align-items: stretch;
@@ -352,7 +366,9 @@
       margin: 15px 0;
       border-radius: 10px;
     }
-    /* ── Lake wallpaper background ── */
+    /* ============================================================
+       SECTION: PAGE BACKGROUND (lake wallpaper + overlay)
+       ============================================================ */
     html {
       background:
         url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&auto=format&fit=crop')
@@ -384,7 +400,9 @@
       color: #ffffff;
       text-shadow: 0 2px 8px rgba(0,0,0,0.75);
     }
-    /* ── Glass-morphism cards — lake visible through every card ── */
+    /* ============================================================
+       SECTION: GLASS-MORPHISM CARD THEME (overrides for all cards)
+       ============================================================ */
     .media-card,
     .git-content,
     .surah,
@@ -544,7 +562,9 @@
       color: #fff !important;
     }
     .quran-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
-    /* ── Floating yearly calendar (top-right) ── */
+    /* ============================================================
+       SECTION: CALENDAR WIDGET (floating, top-right)
+       ============================================================ */
     #cal-widget {
       position: absolute;
       top: 10px;
@@ -632,7 +652,9 @@
       font-weight: 700;
     }
     #cal-widget .cal-month-chip:hover { background: rgba(255,255,255,0.25); }
-    /* ── To-Do / Notes widget (left of calendar) ── */
+    /* ============================================================
+       SECTION: TO-DO / NOTES WIDGET (floating, left of calendar)
+       ============================================================ */
     #todo-widget {
       position: absolute;
       top: 10px;
@@ -728,7 +750,9 @@
       text-align: center;
       padding: 10px 0;
     }
-    /* ── Weather widget (left of To-Do / Notes) ── */
+    /* ============================================================
+       SECTION: WEATHER WIDGET (floating, left of To-Do / Notes)
+       ============================================================ */
     #weather-widget {
       position: absolute;
       top: 10px;
@@ -981,7 +1005,11 @@
       color: #6b7280 !important;
       text-align: right;
     }
-    /* ── Radio + YouTube entertainment row ── */
+    /* ============================================================
+       SECTION: RADIO + I-LISTEN ENTERTAINMENT ROW
+       (shared styles below cover both .radio-card and .youtube-card,
+       incl. I-LISTEN's toolbar/results/screen used by I-WATCH too)
+       ============================================================ */
     .entertainment-row {
       margin: 22px 0;
     }
@@ -990,7 +1018,7 @@
       color: #e0f2fe !important;
       margin: 4px 0 12px !important;
     }
-    /* Radio widget */
+    /* ── SUBSECTION: Radio widget ── */
     .radio-toolbar {
       display: flex;
       gap: 10px;
@@ -1058,16 +1086,20 @@
       color: #cbd5e1 !important;
       margin: 6px 0 0 !important;
     }
-    /* YouTube widget (I-WATCH) */
-    .youtube-toolbar {
+    /* ── SUBSECTION: I-LISTEN widget (YouTube search/player — also
+       used, via the same classes, by the I-WATCH widget below) ── */
+    .youtube-country-row {
       display: flex;
-      gap: 10px;
       align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
       margin-top: 6px;
-      position: relative;
     }
-    .youtube-toolbar input {
+    .youtube-country-row label {
+      font-size: 12px !important;
+      white-space: nowrap;
+    }
+    .youtube-country-row select {
       flex: 1 1 220px;
       border: 1px solid rgba(255,255,255,0.35);
       border-radius: 8px;
@@ -1075,87 +1107,31 @@
       background: rgba(255,255,255,0.15) !important;
       color: #fff !important;
     }
-    .youtube-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
-    /* Live suggestions dropdown — appears under the search bar as you type */
-    .youtube-suggestions {
-      position: relative;
-      margin-top: 6px;
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 8px;
-      background: rgba(15,23,42,0.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      max-height: 320px;
-      overflow-y: auto;
-      z-index: 30;
+    .youtube-country-row select option {
+      color: #111827;
     }
-    .youtube-suggestions[hidden] { display: none; }
-    .youtube-suggest-row {
+    .youtube-toolbar {
       display: flex;
-      align-items: center;
       gap: 10px;
-      width: 100%;
-      border: 0;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      background: transparent;
-      color: #fff;
-      padding: 7px 10px;
-      text-align: left;
-      cursor: pointer;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
     }
-    .youtube-suggest-row:last-child { border-bottom: none; }
-    .youtube-suggest-row:hover { background: rgba(255,255,255,0.12); }
-    .youtube-suggest-row img {
-      width: 48px;
-      height: 36px;
-      object-fit: cover;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-    .youtube-suggest-row span {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .youtube-toolbar .search-field {
+      flex: 1 1 220px;
+      position: relative;
       min-width: 0;
     }
-    .youtube-suggest-row b {
-      font-size: 12.5px !important;
-      font-weight: 700;
-      line-height: 1.3;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .youtube-suggest-row small {
-      font-size: 11px !important;
-      color: #cbd5e1 !important;
-    }
-    /* Slider label + horizontal results slider (sits between the
-       search bar and the video screen, per the "at least 40 results,
-       newest first" requirement). */
-    .youtube-slider-label {
-      font-size: 12px !important;
-      color: #cbd5e1 !important;
-      margin: 12px 0 6px !important;
-    }
-    .youtube-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .youtube-slider-nav {
-      flex: 0 0 auto;
-      width: 30px;
-      height: 44px;
-      border: 1px solid rgba(255,255,255,0.30);
+    .youtube-toolbar input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.35);
       border-radius: 8px;
-      background: rgba(255,255,255,0.10);
-      color: #fff;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.15) !important;
+      color: #fff !important;
     }
-    .youtube-slider-nav:hover { background: rgba(255,255,255,0.22); }
+    .youtube-toolbar input::placeholder { color: rgba(255,255,255,0.6) !important; }
     .youtube-api-key-panel {
       margin-top: 10px;
       border: 1px solid rgba(255,255,255,0.25);
@@ -1184,21 +1160,16 @@
       margin: 8px 0 0 !important;
     }
     .youtube-results {
-      flex: 1 1 auto;
-      min-width: 0;
-      display: flex;
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 10px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x proximity;
-      padding-bottom: 4px;
+      max-height: 260px;
+      overflow-y: auto;
     }
-    .youtube-results::-webkit-scrollbar { height: 6px; }
+    .youtube-results::-webkit-scrollbar { width: 6px; }
     .youtube-results::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
     .youtube-result-card {
-      flex: 0 0 auto;
-      scroll-snap-align: start;
-      width: 150px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -1212,8 +1183,6 @@
     .youtube-result-card:hover { background: rgba(255,255,255,0.20); }
     .youtube-result-card img {
       width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
       border-radius: 6px;
       display: block;
     }
@@ -1221,11 +1190,6 @@
       font-size: 12px !important;
       font-weight: 700;
       line-height: 1.3;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
     }
     .youtube-result-channel {
       font-size: 11px !important;
@@ -1243,6 +1207,330 @@
       border: 1px solid rgba(255,255,255,0.25);
       background: #000;
     }
+
+/* ============================================================
+   SECTION: I-WATCH APP SHELL (TV-console chrome)
+   Scoped under .iwatch-app so nothing here can collide with the
+   rules above — this site already uses a class named ".tab" for
+   its Quick Links bar (with an !important rule), so anything under
+   .iwatch-app that still uses tab-style buttons is named ".iw-tab"
+   to stay completely separate.
+
+   I-WATCH's actual widget (search box, API key panel, results,
+   related-videos dropdown, video screen) is a duplicate of the
+   I-LISTEN widget and reuses I-LISTEN's own classes (.youtube-*,
+   .quran-btn, .related-select, etc.) defined further up this file —
+   only the surrounding TV-console shell below (.iwatch-app / .wrap /
+   .section / .tv-outer / .tv-frame / .tv-screen / .tv-stand /
+   .tv-base / .now-playing-bar) is unique to I-WATCH, kept so the
+   section's overall size/shape stays the same as the original
+   I-WATCH movie browser it replaced.
+   ============================================================ */
+:root{
+    --bg-1:#0b1410;
+    --bg-2:#0f1f18;
+    --panel:#132a20;
+    --panel-2:#0d2018;
+    --glass:rgba(255,255,255,0.04);
+    --glass-brd:rgba(255,255,255,0.08);
+    --accent:#3b82f6;
+    --accent-2:#2563eb;
+    --text:#eef3ef;
+    --text-dim:#9fb3a8;
+    --tv-bezel:#1a1a1a;
+}
+.iwatch-app, .iwatch-app *{box-sizing:border-box;}
+.iwatch-app{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #17301f 0%, transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, #12261c 0%, transparent 55%),
+      linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    color:var(--text);
+    border-radius:28px;
+    margin:22px 0;
+    overflow:hidden;
+}
+.iwatch-app .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+.iwatch-app .app-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:15px;font-weight:700;letter-spacing:.4px;
+    color:var(--text-dim);
+    background:var(--glass);
+    border:1px solid var(--glass-brd);
+    padding:10px 16px;border-radius:12px;
+    width:fit-content;margin-bottom:22px;
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px);
+}
+.iwatch-app .app-title .emoji{font-size:18px;}
+.iwatch-app .app-title b{color:var(--text);}
+.iwatch-app .section{
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border:1px solid var(--glass-brd);
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+/* Search row */
+.iwatch-app .search-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.iwatch-app .search-row .search-field{
+    flex:2;min-width:180px;
+    position:relative;
+}
+.iwatch-app .search-row input[type="text"]{
+    width:100%;
+    box-sizing:border-box;
+    background:var(--panel-2);
+    border:1px solid var(--glass-brd);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:12px;
+    font-size:14.5px;
+    outline:none;
+    transition:border-color .15s ease;
+}
+.iwatch-app .search-row input[type="text"]::placeholder{color:var(--text-dim);}
+.iwatch-app .search-row input[type="text"]:focus{border-color:var(--accent);}
+.iwatch-app .dropdown-select{
+    flex:1;min-width:150px;
+    background:var(--panel-2);
+    border:1px solid var(--glass-brd);
+    color:var(--text);
+    padding:13px 12px;
+    border-radius:12px;
+    font-size:13.5px;
+    outline:none;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239fb3a8' stroke-width='2'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat:no-repeat;
+    background-position:right 10px center;
+    padding-right:32px;
+    transition:border-color .15s ease;
+}
+.iwatch-app .dropdown-select:focus{border-color:var(--accent);}
+.iwatch-app .btn{
+    border:none;cursor:pointer;
+    border-radius:12px;
+    padding:13px 18px;
+    font-size:14px;font-weight:600;
+    display:flex;align-items:center;gap:6px;
+    transition:transform .1s ease, filter .15s ease;
+    white-space:nowrap;
+}
+.iwatch-app .btn:active{transform:scale(0.97);}
+.iwatch-app .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;}
+.iwatch-app .btn-primary:hover{filter:brightness(1.08);}
+.iwatch-app .btn-ghost{background:var(--glass);border:1px solid var(--glass-brd);color:var(--text);}
+.iwatch-app .btn-ghost:hover{filter:brightness(1.15);}
+.iwatch-app .filter-hint{font-size:11.5px;color:var(--text-dim);margin:0 0 16px 2px;}
+/* Tabs row (renamed from .tab to .iw-tab to avoid clashing with the site's Quick Links .tab) */
+.iwatch-app .tabs-row{
+    display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;
+}
+.iwatch-app .iw-tab{
+    background:var(--glass);
+    border:1px solid var(--glass-brd);
+    color:var(--text-dim);
+    padding:9px 16px;
+    border-radius:999px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .15s ease;
+}
+.iwatch-app .iw-tab:hover{color:var(--text);}
+.iwatch-app .iw-tab.active{
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));
+    color:white;border-color:transparent;
+}
+/* TV set */
+.iwatch-app .tv-outer{display:flex;flex-direction:column;align-items:center;margin-top:6px;}
+.iwatch-app .tv-frame{
+    width:100%;
+    background:
+      linear-gradient(160deg,#242424,#111111 60%),
+      var(--tv-bezel);
+    border-radius:26px;
+    padding:16px;
+    box-shadow:
+      0 30px 70px rgba(0,0,0,0.55),
+      inset 0 0 0 1px rgba(255,255,255,0.06);
+    position:relative;
+}
+.iwatch-app .tv-frame::before{
+    content:"";
+    position:absolute;
+    top:10px;left:26px;
+    width:8px;height:8px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #6be08a, #1c7a3b);
+    box-shadow:0 0 8px rgba(107,224,138,0.7);
+}
+.iwatch-app .tv-screen{
+    background:#04070a;
+    border-radius:14px;
+    aspect-ratio:16/9;
+    width:100%;
+    overflow:hidden;
+    position:relative;
+    box-shadow:inset 0 0 40px rgba(0,0,0,0.8);
+}
+.iwatch-app .tv-screen:fullscreen{ border-radius:0; aspect-ratio:auto; }
+.iwatch-app .tv-screen iframe{width:100%;height:100%;border:0;display:block;}
+.iwatch-app .tv-stand{
+    width:120px;height:20px;
+    background:linear-gradient(180deg,#1c1c1c,#0a0a0a);
+    border-radius:0 0 10px 10px;
+    margin-top:-2px;
+}
+.iwatch-app .tv-base{
+    width:220px;height:10px;
+    background:linear-gradient(180deg,#161616,#050505);
+    border-radius:6px;
+    margin-top:2px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.5);
+}
+/* Screen content states */
+.iwatch-app .screen-inner{
+    position:absolute;inset:0;
+    overflow-y:auto;
+    padding:18px;
+}
+.iwatch-app .screen-idle{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;
+    color:#5c6f66;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(59,130,246,0.08), transparent 60%),
+      #04070a;
+}
+.iwatch-app .screen-idle .big{font-size:15px;font-weight:600;color:#8ea297;}
+.iwatch-app .screen-idle .small{font-size:12.5px;color:#526155;}
+.iwatch-app .static-bars{
+    display:flex;gap:3px;height:24px;align-items:flex-end;opacity:.5;
+}
+.iwatch-app .static-bars span{
+    width:3px;background:#3b5c4d;
+    animation:bar 1.4s ease-in-out infinite;
+    border-radius:2px;
+}
+.iwatch-app .static-bars span:nth-child(1){height:40%;animation-delay:0s;}
+.iwatch-app .static-bars span:nth-child(2){height:80%;animation-delay:.15s;}
+.iwatch-app .static-bars span:nth-child(3){height:55%;animation-delay:.3s;}
+.iwatch-app .static-bars span:nth-child(4){height:90%;animation-delay:.45s;}
+.iwatch-app .static-bars span:nth-child(5){height:35%;animation-delay:.6s;}
+@keyframes bar{0%,100%{transform:scaleY(0.4);}50%{transform:scaleY(1);}}
+.iwatch-app .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+    gap:12px;
+}
+.iwatch-app .card{
+    background:var(--glass);
+    border:1px solid var(--glass-brd);
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease;
+}
+.iwatch-app .card:hover{transform:translateY(-3px);border-color:var(--accent);}
+.iwatch-app .poster-wrap{width:100%;aspect-ratio:2/3;background:#132a20;overflow:hidden;}
+.iwatch-app .poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.iwatch-app .card-meta{padding:8px 9px 10px;}
+.iwatch-app .card-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.25;
+    display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.iwatch-app .card-date{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.iwatch-app .now-playing-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:14px;flex-wrap:wrap;gap:10px;
+}
+.iwatch-app .now-playing-bar[hidden]{ display:none; }
+.iwatch-app .np-info{font-size:13px;color:var(--text-dim);}
+.iwatch-app .np-info b{color:var(--text);}
+/* Player controls overlay - volume/mute, captions, enlarge */
+.iwatch-app .player-controls{
+    position:absolute;left:0;right:0;bottom:0;
+    display:flex;align-items:center;gap:12px;
+    padding:10px 14px;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.85));
+    opacity:0;
+    transition:opacity .2s ease;
+}
+.iwatch-app .tv-screen:hover .player-controls,
+.iwatch-app .player-controls.pinned{opacity:1;}
+.iwatch-app .ctrl-btn{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    color:#fff;
+    width:34px;height:34px;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:15px;
+    transition:background .15s ease;
+    flex-shrink:0;
+}
+.iwatch-app .ctrl-btn:hover{background:rgba(255,255,255,0.18);}
+.iwatch-app .ctrl-btn.on{background:rgba(59,130,246,0.55);border-color:rgba(59,130,246,0.8);}
+.iwatch-app .volume-slider{
+    width:80px;accent-color:var(--accent);
+    cursor:pointer;
+}
+.iwatch-app .ctrl-spacer{flex:1;}
+.iwatch-app .back-btn{
+    position:sticky;top:0;
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(0,0,0,0.55);
+    border:1px solid rgba(255,255,255,0.15);
+    color:#fff;padding:7px 12px;border-radius:8px;
+    font-size:12.5px;cursor:pointer;margin-bottom:10px;
+    -webkit-backdrop-filter:blur(4px);
+    backdrop-filter:blur(4px);
+}
+.iwatch-app .back-btn:hover{background:rgba(0,0,0,0.75);}
+.iwatch-app .status-msg{
+    font-size:13px;color:var(--text-dim);text-align:center;padding:30px 10px;
+}
+.iwatch-app .attribution{
+    text-align:center;font-size:11px;color:#5b6d63;margin-top:16px;
+}
+.iwatch-app .attribution a{color:#7fb0ff;text-decoration:none;}
+/* modal */
+.iwatch-app .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    display:none;align-items:center;justify-content:center;z-index:50;
+}
+.iwatch-app .modal-backdrop.open{display:flex;}
+.iwatch-app .modal{
+    background:var(--panel);
+    border:1px solid var(--glass-brd);
+    border-radius:16px;
+    padding:22px;
+    width:min(420px,90vw);
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+}
+.iwatch-app .modal h3{
+    margin:0 0 6px;font-size:16px;
+    color:var(--text) !important;
+    background:transparent !important;
+    border:none !important;
+}
+.iwatch-app .modal p{margin:0 0 14px;font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+.iwatch-app .modal p a{color:#7fb0ff;}
+.iwatch-app .modal input{
+    width:100%;padding:11px 13px;border-radius:10px;
+    border:1px solid var(--glass-brd);background:var(--panel-2);color:var(--text);
+    font-size:13.5px;margin-bottom:12px;outline:none;
+}
+.iwatch-app .modal input:focus{border-color:var(--accent);}
+.iwatch-app .modal-actions{display:flex;justify-content:flex-end;gap:8px;}
+@media(max-width:560px){
+    .iwatch-app .wrap{padding:18px 12px 40px;}
+    .iwatch-app .search-row .search-field{flex-basis:100%;}
+}
 
 /* ============================================================
    MOBILE RESPONSIVE LAYER
@@ -1377,14 +1665,16 @@ html {
 
   .quran-toolbar,
   .radio-toolbar,
-  .youtube-toolbar {
+  .youtube-toolbar,
+  .youtube-country-row {
     flex-direction: column;
     align-items: stretch;
   }
   .quran-toolbar input,
   .radio-toolbar select,
   .radio-toolbar input,
-  .youtube-toolbar input {
+  .youtube-toolbar input,
+  .youtube-country-row select {
     flex-basis: auto;
     width: 100%;
     box-sizing: border-box;
@@ -1403,8 +1693,8 @@ html {
     width: 100%;
   }
 
-  .youtube-result-card {
-    width: 130px;
+  .youtube-results {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   }
 
   /* Git notes: single column already kicks in at 900px; reduce the
@@ -1447,17 +1737,136 @@ html {
     padding: 10px;
   }
 
-  /* I-WATCH search bar: stack input + buttons on narrow screens */
-  .youtube-toolbar {
+  /* I-WATCH app shell */
+  .iwatch-app .wrap {
+    padding: 16px 12px 36px;
+  }
+  .iwatch-app .search-row {
     flex-direction: column;
     align-items: stretch;
   }
-  .youtube-toolbar input,
-  .youtube-toolbar button {
+  .iwatch-app .search-row input[type="text"],
+  .iwatch-app .dropdown-select,
+  .iwatch-app .btn {
     width: 100%;
     flex: none;
     font-size: 16px;
   }
+  .iwatch-app .tabs-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .iwatch-app .iw-tab {
+    flex: 0 0 auto;
+  }
+  .iwatch-app .grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  .iwatch-app .now-playing-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .iwatch-app .now-playing-bar .btn {
+    width: 100%;
+  }
+}
+
+/* ── "Related content" dropdown (I-LISTEN + I-WATCH) ── */
+.related-select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.related-select[hidden] { display: none; }
+.related-select option { color: #111827; }
+.iwatch-app .related-select {
+  background: var(--panel-2);
+  border-color: var(--glass-brd);
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+/* ============================================================
+   SECTION: LIVE SEARCH SUGGESTIONS DROPDOWN (I-LISTEN + I-WATCH)
+   Appears under the search box as the user types, listing only
+   videos YouTube reports as embeddable + syndicated (i.e. videos
+   that will actually play inside this site's own player).
+   ============================================================ */
+.search-field {
+  position: relative;
+}
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  background: rgba(8,12,10,0.97);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.search-suggestions[hidden] { display: none; }
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover,
+.suggestion-item:focus-visible { background: rgba(255,255,255,0.12); }
+.suggestion-item img {
+  width: 52px;
+  height: 39px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #000;
+}
+.suggestion-item .sug-text { min-width: 0; }
+.suggestion-item .sug-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.suggestion-item .sug-channel {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 2px;
+}
+.suggestion-empty,
+.suggestion-loading {
+  padding: 12px 10px;
+  font-size: 12.5px;
+  color: #cbd5e1;
+  text-align: center;
 }
 
 /* ── Small phones (≤ 420px) ── */
@@ -1465,7 +1874,10 @@ html {
   h1 { font-size: 26px; }
   .course-title { font-size: 20px; }
   .git-notes-tab { font-size: 19px !important; }
-  .youtube-result-card {
-    width: 120px;
+  .youtube-results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .iwatch-app .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
