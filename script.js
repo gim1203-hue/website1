@@ -1,3 +1,32 @@
+/* Shared rendering and request safeguards. Dynamic HTML values are always escaped. */
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
+function safeHTML(strings, ...values) {
+  return strings.reduce((html, part, index) => html + part +
+    (index < values.length ? escapeHTML(values[index]) : ''), '');
+}
+function safeMediaURL(value) {
+  try {
+    const url = new URL(String(value));
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : '';
+  } catch (_) { return ''; }
+}
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (options.signal?.aborted) controller.abort();
+  options.signal?.addEventListener('abort', abort, { once: true });
+  const timer = setTimeout(abort, 12000);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+    options.signal?.removeEventListener('abort', abort);
+  }
+}
+
 /* ============================================================
    SECTION: PAGE HEADER — today's date text
    ============================================================ */
@@ -43,6 +72,11 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           panelItems.push(sibling);
           sibling = sibling.nextElementSibling;
         }
+        const panel = document.createElement('div');
+        panel.id = panelId;
+        panel.className = 'accordion-panel';
+        header.after(panel);
+        panelItems.forEach(item => panel.appendChild(item));
         header.setAttribute('aria-controls', panelId);
         header.setAttribute('aria-expanded', 'false');
         panelItems.forEach((item) => {
@@ -82,11 +116,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         modalHint.textContent = isZoomed ? 'Click the image to zoom out' : 'Click the image to zoom in';
         if (!isZoomed) modalInner.scrollTop = 0;
       }
+      let opener = null;
       function closeModal() {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
-        modalImage.src = '';
+        modalImage.removeAttribute('src');
         setZoomed(false);
+        document.body.classList.remove('modal-open');
+        opener?.focus();
       }
       thumbButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -95,11 +132,28 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           modalImage.alt = btn.dataset.fullAlt || 'Certificate preview';
           modal.classList.add('is-open');
           modal.setAttribute('aria-hidden', 'false');
+          opener = btn;
+          document.body.classList.add('modal-open');
+          closeBtn.focus();
         });
       });
       modalImage.addEventListener('click', (event) => {
         event.stopPropagation();
         setZoomed(!modalImage.classList.contains('zoomed'));
+      });
+      modalImage.setAttribute('tabindex', '0');
+      modalImage.setAttribute('role', 'button');
+      modalImage.setAttribute('aria-label', 'Toggle certificate zoom');
+      modalImage.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setZoomed(!modalImage.classList.contains('zoomed'));
+        }
+      });
+      modal.addEventListener('keydown', event => {
+        if (event.key !== 'Tab') return;
+        event.preventDefault();
+        (document.activeElement === closeBtn ? modalImage : closeBtn).focus();
       });
       closeBtn.addEventListener('click', closeModal);
       modal.addEventListener('click', (event) => {
@@ -130,7 +184,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       stopBtn.disabled = !isSpeaking;
     }
     function stopTranslationAudio() {
-      window.speechSynthesis.cancel();
+      window.speechSynthesis?.cancel();
       quranState.currentUtterance = null;
       document.querySelectorAll('.surah-audio').forEach(audioEl => {
         audioEl.pause();
@@ -173,7 +227,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       card.className = 'surah';
       card.dataset.surahNumber = String(surah.number);
       card.dataset.translationReady = '';
-      card.innerHTML = `
+      card.innerHTML = safeHTML`
         <h4>${surah.number}. ${surah.englishName} — ${surah.englishNameTranslation}</h4>
         <div class="surah-actions">
           <button class="quran-btn load-surah-btn" type="button">Load audio + translation</button>
@@ -210,8 +264,8 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         statusEl.textContent = 'Loading surah data...';
         try {
           const [arabicResponse, englishResponse] = await Promise.all([
-            fetch(`https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`),
-            fetch(`https://api.alquran.cloud/v1/surah/${number}/en.asad`)
+            fetchWithTimeout(`https://api.alquran.cloud/v1/surah/${number}/ar.alafasy`),
+            fetchWithTimeout(`https://api.alquran.cloud/v1/surah/${number}/en.asad`)
           ]);
           if (!arabicResponse.ok || !englishResponse.ok) {
             throw new Error('API response error');
@@ -219,8 +273,8 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           const arabicJson = await arabicResponse.json();
           const englishJson = await englishResponse.json();
           const arabicAyahs = arabicJson?.data?.ayahs || [];
-          const arabicAudioAyahs = arabicAyahs.map(ayah => ayah.audio).filter(Boolean);
-          const arabicTextHtml = arabicAyahs.map(ayah => ayah.text).join('<br>');
+          const arabicAudioAyahs = arabicAyahs.map(ayah => safeMediaURL(ayah.audio)).filter(Boolean);
+          const arabicTextHtml = arabicAyahs.map(ayah => escapeHTML(ayah.text)).join('<br>');
           const ayahTranslations = (englishJson?.data?.ayahs || []).map(ayah => ayah.text).join(' ');
           const translationPreview = ayahTranslations
             ? ayahTranslations.slice(0, 360) + (ayahTranslations.length > 360 ? '...' : '')
@@ -315,7 +369,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       loadSurahsBtn.textContent = 'Loading...';
       quranSurahsContainer.innerHTML = '<p class="surah-status">Fetching all surahs...</p>';
       try {
-        const response = await fetch('https://api.alquran.cloud/v1/surah');
+        const response = await fetchWithTimeout('https://api.alquran.cloud/v1/surah');
         if (!response.ok) throw new Error('Failed to load surah list');
         const data = await response.json();
         quranState.catalog = data?.data || [];
@@ -637,7 +691,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         const timeoutId = setTimeout(() => controller.abort(), 12000);
         let response;
         try {
-          response = await fetch(url, { signal: controller.signal });
+          response = await fetchWithTimeout(url, { signal: controller.signal });
         } finally {
           clearTimeout(timeoutId);
         }
@@ -825,8 +879,21 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const addBtn  = document.getElementById('todo-add-btn');
       const list    = document.getElementById('todo-list');
       const STORE   = 'ik_todos';
-      let todos     = JSON.parse(localStorage.getItem(STORE) || '[]');
-      function save() { localStorage.setItem(STORE, JSON.stringify(todos)); }
+      let todos = [];
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE) || '[]');
+        if (Array.isArray(saved)) todos = saved.filter(item => item && typeof item.text === 'string')
+          .map(item => ({ text: item.text, done: Boolean(item.done) }));
+      } catch (_) { /* Keep the widget usable when storage is unavailable or corrupt. */ }
+      const storageStatus = document.getElementById('todo-storage-status');
+      function save() {
+        try {
+          localStorage.setItem(STORE, JSON.stringify(todos));
+          storageStatus.textContent = '';
+        } catch (_) {
+          storageStatus.textContent = 'Browser storage is unavailable. Changes last for this visit only.';
+        }
+      }
       function render() {
         list.innerHTML = '';
         if (!todos.length) {
@@ -836,10 +903,10 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         todos.forEach((todo, i) => {
           const li = document.createElement('li');
           if (todo.done) li.classList.add('done');
-          li.innerHTML = `
-            <input type="checkbox" ${todo.done ? 'checked' : ''} data-i="${i}">
+          li.innerHTML = safeHTML`
+            <input type="checkbox" ${todo.done ? 'checked' : ''} data-i="${i}" aria-label="Mark task complete: ${todo.text}">
             <span class="todo-text">${todo.text}</span>
-            <button class="todo-del" data-i="${i}" title="Delete">✕</button>`;
+            <button class="todo-del" data-i="${i}" title="Delete" aria-label="Delete task: ${todo.text}">✕</button>`;
           list.appendChild(li);
         });
         list.querySelectorAll('input[type=checkbox]').forEach(cb => {
@@ -873,10 +940,11 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const MONTHS = ['January','February','March','April','May','June',
                       'July','August','September','October','November','December'];
       const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-      const today  = new Date();
+      let today  = new Date();
       let viewYear  = today.getFullYear();
       let viewMonth = today.getMonth();
       function renderCalendar() {
+        today = new Date();
         const titleEl    = document.getElementById('cal-title');
         const gridEl     = document.getElementById('cal-grid');
         const yearRowEl  = document.getElementById('cal-year-row');
@@ -889,25 +957,25 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         const daysInPrev  = new Date(viewYear, viewMonth, 0).getDate();
         // prev-month fill
         for (let i = firstDay - 1; i >= 0; i--) {
-          gridEl.innerHTML += `<div class="cal-cell other-month">${daysInPrev - i}</div>`;
+          gridEl.innerHTML += safeHTML`<div class="cal-cell other-month">${daysInPrev - i}</div>`;
         }
         // current month
         for (let d = 1; d <= daysInMonth; d++) {
           const isToday = d === today.getDate() &&
                           viewMonth === today.getMonth() &&
                           viewYear  === today.getFullYear();
-          gridEl.innerHTML += `<div class="cal-cell${isToday ? ' today' : ''}">${d}</div>`;
+          gridEl.innerHTML += safeHTML`<div class="cal-cell${isToday ? ' today' : ''}">${d}</div>`;
         }
         // next-month fill
         const totalCells = firstDay + daysInMonth;
         const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
         for (let d = 1; d <= remaining; d++) {
-          gridEl.innerHTML += `<div class="cal-cell other-month">${d}</div>`;
+          gridEl.innerHTML += safeHTML`<div class="cal-cell other-month">${d}</div>`;
         }
         // month chips row (all 12 months of the year)
         yearRowEl.innerHTML = MONTHS.map((m, i) =>
-          `<span class="cal-month-chip${i === viewMonth ? ' active' : ''}"
-                 data-m="${i}">${m.slice(0,3)}</span>`
+          `<button type="button" aria-label="${m}" aria-pressed="${i === viewMonth}" class="cal-month-chip${i === viewMonth ? ' active' : ''}"
+                 data-m="${i}">${m.slice(0,3)}</button>`
         ).join('');
         yearRowEl.querySelectorAll('.cal-month-chip').forEach(chip => {
           chip.addEventListener('click', () => {
@@ -955,15 +1023,15 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       let workingMirror = null;
 
       async function radioFetch(path) {
-        const mirrors = workingMirror ? [workingMirror, ...RADIO_API_MIRRORS] : RADIO_API_MIRRORS;
+        const mirrors = [...new Set(workingMirror ? [workingMirror, ...RADIO_API_MIRRORS] : RADIO_API_MIRRORS)];
         let lastError = null;
         for (const mirror of mirrors) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
           try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            const response = await fetch(mirror + path, {
+            const response = await fetchWithTimeout(mirror + path, {
               signal: controller.signal,
-              headers: { 'User-Agent': 'ImranKhanPersonalSite/1.0' }
+              headers: { 'Accept': 'application/json' }
             });
             clearTimeout(timeoutId);
             if (!response.ok) throw new Error('Radio API error ' + response.status);
@@ -971,13 +1039,13 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             return await response.json();
           } catch (error) {
             lastError = error;
-          }
+          } finally { clearTimeout(timeoutId); }
         }
         throw lastError || new Error('All radio mirrors failed.');
       }
 
       function setListStatus(message) {
-        listEl.innerHTML = `<p class="radio-status">${message}</p>`;
+        listEl.innerHTML = safeHTML`<p class="radio-status">${message}</p>`;
       }
 
       function renderStations(stations) {
@@ -993,7 +1061,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           btn.type = 'button';
           btn.className = 'radio-station-btn';
           const tags = (station.tags || '').split(',').filter(Boolean).slice(0, 2).join(', ');
-          btn.innerHTML = `
+          btn.innerHTML = safeHTML`
             <span class="radio-station-name">${station.name || 'Unnamed station'}</span>
             <span class="radio-station-meta">${[station.country, tags].filter(Boolean).join(' • ')}</span>
           `;
@@ -1004,7 +1072,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
 
       function playStation(station) {
-        const streamUrl = station.url_resolved || station.url;
+        const streamUrl = safeMediaURL(station.url_resolved || station.url);
         if (!streamUrl) {
           statusEl.textContent = 'This station has no playable stream.';
           return;
@@ -1039,7 +1107,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         }
       }
 
+      let radioSearchVersion = 0;
       async function searchStations() {
+        const version = ++radioSearchVersion;
         const name = searchInput.value.trim();
         const country = countrySelect.value;
         if (!name && !country) {
@@ -1057,8 +1127,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           if (name) params.set('name', name);
           if (country) params.set('country', country);
           const stations = await radioFetch(`/json/stations/search?${params.toString()}`);
-          renderStations(stations);
+          if (version === radioSearchVersion) renderStations(stations);
         } catch (error) {
+          if (version !== radioSearchVersion) return;
           setListStatus('Could not reach the radio directory. Check your internet connection and try again.');
         }
       }
@@ -1256,7 +1327,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
 
       function loadVideo(videoId, title) {
-        if (!videoId) return;
+        if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId || '')) return;
         playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         screenHintEl.textContent = title ? `Now playing: ${title}` : 'Video loaded.';
         loadRelatedVideos(videoId, title);
@@ -1266,7 +1337,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
          (fetching it first via videos.list when we only have an ID,
          e.g. a pasted link) to search YouTube for similar videos and
          lets the user jump straight to one from a <select>. ── */
+      let relatedVersion = 0;
       async function loadRelatedVideos(videoId, title) {
+        const version = ++relatedVersion;
         if (!relatedSelect) return;
         const apiKey = getApiKey();
         if (!apiKey) {
@@ -1277,7 +1350,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           let queryTitle = title;
           if (!queryTitle) {
             const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
-            const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+            const infoRes = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
             if (infoRes.ok) {
               const infoData = await infoRes.json();
               queryTitle = infoData.items?.[0]?.snippet?.title || '';
@@ -1291,7 +1364,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
             videoEmbeddable: 'true', videoSyndicated: 'true'
           });
-          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+          const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
           if (!response.ok) throw new Error('related fetch failed');
           const data = await response.json();
           const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
@@ -1299,11 +1372,12 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             relatedSelect.hidden = true;
             return;
           }
+          if (version !== relatedVersion) return;
           relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
-            items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+            items.map(it => safeHTML`<option value="${it.id.videoId}">${it.snippet?.title || 'Untitled'}</option>`).join('');
           relatedSelect.hidden = false;
         } catch (_) {
-          relatedSelect.hidden = true;
+          if (version === relatedVersion) relatedSelect.hidden = true;
         }
       }
       if (relatedSelect) {
@@ -1324,15 +1398,15 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
           const videoId = item.id?.videoId;
-          if (!videoId) return;
+          if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId || '')) return;
           const title = item.snippet?.title || 'Untitled video';
           const channel = item.snippet?.channelTitle || '';
           const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
           const card = document.createElement('button');
           card.type = 'button';
           card.className = 'youtube-result-card';
-          card.innerHTML = `
-            <img src="${thumb}" alt="${title}" loading="lazy">
+          card.innerHTML = safeHTML`
+            <img src="${safeMediaURL(thumb)}" alt="${title}" loading="lazy">
             <span class="youtube-result-title">${title}</span>
             <span class="youtube-result-channel">${channel}</span>
           `;
@@ -1342,7 +1416,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         resultsEl.appendChild(fragment);
       }
 
+      let searchVersion = 0;
       async function performSearch() {
+        const version = ++searchVersion;
         hideSuggestions();
         const query = searchInput.value.trim();
         if (!query) {
@@ -1388,15 +1464,16 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
               params.set('relevanceLanguage', selectedOption.dataset.lang);
             }
           }
-          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+          const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
           if (!response.ok) {
             const errorPayload = await response.json().catch(() => null);
             throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
           }
           const data = await response.json();
-          renderResults(data.items || []);
+          if (version === searchVersion) renderResults(data.items || []);
         } catch (error) {
-          resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
+          if (version !== searchVersion) return;
+          resultsEl.innerHTML = safeHTML`<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
         }
       }
 
@@ -1412,8 +1489,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
          guaranteed to actually play in this page's own player. ── */
       let suggestDebounceTimer = null;
       let suggestAbortController = null;
+      let suggestionVersion = 0;
 
       function hideSuggestions() {
+        suggestionVersion++;
+        clearTimeout(suggestDebounceTimer);
+        suggestionVersion++;
+        suggestAbortController?.abort();
+        suggestAbortController?.abort();
         if (!suggestionsEl) return;
         suggestionsEl.hidden = true;
         suggestionsEl.innerHTML = '';
@@ -1437,9 +1520,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
           const row = document.createElement('button');
           row.type = 'button';
           row.className = 'suggestion-item';
-          row.setAttribute('role', 'option');
-          row.innerHTML = `
-            <img src="${thumb}" alt="" loading="lazy">
+          row.setAttribute('aria-label', title + ' — ' + channel);
+          row.innerHTML = safeHTML`
+            <img src="${safeMediaURL(thumb)}" alt="" loading="lazy">
             <span class="sug-text">
               <span class="sug-title">${title}</span>
               <span class="sug-channel">${channel}</span>
@@ -1457,6 +1540,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       }
 
       async function fetchSuggestions(query) {
+        const version = ++suggestionVersion;
         if (!suggestionsEl) return;
         const apiKey = getApiKey();
         if (!apiKey) {
@@ -1478,12 +1562,12 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
             videoEmbeddable: 'true',
             videoSyndicated: 'true'
           });
-          const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+          const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
           if (!response.ok) throw new Error('suggestion request failed');
           const data = await response.json();
-          renderSuggestions(data.items || []);
+          if (version === suggestionVersion && searchInput.value.trim() === query) renderSuggestions(data.items || []);
         } catch (error) {
-          if (error.name === 'AbortError') return;
+          if (error.name === 'AbortError' || version !== suggestionVersion) return;
           suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
           suggestionsEl.hidden = false;
         }
@@ -1492,6 +1576,8 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       searchInput.addEventListener('input', () => {
         const query = searchInput.value.trim();
         clearTimeout(suggestDebounceTimer);
+        suggestionVersion++;
+        suggestAbortController?.abort();
         if (!query || extractVideoId(query)) {
           hideSuggestions();
           return;
@@ -1590,6 +1676,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
   }
 
   function showIdle() {
+    relatedVersion++;
     playerEl.style.display = 'none';
     playerEl.src = 'about:blank';
     screenIdleEl.style.display = '';
@@ -1598,7 +1685,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
   }
 
   function loadVideo(videoId, title) {
-    if (!videoId) return;
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId || '')) return;
     playerEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     screenIdleEl.style.display = 'none';
     playerEl.style.display = 'block';
@@ -1611,7 +1698,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
      resolve a title for the loaded video (fetching it when only an
      ID is known, e.g. a pasted link), search for similar videos, and
      let the user jump to one straight from the dropdown. ── */
-  async function loadRelatedVideos(videoId, title) {
+  let relatedVersion = 0;
+      async function loadRelatedVideos(videoId, title) {
+        const version = ++relatedVersion;
     if (!relatedSelect) return;
     const apiKey = getApiKey();
     if (!apiKey) {
@@ -1622,7 +1711,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       let queryTitle = title;
       if (!queryTitle) {
         const infoParams = new URLSearchParams({ part: 'snippet', id: videoId, key: apiKey });
-        const infoRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
+        const infoRes = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/videos?${infoParams.toString()}`);
         if (infoRes.ok) {
           const infoData = await infoRes.json();
           queryTitle = infoData.items?.[0]?.snippet?.title || '';
@@ -1636,7 +1725,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         part: 'snippet', type: 'video', maxResults: '10', q: queryTitle, key: apiKey,
         videoEmbeddable: 'true', videoSyndicated: 'true'
       });
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
       if (!response.ok) throw new Error('related fetch failed');
       const data = await response.json();
       const items = (data.items || []).filter(it => it.id?.videoId && it.id.videoId !== videoId);
@@ -1644,11 +1733,12 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         relatedSelect.hidden = true;
         return;
       }
-      relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
-        items.map(it => `<option value="${it.id.videoId}">${(it.snippet?.title || 'Untitled').replace(/</g, '&lt;')}</option>`).join('');
+      if (version !== relatedVersion) return;
+          relatedSelect.innerHTML = '<option value="">🔽 Related videos…</option>' +
+        items.map(it => safeHTML`<option value="${it.id.videoId}">${it.snippet?.title || 'Untitled'}</option>`).join('');
       relatedSelect.hidden = false;
     } catch (_) {
-      relatedSelect.hidden = true;
+      if (version === relatedVersion) relatedSelect.hidden = true;
     }
   }
   if (relatedSelect) {
@@ -1669,15 +1759,15 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
       const videoId = item.id?.videoId;
-      if (!videoId) return;
+      if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId || '')) return;
       const title = item.snippet?.title || 'Untitled video';
       const channel = item.snippet?.channelTitle || '';
       const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '';
       const card = document.createElement('button');
       card.type = 'button';
       card.className = 'youtube-result-card';
-      card.innerHTML = `
-        <img src="${thumb}" alt="${title}" loading="lazy">
+      card.innerHTML = safeHTML`
+        <img src="${safeMediaURL(thumb)}" alt="${title}" loading="lazy">
         <span class="youtube-result-title">${title}</span>
         <span class="youtube-result-channel">${channel}</span>
       `;
@@ -1687,7 +1777,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
     resultsEl.appendChild(fragment);
   }
 
-  async function performSearch() {
+  let searchVersion = 0;
+      async function performSearch() {
+        const version = ++searchVersion;
     hideSuggestions();
     const query = searchInput.value.trim();
     if (!query) {
@@ -1722,15 +1814,16 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         videoEmbeddable: 'true',
         videoSyndicated: 'true'
       });
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
+      const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
       if (!response.ok) {
         const errorPayload = await response.json().catch(() => null);
         throw new Error(errorPayload?.error?.message || `YouTube API error ${response.status}`);
       }
       const data = await response.json();
-      renderResults(data.items || []);
+      if (version === searchVersion) renderResults(data.items || []);
     } catch (error) {
-      resultsEl.innerHTML = `<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
+      if (version !== searchVersion) return;
+          resultsEl.innerHTML = safeHTML`<p class="radio-status">Search failed: ${error.message}. Check that your API key is valid and the YouTube Data API v3 is enabled.</p>`;
     }
   }
 
@@ -1748,8 +1841,14 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
      (guaranteed-playable) videos. ── */
   let suggestDebounceTimer = null;
   let suggestAbortController = null;
+      let suggestionVersion = 0;
 
   function hideSuggestions() {
+        suggestionVersion++;
+        clearTimeout(suggestDebounceTimer);
+        suggestionVersion++;
+        suggestAbortController?.abort();
+        suggestAbortController?.abort();
     if (!suggestionsEl) return;
     suggestionsEl.hidden = true;
     suggestionsEl.innerHTML = '';
@@ -1773,9 +1872,9 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
       const row = document.createElement('button');
       row.type = 'button';
       row.className = 'suggestion-item';
-      row.setAttribute('role', 'option');
-      row.innerHTML = `
-        <img src="${thumb}" alt="" loading="lazy">
+      row.setAttribute('aria-label', title + ' — ' + channel);
+      row.innerHTML = safeHTML`
+        <img src="${safeMediaURL(thumb)}" alt="" loading="lazy">
         <span class="sug-text">
           <span class="sug-title">${title}</span>
           <span class="sug-channel">${channel}</span>
@@ -1793,6 +1892,7 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
   }
 
   async function fetchSuggestions(query) {
+        const version = ++suggestionVersion;
     if (!suggestionsEl) return;
     const apiKey = getApiKey();
     if (!apiKey) {
@@ -1814,12 +1914,12 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
         videoEmbeddable: 'true',
         videoSyndicated: 'true'
       });
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
+      const response = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`, { signal: suggestAbortController.signal });
       if (!response.ok) throw new Error('suggestion request failed');
       const data = await response.json();
-      renderSuggestions(data.items || []);
+      if (version === suggestionVersion && searchInput.value.trim() === query) renderSuggestions(data.items || []);
     } catch (error) {
-      if (error.name === 'AbortError') return;
+      if (error.name === 'AbortError' || version !== suggestionVersion) return;
       suggestionsEl.innerHTML = '<div class="suggestion-empty">Could not load suggestions right now.</div>';
       suggestionsEl.hidden = false;
     }
@@ -1828,6 +1928,8 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
     clearTimeout(suggestDebounceTimer);
+        suggestionVersion++;
+        suggestAbortController?.abort();
     if (!query || extractVideoId(query)) {
       hideSuggestions();
       return;

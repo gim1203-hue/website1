@@ -1,0 +1,32 @@
+﻿const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const source = fs.readFileSync('script.js', 'utf8');
+const helpers = source.slice(0, source.indexOf('/* ============================================================'));
+const context = vm.createContext({URL, AbortController, setTimeout, clearTimeout});
+vm.runInContext(helpers, context);
+assert.equal(context.safeHTML`<p>${'<img src=x onerror="alert(1)">'}</p>`, '<p>&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p>');
+assert.equal(context.safeMediaURL('javascript:alert(1)'), '');
+assert.equal(context.safeMediaURL('data:text/html,test'), '');
+assert.equal(context.safeMediaURL('https://example.com/audio.mp3'), 'https://example.com/audio.mp3');
+const notesStart = source.indexOf('    (function()', source.indexOf('SECTION: TO-DO / NOTES WIDGET'));
+const notesEnd = source.indexOf('    /*', notesStart);
+const notes = source.slice(notesStart, notesEnd);
+function runNotes(storage) {
+  const elements = {};
+  for (const id of ['todo-input','todo-add-btn','todo-list','todo-storage-status']) elements[id] = {value:'', textContent:'', innerHTML:'', children:[], listeners:{}, addEventListener(event, fn){this.listeners[event]=fn;}, appendChild(el){this.children.push(el);}, querySelectorAll(){return [];}};
+  const scope = vm.createContext({localStorage:storage, document:{getElementById:id=>elements[id], createElement:()=>({classList:{add(){}},innerHTML:''})}});
+  vm.runInContext(helpers + notes, scope);
+  elements['todo-input'].value = '<svg onload=alert(1)>';
+  elements['todo-add-btn'].listeners.click();
+  assert.match(elements['todo-list'].children.at(-1).innerHTML, /&lt;svg onload=alert\(1\)&gt;/);
+  return elements;
+}
+runNotes({getItem:()=>'{invalid',setItem(){}});
+runNotes({getItem:()=>'{"wrong":"shape"}',setItem(){}});
+const blocked = runNotes({getItem(){throw Error('blocked');},setItem(){throw Error('full');}});
+assert.match(blocked['todo-storage-status'].textContent, /this visit only/);
+const html = fs.readFileSync('index.html','utf8');
+assert.equal((html.match(/class="cert-thumb-btn"/g)||[]).length, 2);
+assert.ok(!html.includes('cdn.jsdelivr.net/npm/axios') && !html.includes('cdn.jsdelivr.net/npm/marked'));
+console.log('PASS: HTML injection escaping, safe media URLs, malformed/blocked/full notes storage, certificate entry points, unused dependencies.');
