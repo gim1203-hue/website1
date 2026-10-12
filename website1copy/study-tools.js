@@ -22,6 +22,7 @@
   progress.className = 'study-progress';
   progress.innerHTML = '<h3>Your learning progress</h3><p id="study-progress-text" role="status"></p><progress id="study-progress-meter" max="26" value="0" aria-label="Completed lessons"></progress><div class="study-row"><label><input id="notes-bookmarks-only" type="checkbox"> Bookmarked lessons only</label></div><p id="study-storage-status" class="study-muted"></p>';
   library.querySelector('.notes-library-heading').after(progress);
+  progress.insertAdjacentHTML('beforeend', '<div class="study-row"><button id="study-export" type="button">Export progress</button><button id="study-import" type="button">Import progress</button><input id="study-import-file" type="file" accept=".json,application/json" hidden></div><p class="study-muted">Download a backup, then import it on another browser. Imports combine with your existing bookmarks and completed lessons.</p><p id="study-transfer-status" role="status"></p>');
   byId('study-progress-meter').max = lessons.length;
   const buttons = [];
   lessons.forEach(lesson => {
@@ -60,6 +61,56 @@
   }
   byId('study-focus').addEventListener('click', () => { state.focus = !state.focus; save(); renderFocus(); renderProgress(); });
   renderProgress(); renderFocus();
+
+  const transferStatus = byId('study-transfer-status');
+  const importFile = byId('study-import-file');
+  function transferMessage(message, error = false) {
+    transferStatus.textContent = message;
+    transferStatus.classList.toggle('study-transfer-error', error);
+  }
+  byId('study-export').addEventListener('click', () => {
+    let url = null;
+    try {
+      const backup = {format:'imran-study-progress', version:1, exportedAt:new Date().toISOString(), bookmarks:state.bookmarks, completed:state.completed};
+      const blob = new Blob([JSON.stringify(backup, null, 2) + '\n'], {type:'application/json'});
+      url = URL.createObjectURL(blob);
+      const link = document.createElement('a'); link.href = url; link.download = 'imran-study-progress.json';
+      document.body.append(link); link.click(); link.remove();
+      transferMessage(`Backup download started: ${state.bookmarks.length} bookmarks and ${state.completed.length} completed lessons.`);
+    } catch (_) { transferMessage('Could not download the backup. Try again in a browser that supports file downloads.', true); }
+    finally { if (url) { const downloadURL = url; setTimeout(() => URL.revokeObjectURL(downloadURL), 1000); } }
+  });
+  byId('study-import').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', async () => {
+    const file = importFile.files?.[0]; if (!file) return;
+    const importButton = byId('study-import'); importButton.disabled = true;
+    transferMessage('Reading your progress backup…');
+    try {
+      if (file.size > 128 * 1024) throw new Error('This file is too large. Choose a progress backup smaller than 128 KB.');
+      const text = await new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.onload = () => resolve(String(reader.result));
+        reader.onerror = reader.onabort = () => reject(new Error('Could not read this file. Please try again.'));
+        reader.readAsText(file);
+      });
+      let backup;
+      try { backup = JSON.parse(text.replace(/^\uFEFF/, '')); }
+      catch (_) { throw new Error('This is not valid JSON. Choose a file made with Export progress.'); }
+      if (!backup || backup.format !== 'imran-study-progress' || backup.version !== 1) throw new Error('This is not a supported progress backup. Choose a file made with Export progress.');
+      for (const key of ['bookmarks', 'completed']) {
+        if (!Array.isArray(backup[key]) || backup[key].length > 1000 || backup[key].some(id => typeof id !== 'string')) throw new Error('The backup has invalid lesson lists. Your existing progress has not changed.');
+      }
+      const before = {bookmarks:state.bookmarks.length, completed:state.completed.length};
+      let skipped = 0;
+      for (const key of ['bookmarks', 'completed']) {
+        const known = backup[key].filter(id => { if (ids.has(id)) return true; skipped++; return false; });
+        state[key] = [...new Set([...state[key], ...known])];
+      }
+      save(); renderProgress(); document.dispatchEvent(new Event('study-progress-change'));
+      const added = `Imported ${state.bookmarks.length - before.bookmarks} new bookmarks and ${state.completed.length - before.completed} new completed lessons.`;
+      transferMessage(added + (skipped ? ` Skipped ${skipped} unknown lesson entries.` : '') + (storageOK ? ' Your existing progress was kept.' : ' Browser storage is unavailable; export a backup before leaving.'));
+    } catch (error) { transferMessage(error.message || 'Could not import this backup. Your existing progress has not changed.', true); }
+    finally { importButton.disabled = false; importFile.value = ''; }
+  });
 
   const normalize = value => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
   const records = lessons.map(lesson => ({title:lesson.querySelector('summary > span').textContent, text:normalize(lesson.dataset.topic + ' ' + lesson.textContent), kind:'Lesson', element:lesson}));

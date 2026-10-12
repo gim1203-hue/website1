@@ -99,3 +99,60 @@ test('each copied page resolves project image and includes identical learning to
     assert.equal(fs.readFileSync(`${folder}/study-tools.js`,'utf8'),fs.readFileSync('study-tools.js','utf8'));
   }
 });
+
+async function importBackup(w, d, content) {
+  const picker = d.getElementById('study-import-file');
+  const file = new w.File([content], 'backup.json', {type:'application/json'});
+  Object.defineProperty(picker, 'files', {value:[file], configurable:true});
+  picker.dispatchEvent(new w.Event('change'));
+  for (let attempt = 0; attempt < 100 && d.getElementById('study-import').disabled; attempt++) await new Promise(resolve=>setTimeout(resolve, 5));
+  assert.equal(d.getElementById('study-import').disabled, false);
+}
+test('export downloads only portable learning data and imports into a fresh browser', async t => {
+  const {w,d,click} = setup(t, JSON.stringify({bookmarks:['lesson-0'],completed:['lesson-1'],focus:true}));
+  let blob, download;
+  w.URL.createObjectURL = value => { blob = value; return 'blob:backup'; };
+  w.URL.revokeObjectURL = () => {};
+  w.HTMLAnchorElement.prototype.click = function(){download = this.download;};
+  click('study-export'); assert.equal(download, 'imran-study-progress.json');
+  const text = await new Promise(resolve=>{const reader=new w.FileReader();reader.onload=()=>resolve(reader.result);reader.readAsText(blob);});
+  const backup = JSON.parse(text);
+  assert.deepEqual(Object.keys(backup).sort(), ['bookmarks','completed','exportedAt','format','version']);
+  assert.equal(backup.format, 'imran-study-progress'); assert.equal(backup.version, 1);
+  assert.deepEqual(backup.bookmarks, ['lesson-0']); assert.deepEqual(backup.completed, ['lesson-1']);
+  const fresh = setup(t);
+  await importBackup(fresh.w, fresh.d, text);
+  assert.equal(fresh.d.getElementById('lesson-0').dataset.bookmarked, 'true');
+  assert.equal(fresh.d.getElementById('study-progress-meter').value, 1);
+  assert.equal(fresh.d.body.classList.contains('study-focus-mode'), false);
+  assert.equal(fresh.d.querySelector('[data-lock-heading]').dataset.locked, 'true');
+});
+test('import merges without duplicates, skips unknown IDs, and reapplies bookmark filtering', async t => {
+  const {w,d} = setup(t, JSON.stringify({bookmarks:['lesson-0'],completed:['lesson-1']}));
+  d.getElementById('notes-bookmarks-only').checked = true;
+  const text = JSON.stringify({format:'imran-study-progress',version:1,bookmarks:['lesson-0','lesson-2','lesson-2','unknown'],completed:['lesson-1','lesson-3']});
+  await importBackup(w,d,text);
+  assert.deepEqual(JSON.parse(w.localStorage.getItem('ik_study_progress_v1')).bookmarks, ['lesson-0','lesson-2']);
+  assert.equal(d.querySelectorAll('.lesson:not([hidden])').length, 2);
+  assert.equal(d.getElementById('study-progress-meter').value, 2);
+  assert.match(d.getElementById('study-transfer-status').textContent, /Skipped 1/);
+  await importBackup(w,d,text);
+  assert.match(d.getElementById('study-transfer-status').textContent, /Imported 0 new bookmarks and 0 new completed lessons/);
+});
+test('invalid, future-version, oversized, and malformed-list backups leave progress unchanged', async t => {
+  const {w,d} = setup(t, JSON.stringify({bookmarks:['lesson-0'],completed:['lesson-1']}));
+  const before = w.localStorage.getItem('ik_study_progress_v1');
+  for (const content of ['{broken', 'null', JSON.stringify({format:'imran-study-progress',version:2,bookmarks:[],completed:[]}), JSON.stringify({format:'imran-study-progress',version:1,bookmarks:['lesson-2'],completed:[{}]}), ' '.repeat(128*1024+1)]) {
+    await importBackup(w,d,content);
+    assert.equal(w.localStorage.getItem('ik_study_progress_v1'), before);
+    assert(d.getElementById('study-transfer-status').classList.contains('study-transfer-error'));
+  }
+});
+test('import survives blocked storage and export reports download failure', async t => {
+  const {w,d,click} = setup(t, null, true);
+  await importBackup(w,d,JSON.stringify({format:'imran-study-progress',version:1,bookmarks:['lesson-0'],completed:['lesson-1']}));
+  assert.equal(d.getElementById('study-progress-meter').value, 1);
+  assert.match(d.getElementById('study-transfer-status').textContent, /export a backup before leaving/);
+  w.URL.createObjectURL = () => { throw Error('Unavailable'); };
+  click('study-export'); assert.match(d.getElementById('study-transfer-status').textContent, /Could not download/);
+});
