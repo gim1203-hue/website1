@@ -1,0 +1,11 @@
+﻿node_modules/
+.test-tools/
+backups/
+.expand-notes.py
+website-preview.png
+notes-preview.png
+notes-mobile-preview.png
+.env
+.env.*
+!.env.example
+locks-preview.png

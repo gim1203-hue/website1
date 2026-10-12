@@ -1,0 +1,262 @@
+[
+  {
+    "topic": "Git",
+    "title": "Snapshots: status, stage, commit",
+    "explanation": "Git records project snapshots. Your working folder holds edits; staging chooses what goes into the next commit. Review the diff before committing. Run these commands inside an existing repository.",
+    "language": "shell",
+    "code": "git status\ngit diff\ngit add index.html styles.css\ngit diff --staged\ngit commit -m \"Improve notes layout\"\ngit log --oneline -5",
+    "mistake": "git add . can include secrets and unrelated files. Commits stay local until pushed. Write messages that explain the change.",
+    "exercise": "Change a heading in a practice repository. Stage only that file and inspect the staged diff.",
+    "answer": "Use git add with the exact filename, then git diff --staged. Confirm only your heading edit is present before committing."
+  },
+  {
+    "topic": "Git",
+    "title": "Branches, merge, and safe undo",
+    "explanation": "A branch names a line of commits. Use feature branches to work independently. Replace main with your actual default branch; this website uses master. Revert creates a new undo commit for shared history.",
+    "language": "shell",
+    "code": "git switch -c feature/notes\n# Edit, stage, and commit first.\ngit switch main\ngit merge feature/notes\n# Inspect a commit before undoing it:\ngit show COMMIT_ID\ngit revert COMMIT_ID",
+    "mistake": "git reset --hard discards tracked local edits. git restore FILE discards unstaged edits; git restore --staged FILE only unstages. Rebase rewrites history: avoid rebasing shared commits. Use --force-with-lease rather than --force only when rewriting your own branch is intentional.",
+    "exercise": "Unstage a file in a disposable practice repository without deleting your edits.",
+    "answer": "git restore --staged filename unstages it; git status shows modified content still present in your working folder."
+  },
+  {
+    "topic": "Terminal commands",
+    "title": "Navigate with PowerShell",
+    "explanation": "A terminal runs commands in a current directory. These are PowerShell examples, matching this project. Quote paths containing spaces and inspect paths before modifying them.",
+    "language": "powershell",
+    "code": "Get-Location\nGet-ChildItem\nSet-Location -LiteralPath \"C:\\Projects\\my website\"\nGet-Content -LiteralPath \"index.html\" -TotalCount 10\nNew-Item -ItemType Directory -Path \"practice\"",
+    "mistake": "PowerShell, Bash, and cmd have different syntax. Bash export NAME=value is not PowerShell syntax. Check targets before pasting deletion commands.",
+    "exercise": "Create a practice directory, enter it, and display your location.",
+    "answer": "New-Item -ItemType Directory -Path practice; then Set-Location practice and Get-Location. Set-Location .. goes back."
+  },
+  {
+    "topic": "Terminal commands",
+    "title": "Pipelines, environment, exit codes",
+    "explanation": "PowerShell pipelines pass objects between commands. Environment variables configure the current process and child processes. Native commands report success or failure through $LASTEXITCODE.",
+    "language": "powershell",
+    "code": "Get-ChildItem -File | Sort-Object Length -Descending | Select-Object -First 5 Name, Length\n$env:PORT = \"3000\"\nnode --check script.js\nif ($LASTEXITCODE -ne 0) { throw \"Syntax check failed\" }",
+    "mistake": "Do not print secrets or commit .env files. A later successful command can mask an earlier failure unless you check it. PowerShell object pipelines differ from Bash text pipelines.",
+    "exercise": "List JavaScript files sorted by filename.",
+    "answer": "Get-ChildItem -Filter *.js -File | Sort-Object Name | Select-Object Name"
+  },
+  {
+    "topic": "HTML",
+    "title": "Semantic structure and forms",
+    "explanation": "HTML describes meaning. Use a descriptive page h1, a main landmark, and real buttons for actions. Every input needs an associated label. Browser validation helps users; the server must still validate submitted data.",
+    "language": "html",
+    "code": "<main>\n  <h1>Learning notes</h1>\n  <form action=\"/subscribe\" method=\"post\">\n    <label for=\"email\">Email address</label>\n    <input id=\"email\" name=\"email\" type=\"email\" autocomplete=\"email\" required>\n    <button type=\"submit\">Subscribe</button>\n  </form>\n</main>",
+    "mistake": "A placeholder is not a label. Clickable divs do not provide native button keyboard behavior. /subscribe is an example endpoint that needs a server.",
+    "exercise": "Add a labeled name field.",
+    "answer": "Add <label for=\"name\">Name</label> and <input id=\"name\" name=\"name\" autocomplete=\"name\" required>. for and id must match."
+  },
+  {
+    "topic": "HTML",
+    "title": "Links, lists, images, disclosures",
+    "explanation": "Links navigate; buttons act. Native details and summary create expandable content that works without JavaScript. ul type is obsolete: use list-style-type in CSS. ol type remains valid.",
+    "language": "html",
+    "code": "<a href=\"https://developer.mozilla.org/\" target=\"_blank\" rel=\"noopener\">Read MDN</a>\n<ul class=\"topics\"><li>Git</li><li>HTML</li></ul>\n<img src=\"diagram.png\" alt=\"Browser requesting API data\" width=\"640\" height=\"360\" loading=\"lazy\">\n<details>\n  <summary>What is semantic HTML?</summary>\n  <p>Choose elements according to meaning.</p>\n</details>",
+    "mistake": "Ordinary links should not use role=\"tab\". Meaningful images need useful alt text; decorative images use alt=\"\". diagram.png is an example asset.",
+    "exercise": "Give the unordered list square markers using modern CSS.",
+    "answer": ".topics { list-style-type: square; } with <ul class=\"topics\">."
+  },
+  {
+    "topic": "Modern CSS",
+    "title": "Responsive Grid and Flexbox",
+    "explanation": "Grid arranges rows and columns; Flexbox distributes items along one main axis. Start with narrow screens. minmax(0, 1fr) and min-width: 0 let long content shrink instead of pushing the page sideways.",
+    "language": "css",
+    "code": ":root { --space: 1rem; --accent: #facc15; }\n.cards { display: grid; gap: var(--space); grid-template-columns: 1fr; }\n.card { min-width: 0; overflow-wrap: anywhere; }\n.toolbar { display: flex; flex-wrap: wrap; gap: .75rem; }\n@media (min-width: 48rem) {\n  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n}",
+    "mistake": "Fixed widths and absolute positioning are fragile for page layout. overflow-x: hidden may hide the problem and content. Test long words and browser zoom.",
+    "exercise": "Use three columns at 72rem and wider.",
+    "answer": "@media (min-width: 72rem) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }"
+  },
+  {
+    "topic": "Modern CSS",
+    "title": "Cascade, containers, and motion",
+    "explanation": "The cascade considers origin, layers, specificity, and order. Scope component styles instead of relying on !important. Container queries respond to a parent container. Respect reduced-motion preferences and visible keyboard focus.",
+    "language": "css",
+    "code": ".notes-shell { container-type: inline-size; }\n.note-card { padding: 1rem; }\n@container (min-width: 40rem) { .note-card { padding: 1.5rem; } }\nbutton:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }\n@media (prefers-reduced-motion: reduce) {\n  .note-card { animation: none; transition: none; }\n}",
+    "mistake": "A container cannot use its own size query to restyle itself: target descendants. Never remove focus outlines without a replacement. Test contrast over photos.",
+    "exercise": "Add a hover transition disabled for reduced-motion users.",
+    "answer": "Set .note-card { transition: border-color .15s ease; }, add a hover border color, and keep the reduced-motion transition: none rule."
+  },
+  {
+    "topic": "JavaScript",
+    "title": "Values, functions, arrays",
+    "explanation": "Use const for bindings you do not reassign and let for bindings you do. const does not freeze objects. Functions return results. map transforms arrays; filter keeps matches.",
+    "language": "javascript",
+    "code": "const tasks = [{ id: 1, done: false }, { id: 2, done: true }];\nconst pending = tasks.filter(task => !task.done);\nconst completed = tasks.map(task =>\n  task.id === 1 ? { ...task, done: true } : task\n);\nconsole.log(pending.length); // 1\nconsole.log(tasks[0].done); // false",
+    "mistake": "Use === for comparison without coercion. map needs a return value. Copying an array alone does not copy nested objects.",
+    "exercise": "Double every number without changing the input array.",
+    "answer": "const doubleAll = numbers => numbers.map(number => number * 2); doubleAll([1, 2, 3]) returns [2, 4, 6]."
+  },
+  {
+    "topic": "JavaScript",
+    "title": "DOM events, promises, errors",
+    "explanation": "Find elements after the DOM exists, register listeners, and update text safely. Async functions return promises; await pauses that function until a promise settles. Catch failures and restore loading state in finally.",
+    "language": "javascript",
+    "code": "const button = document.querySelector(\"#load-button\");\nconst status = document.querySelector(\"#load-status\");\nbutton.addEventListener(\"click\", async () => {\n  button.disabled = true;\n  try {\n    const response = await fetch(\"/api/notes\");\n    if (!response.ok) throw new Error(`HTTP ${response.status}`);\n    const notes = await response.json();\n    status.textContent = `Loaded ${notes.length} notes`;\n  } catch { status.textContent = \"Could not load notes. Try again.\"; }\n  finally { button.disabled = false; }\n});",
+    "mistake": "Requires matching button/status elements and an endpoint returning an array. Do not put untrusted input in innerHTML. Syntax success does not mean the network will succeed.",
+    "exercise": "Add a loading message before the request.",
+    "answer": "Set status.textContent = \"Loading notes…\" after disabling the button. Keep finally so the button recovers from both success and failure."
+  },
+  {
+    "topic": "React",
+    "title": "Components, props, state",
+    "explanation": "Components return UI. Props are read-only inputs from a parent; state is memory that triggers renders. Use functional updates when the next value depends on the old value. JSX requires a configured React project.",
+    "language": "jsx",
+    "code": "import { useState } from \"react\";\nexport default function Counter({ initial = 0 }) {\n  const [count, setCount] = useState(initial);\n  return (\n    <button onClick={() => setCount(previous => previous + 1)}>\n      Count: {count}\n    </button>\n  );\n}",
+    "mistake": "Do not mutate state arrays with push; use setItems(previous => [...previous, newItem]). Use stable data IDs as list keys. Never call Hooks conditionally or in loops.",
+    "exercise": "Add a Reset button returning the counter to initial.",
+    "answer": "Wrap both buttons in a fragment and add <button onClick={() => setCount(initial)}>Reset</button>."
+  },
+  {
+    "topic": "React",
+    "title": "Effects and cleanup",
+    "explanation": "Effects synchronize an external system, such as a timer or subscription. Calculate derived values during rendering instead of storing them in duplicate state. Effects need cleanup. Strict Mode may run an extra setup/cleanup cycle during development.",
+    "language": "jsx",
+    "code": "import { useEffect, useState } from \"react\";\nexport default function Clock() {\n  const [now, setNow] = useState(() => new Date());\n  useEffect(() => {\n    const timer = setInterval(() => setNow(new Date()), 1000);\n    return () => clearInterval(timer);\n  }, []);\n  return <time dateTime={now.toISOString()}>{now.toLocaleTimeString()}</time>;\n}",
+    "mistake": "An Effect callback must not be async: it must return cleanup or nothing, not a promise. Include reactive dependencies. Prefer framework data-loading facilities when available; manual requests need cancellation and stale-response handling.",
+    "exercise": "Explain the consequence of removing timer cleanup.",
+    "answer": "The interval can continue running after unmount, wasting work. The cleanup stops it."
+  },
+  {
+    "topic": "APIs",
+    "title": "HTTP methods, status codes, JSON",
+    "explanation": "An API defines a contract between programs. GET reads; POST commonly creates; PUT replaces; PATCH partially updates; DELETE removes. JSON represents data. fetch does not reject only because the server returns 404 or 500: check response.ok.",
+    "language": "javascript",
+    "code": "async function getNotes() {\n  const response = await fetch(\"/api/notes\", {\n    headers: { Accept: \"application/json\" }\n  });\n  if (!response.ok) throw new Error(`HTTP ${response.status}`);\n  return response.json();\n}\n// Call inside an async function:\n// const notes = await getNotes();",
+    "mistake": "Do not parse 204 No Content as JSON. 401 means authentication is needed; 403 means access is denied. CORS is not authentication. The example requires an API endpoint.",
+    "exercise": "Describe loading, empty, and failure states.",
+    "answer": "Show progress while loading, a helpful empty state for [], and a retryable error after failure. Restore disabled controls in finally."
+  },
+  {
+    "topic": "APIs",
+    "title": "Parameters, cancellation, pagination",
+    "explanation": "URLSearchParams encodes query values. AbortController cancels slow or obsolete requests. Paginate large collections. Abort older searches and check response versions so stale results cannot replace new ones.",
+    "language": "javascript",
+    "code": "async function searchNotes(query) {\n  const controller = new AbortController();\n  const timeout = setTimeout(() => controller.abort(), 8000);\n  try {\n    const params = new URLSearchParams({ q: query, limit: \"20\" });\n    const response = await fetch(`/api/notes?${params}`, { signal: controller.signal });\n    if (!response.ok) throw new Error(`HTTP ${response.status}`);\n    return await response.json();\n  } finally { clearTimeout(timeout); }\n}",
+    "mistake": "Do not join raw user values into URLs. Handle AbortError separately for expected cancellation. Retrying non-idempotent requests blindly can create duplicates.",
+    "exercise": "Encode React & CSS with limit 10.",
+    "answer": "new URLSearchParams({ q: \"React & CSS\", limit: \"10\" }).toString() returns q=React+%26+CSS&limit=10."
+  },
+  {
+    "topic": "Node.js",
+    "title": "Modules, files, configuration",
+    "explanation": "Node runs JavaScript outside the browser. Use built-in modules through node: imports. Save this as read-note.mjs to run as an ES module. Asynchronous file operations allow other work to continue.",
+    "language": "javascript",
+    "code": "import { readFile } from \"node:fs/promises\";\nconst filename = new URL(\"./README.md\", import.meta.url);\ntry {\n  const content = await readFile(filename, \"utf8\");\n  console.log(content);\n} catch (error) {\n  console.error(\"Could not read README:\", error.code);\n  process.exitCode = 1;\n}",
+    "mistake": "Node has no document or window. Relative filesystem paths normally resolve from the working directory; import.meta.url resolves from the module location. README.md must exist beside the example.",
+    "exercise": "Read PORT from environment with 3000 as default.",
+    "answer": "const port = Number(process.env.PORT ?? 3000); validate that it is an integer between 1 and 65535."
+  },
+  {
+    "topic": "Node.js",
+    "title": "A small HTTP JSON server",
+    "explanation": "A server receives requests and sends responses. Check routes and methods; use explicit status codes and content types. This development example binds to loopback, making it accessible only on your computer.",
+    "language": "javascript",
+    "code": "import { createServer } from \"node:http\";\nconst server = createServer((request, response) => {\n  const url = new URL(request.url, \"http://localhost\");\n  if (request.method === \"GET\" && url.pathname === \"/api/health\") {\n    response.writeHead(200, { \"Content-Type\": \"application/json; charset=utf-8\" });\n    response.end(JSON.stringify({ ok: true }));\n    return;\n  }\n  response.writeHead(404, { \"Content-Type\": \"application/json\" });\n  response.end(JSON.stringify({ error: \"Not found\" }));\n});\nserver.listen(3000, \"127.0.0.1\");",
+    "mistake": "Save as server.mjs and run node server.mjs. Production needs input validation, body-size limits, timeouts, logging, appropriate authentication, and HTTPS. Never expose arbitrary filesystem paths as routes.",
+    "exercise": "Add GET /api/notes returning an empty array.",
+    "answer": "Before the 404 response, check GET and /api/notes; send status 200, JSON content type, JSON.stringify([]), then return."
+  },
+  {
+    "topic": "SQL",
+    "title": "Tables, joins, aggregation",
+    "explanation": "SQL queries relational tables. Primary keys identify rows; foreign keys link tables. WHERE filters rows; GROUP BY aggregates; ORDER BY makes ordering explicit. This schema uses integer IDs supplied by the application.",
+    "language": "sql",
+    "code": "CREATE TABLE topics (id INTEGER PRIMARY KEY, name VARCHAR(100) NOT NULL);\nCREATE TABLE notes (id INTEGER PRIMARY KEY, topic_id INTEGER REFERENCES topics(id), title VARCHAR(200) NOT NULL);\nINSERT INTO topics (id, name) VALUES (1, 'Git');\nINSERT INTO notes (id, topic_id, title) VALUES (1, 1, 'Branches');\nSELECT topics.name, COUNT(notes.id) AS note_count\nFROM topics LEFT JOIN notes ON notes.topic_id = topics.id\nGROUP BY topics.id, topics.name\nORDER BY topics.name;",
+    "mistake": "Use IS NULL, not = NULL. LEFT JOIN keeps topics without notes; COUNT(notes.id) returns zero for them. SQL dialects differ in generated IDs and pagination.",
+    "exercise": "Select titles containing Git.",
+    "answer": "SELECT id, title FROM notes WHERE title LIKE '%Git%' ORDER BY title; Case sensitivity depends on database and collation."
+  },
+  {
+    "topic": "SQL",
+    "title": "Parameters, indexes, transactions",
+    "explanation": "Bind user values as query parameters, not SQL text. Transactions make related changes succeed or fail together. Indexes can speed lookups but cost storage and work on writes. This JavaScript example uses PostgreSQL pg and a previously connected client.",
+    "language": "javascript",
+    "code": "const result = await client.query(\n  \"SELECT id, title FROM notes WHERE topic_id = $1 ORDER BY id LIMIT $2\",\n  [topicId, 20]\n);\nawait client.query(\"BEGIN\");\ntry {\n  await client.query(\"UPDATE notes SET title = $1 WHERE id = $2\", [title, noteId]);\n  await client.query(\"COMMIT\");\n} catch (error) {\n  await client.query(\"ROLLBACK\");\n  throw error;\n}",
+    "mistake": "Use the same connection throughout a transaction. Parameters bind values, not identifiers; allowlist dynamic table names. Check WHERE before UPDATE or DELETE.",
+    "exercise": "Create an index for topic_id lookups.",
+    "answer": "CREATE INDEX notes_topic_id_idx ON notes(topic_id); Inspect query plans with EXPLAIN before assuming an index helps."
+  },
+  {
+    "topic": "Algorithms",
+    "title": "Big O and binary search",
+    "explanation": "Big O describes how resource use grows with input size. Linear scans are O(n). Binary search halves a range each step: O(log n) time, but it requires sorted input. This iterative version uses O(1) auxiliary space.",
+    "language": "javascript",
+    "code": "function binarySearch(sorted, target) {\n  let low = 0, high = sorted.length - 1;\n  while (low <= high) {\n    const middle = low + Math.floor((high - low) / 2);\n    if (sorted[middle] === target) return middle;\n    if (sorted[middle] < target) low = middle + 1;\n    else high = middle - 1;\n  }\n  return -1;\n}\nconsole.log(binarySearch([2, 4, 7, 9], 7)); // 2",
+    "mistake": "Unsorted input produces incorrect results. low = middle can cause an infinite loop; advance to middle + 1. Sorting first costs time, so binary search is not automatically best for one lookup.",
+    "exercise": "Test empty input, missing targets, and first/last items.",
+    "answer": "Expect -1 for [] and a missing target; expect 0 for 2 and 3 for 9 in [2, 4, 7, 9]."
+  },
+  {
+    "topic": "Algorithms",
+    "title": "Sets, maps, problem solving",
+    "explanation": "Sets store unique values; Maps associate keys with values. Begin with a correct simple solution, identify repeated work, then choose a data structure. Explain time and space costs and test boundaries.",
+    "language": "javascript",
+    "code": "function countWords(text) {\n  const counts = new Map();\n  const words = text.toLowerCase().match(/[a-z]+/g) ?? [];\n  for (const word of words) counts.set(word, (counts.get(word) ?? 0) + 1);\n  return counts;\n}\nconsole.log(countWords(\"Git git CSS\").get(\"git\")); // 2\nconst unique = [...new Set([1, 1, 2, 3])]; // [1, 2, 3]",
+    "mistake": "The regex handles English ASCII words, not all languages. Maps compare object keys by identity. Lookup is efficient in typical implementations; do not promise constant-time guarantees for every engine.",
+    "exercise": "Test punctuation-only text and an empty string.",
+    "answer": "countWords(\"!!!\").size and countWords(\"\").size should both be 0 because ?? [] handles no matches."
+  },
+  {
+    "topic": "Testing",
+    "title": "Node unit tests",
+    "explanation": "Unit tests check behavior with controlled inputs. Test boundaries and failures, not only success. The built-in Node runner needs no extra framework. Save this as sum.test.mjs and run node --test.",
+    "language": "javascript",
+    "code": "import test from \"node:test\";\nimport assert from \"node:assert/strict\";\nfunction sum(values) { return values.reduce((total, value) => total + value, 0); }\ntest(\"sums positive and negative values\", () => {\n  assert.equal(sum([3, -2, 4]), 5);\n});\ntest(\"empty input returns zero\", () => {\n  assert.equal(sum([]), 0);\n});",
+    "mistake": "Passing tests prove only the checked behaviors. Avoid copying implementation logic into tests. Control time, storage, and networks to keep tests deterministic.",
+    "exercise": "Test one element and two zeros.",
+    "answer": "assert.equal(sum([7]), 7); assert.equal(sum([0, 0]), 0); use descriptive test names."
+  },
+  {
+    "topic": "Testing",
+    "title": "Integration, UI, accessibility",
+    "explanation": "Integration checks parts working together; UI checks user actions. Prefer role/name selectors. DOM tests do not prove visual layout, native keyboard behavior, clipboard permissions, or real media playback: also test in a browser.",
+    "language": "javascript",
+    "code": "// Playwright example in a configured browser test project:\nimport { test, expect } from \"@playwright/test\";\ntest(\"search finds React lessons\", async ({ page }) => {\n  await page.goto(\"http://127.0.0.1:5502/index.html\");\n  await page.getByRole(\"searchbox\", { name: \"Search all engineering notes\" }).fill(\"React\");\n  await expect(page.locator(\".lesson:not([hidden])\")).not.toHaveCount(0);\n  await page.getByRole(\"button\", { name: \"Clear search and filters\" }).click();\n});",
+    "mistake": "Do not rely on arbitrary sleeps. Check keyboard navigation, touch targets, 200% zoom, empty states, storage failures, and reduced motion.",
+    "exercise": "Describe copy-button behavior when clipboard permission is denied.",
+    "answer": "Open a selectable manual-copy field, announce the fallback, close with Escape, and restore focus to the original button."
+  },
+  {
+    "topic": "Security",
+    "title": "Untrusted text and script injection",
+    "explanation": "Treat user input and third-party API fields as untrusted. Insert text with textContent rather than innerHTML. Intentional rich HTML needs a maintained sanitizer with a restrictive policy. Content Security Policy adds protection but does not replace safe rendering.",
+    "language": "javascript",
+    "code": "const name = '<img src=x onerror=\"alert(1)\">';\nconst output = document.createElement(\"p\");\noutput.textContent = name;\ndocument.querySelector(\"#results\").append(output);\n// Markup is displayed as text, not executed.",
+    "mistake": "A few regex replacements are not an HTML sanitizer. Validate URL protocols. Client validation does not replace server validation and authorization.",
+    "exercise": "Render a title containing <script> as plain text.",
+    "answer": "Create an element, assign title to textContent, and append it. Never pass the title to an HTML parser."
+  },
+  {
+    "topic": "Security",
+    "title": "Authentication, permissions, secrets",
+    "explanation": "Authentication identifies users; authorization checks what they may do. Enforce both on the server for each protected resource. Keep secrets out of browser bundles and Git. Passwords require vetted password-hashing libraries, such as Argon2id implementations, not plain SHA hashing or reversible encryption.",
+    "language": "javascript",
+    "code": "// Connected PostgreSQL client on the server:\nasync function loadOwnedNote(client, authenticatedUserId, noteId) {\n  const result = await client.query(\n    \"SELECT id, title FROM notes WHERE id = $1 AND owner_id = $2\",\n    [noteId, authenticatedUserId]\n  );\n  return result.rows[0] ?? null;\n}\n// authenticatedUserId comes from a verified server session.",
+    "mistake": "Assumes notes has owner_id. Never trust browser-supplied user IDs as identity proof. Restrict public API keys by origin/API; they remain visible. Use HTTPS and secure session cookies; cookie-authenticated mutations also need CSRF protection.",
+    "exercise": "Why does hiding an Edit button not secure an endpoint?",
+    "answer": "Users can call the endpoint directly. The server must verify the session and check permissions before every read or update."
+  },
+  {
+    "topic": "Deployment",
+    "title": "Static hosting versus servers",
+    "explanation": "This site is static HTML, CSS, and JavaScript. Static hosts serve files, not Node servers or databases. Dynamic features call external APIs. Test nested paths because relative asset URLs resolve from each page location.",
+    "language": "shell",
+    "code": "# Run from this project directory:\nnode --check script.js\nnode --check notes.js\nnode audit_checks.cjs\nnpm test\n# Preview with the local development server.\n# Publish only after diff review and approval.",
+    "mistake": "Local success does not prove production DNS, headers, HTTPS, or redirects. Never publish backups or .env files. Do not embed server credentials in browser code.",
+    "exercise": "List assets for the copied updates/index.html page.",
+    "answer": "style.css, java.js, notes.js, and shared certificate images through ../../images/. Check each path resolves."
+  },
+  {
+    "topic": "Deployment",
+    "title": "Release checks and rollback",
+    "explanation": "Reliable releases run repeatable checks and deploy a reviewed revision. Rollback restores a known working release. Keep configuration separate from code and check logs and the live site after release. This workflow validates this project and does not publish.",
+    "language": "yaml",
+    "code": "name: Validate website\non: [push, pull_request]\njobs:\n  check:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 24\n          cache: npm\n      - run: npm ci\n      - run: npm test",
+    "mistake": "Requires package.json and package-lock.json. Deployments need separate hosting setup and approval. Check mobile, keyboard, assets, caching, access controls, and rollback readiness.",
+    "exercise": "What should you verify immediately after publishing?",
+    "answer": "Confirm revision, search/copy/expand behavior, nested assets, HTTPS, console errors, and authentication boundaries. Restore the last working revision if critical checks fail."
+  }
+]

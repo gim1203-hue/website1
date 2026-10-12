@@ -1,0 +1,1 @@
+﻿{"name":"imran-engineering-notes","version":"1.0.0","private":true,"scripts":{"test":"node audit_checks.cjs && node --test tests/notes.test.cjs","check":"node --check script.js && node --check notes.js"},"devDependencies":{"jsdom":"26.1.0"}}

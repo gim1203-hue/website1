@@ -1626,14 +1626,16 @@ document.getElementById('today-date').textContent = new Date().toLocaleDateStrin
   if (!searchInput || !playerEl) return;
 
   const YT_KEY_STORE = 'ik_youtube_api_key';
+  // Public browser default, loaded again on refresh unless explicitly cleared.
+  const IWATCH_DEFAULT_KEY = 'AIzaSyDGxqXl-ka4sv36eeMnPjHgDX19nOoNKVo';
 
   function getApiKey() {
-    try { return localStorage.getItem(YT_KEY_STORE) || ''; } catch (_) { return ''; }
+    try { return localStorage.getItem(YT_KEY_STORE) ?? IWATCH_DEFAULT_KEY; } catch (_) { return IWATCH_DEFAULT_KEY; }
   }
   function setApiKey(key) {
     try {
       if (key) localStorage.setItem(YT_KEY_STORE, key);
-      else localStorage.removeItem(YT_KEY_STORE);
+      else localStorage.setItem(YT_KEY_STORE, '');
     } catch (_) { /* ignore storage errors */ }
   }
 

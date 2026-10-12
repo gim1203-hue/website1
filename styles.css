@@ -1934,3 +1934,63 @@ button { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Engineering library: keeps the existing green landscape, glass panels, and gold accents. */
+.notes-library { margin: 36px 0; padding: clamp(16px, 3vw, 32px); background: rgba(8,20,13,.88); border: 1px solid rgba(255,255,255,.25); border-radius: 16px; }
+.notes-library-heading h2 { font-size: clamp(26px, 4vw, 38px); margin: 0 0 10px; color: #facc15; }
+.notes-eyebrow { color: #86efac; font-size: 12px; letter-spacing: .14em; font-weight: bold; }
+.notes-controls { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr) auto; align-items: end; gap: 12px; margin: 24px 0 14px; }
+.notes-controls label { display: block; margin-bottom: 6px; font-weight: bold; }
+.notes-controls input, .notes-controls select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #748779; border-radius: 8px; background: #12251a; color: #fff; font-size: 16px; }
+.notes-library button, .notes-copy-dialog button { min-height: 44px; padding: 10px 14px; border: 1px solid #718474; border-radius: 8px; background: #20382a; color: #fff; cursor: pointer; }
+.notes-library button:hover, .notes-copy-dialog button:hover { background: #304d39; }
+.notes-library button:disabled { opacity: .55; cursor: default; }
+.notes-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.notes-actions a, .notes-references a { color: #93c5fd; text-underline-offset: 3px; }
+.notes-topic-group { min-width: 0; margin-top: 24px; }
+.notes-library h3 { color: #facc15 !important; background: transparent !important; border: 0; padding: 0; font-size: 22px; }
+.notes-library h4 { color: #facc15; font-size: 16px; margin: 0 0 6px; }
+.lesson { margin-top: 10px; border: 1px solid #526658; border-radius: 10px; background: rgba(255,255,255,.035); overflow: clip; }
+.lesson > summary { padding: 16px; cursor: pointer; font-weight: bold; color: #f0fdf4; list-style-position: inside; }
+.lesson-label { color: #b5cabd; font-weight: normal; font-size: 12px; margin-left: 14px; }
+.lesson[open] > summary { background: rgba(134,239,172,.08); border-bottom: 1px solid #526658; }
+.lesson-body { padding: 16px; }
+.lesson-body p { line-height: 1.7; margin: 0 0 16px; }
+.lesson-code-header { display: flex; justify-content: space-between; gap: 12px; align-items: center; color: #b5cabd; font: 13px monospace; }
+.notes-library pre { white-space: pre; overflow-x: auto; padding: 16px; font-size: 14px; line-height: 1.6; margin: 8px 0 18px; }
+.notes-library pre code { padding: 0; background: transparent !important; font-size: inherit; }
+.lesson-mistake, .lesson-practice { border-left: 3px solid #facc15; padding: 4px 0 4px 14px; margin-top: 18px; }
+.lesson-practice { border-color: #86efac; }
+.practice-answer > summary { cursor: pointer; color: #93c5fd; padding: 10px 0; min-height: 44px; }
+.practice-answer p { margin: 6px 0 0; }
+.notes-references { border-top: 1px solid #526658; margin-top: 28px; padding-top: 8px; }
+#notes-result-status { color: #b5cabd; font-size: 14px; }
+#notes-empty { padding: 20px; border: 1px dashed #748779; border-radius: 8px; }
+#notes-copy-status:empty { display: none; }
+.legacy-corrections { background: rgba(8,20,13,.9) !important; padding: 18px; border: 1px solid #748779; border-radius: 12px; margin: 20px 0; }
+.legacy-corrections h3 { margin-top: 0; }
+.notes-filter-hidden, .notes-library [hidden], #git-notes[hidden], #notes-copy-dialog[hidden] { display: none !important; }
+.notes-copy-dialog { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.8); }
+.notes-copy-dialog-inner { width: min(760px, 100%); max-height: 90dvh; overflow: auto; padding: 24px; border-radius: 14px; border: 1px solid #748779; background: #12251a; }
+.notes-copy-dialog h2 { margin-top: 0; }
+.notes-copy-dialog label { display: block; }
+#notes-copy-text { width: 100%; height: 260px; max-height: 45dvh; padding: 12px; margin: 8px 0 16px; font: 14px monospace; background: #07120c; color: #86efac; border: 1px solid #748779; border-radius: 8px; }
+.notes-library :where(summary, pre):focus-visible { outline: 3px solid #93c5fd; outline-offset: -3px; }
+.notes-controls > *, .notes-copy-dialog-inner { min-width: 0; }
+@media (max-width: 760px) { .notes-controls { grid-template-columns: 1fr; } .lesson-label { display: none; } .notes-actions > button { flex: 1 1 180px; } .notes-library { padding: 16px; } }
+@media (prefers-reduced-motion: reduce) { .notes-library *, .notes-copy-dialog * { scroll-behavior: auto; } }
+
+/* Locked headings retain the existing background and gold link buttons. */
+.locked-group > h3 { padding: 0; }
+.lock-heading { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 12px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; min-height: 48px; }
+[data-lock-icon] { margin-left: .75rem; flex-shrink: 0; }
+.locked-group .lock-content[hidden], .locked-group.is-locked .lock-content, .accordion-panel.is-locked > * { display: none !important; }
+#section-lock-dialog { width: min(440px, calc(100vw - 32px)); box-sizing: border-box; border: 1px solid #9bc8a0; border-radius: 16px; padding: 24px; background: #102319; color: #fff; }
+#section-lock-dialog::backdrop { background: rgba(0,0,0,.75); }
+#section-lock-dialog h2 { margin-top: 0; color: #facc15; }
+#section-lock-dialog label { display: block; margin-bottom: 8px; }
+#section-lock-code { width: 100%; box-sizing: border-box; min-height: 46px; font-size: 18px; padding: 10px; border-radius: 6px; }
+#section-lock-error { color: #ffb4b4; min-height: 1.5em; }
+.lock-dialog-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.lock-dialog-actions button { min-height: 44px; padding: 10px 20px; cursor: pointer; }
+.lock-heading:focus-visible, [data-lock-legacy]:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }

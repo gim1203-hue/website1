@@ -132,9 +132,7 @@
 
 
 
-<h3>DEVELOPER & LEARNING RESOURCES</h3>
-
-<div class="tabs" role="navigation" aria-label="quick links">
+<section class="locked-group" data-lock-group><h3><button type="button" class="lock-heading" data-lock-heading aria-expanded="false" aria-controls="locked-links-0"><span>DEVELOPER & LEARNING RESOURCES</span><span data-lock-icon aria-hidden="true">??</span></button></h3><div id="locked-links-0" class="lock-content" hidden><div class="tabs" role="navigation" aria-label="quick links">
   
 <a href="https://devdocs.io/html" target="_blank" rel="noopener" class="tab">DevDocs HTML</a>
 <a href="https://devdocs.io/javascript" target="_blank" rel="noopener" class="tab">DevDocs JS</a>
@@ -180,13 +178,11 @@
 <a href="https://nodejs.org/en/download" target="_blank" rel="noopener" class="tab">Node.js Downloads</a>
 <a href="https://www.microsoft.com/en-us" target="_blank" rel="noopener" class="tab">Microsoft</a>
 
-</div>
+</div></div></section>
 
 
 
-<h3>DASHBOARDS & ACCOUNTS</h3>
-
-<div class="tabs" role="navigation" aria-label="quick links">
+<section class="locked-group" data-lock-group><h3><button type="button" class="lock-heading" data-lock-heading aria-expanded="false" aria-controls="locked-links-1"><span>DASHBOARDS & ACCOUNTS</span><span data-lock-icon aria-hidden="true">??</span></button></h3><div id="locked-links-1" class="lock-content" hidden><div class="tabs" role="navigation" aria-label="quick links">
 
 <a href="https://hofstra.quickstart.com/my-dashboard/#/bootcamp" target="_blank" rel="noopener" class="tab">Hofstra Bootcamp</a>
 
@@ -236,13 +232,11 @@
 <a href="https://tidbcloud.com/" target="_blank" rel="noopener" class="tab">TiDB Cloud</a>
 
 
-</div>
+</div></div></section>
 
 
 
-<h3>MY HUB</h3>
-
-<div class="tabs" role="navigation" aria-label="quick links">
+<section class="locked-group" data-lock-group><h3><button type="button" class="lock-heading" data-lock-heading aria-expanded="false" aria-controls="locked-links-2"><span>MY HUB</span><span data-lock-icon aria-hidden="true">??</span></button></h3><div id="locked-links-2" class="lock-content" hidden><div class="tabs" role="navigation" aria-label="quick links">
   
   <a href="https://www.homedepo.tech/" target="_blank" rel="noopener" class="tab">HomeDepo</a>
 
@@ -304,7 +298,7 @@
 
 
 
-</div>
+</div></div></section>
   <!-- end of my projects tabs -->
 
   
@@ -491,7 +485,215 @@
   <!-- ============================================================
        SECTION: GIT NOTES (course reference material)
        ============================================================ -->
-  <p class="left-block"><a href="#git-notes">Jump to Git notes ↓</a></p>
+  <p class="left-block"><a href="#engineering-notes">Explore all engineering notes ↓</a> · <a href="#git-notes">Jump to Git notes ↓</a></p>
+<!-- ENGINEERING LIBRARY START -->
+<section id="engineering-notes" class="notes-library" aria-labelledby="notes-library-title">
+  <div class="notes-library-heading"><p class="notes-eyebrow">LEARN · BUILD · PRACTICE</p><h2 id="notes-library-title">Software Engineering Notes</h2><p>A practical reference from your first commit to a production release. Your original course notes are preserved below.</p></div>
+  <div class="notes-controls" role="search" aria-label="Engineering notes">
+    <div><label for="notes-search">Search all engineering notes</label><input id="notes-search" type="search" placeholder="Try: git restore, React, fetch, SQL…" aria-controls="notes-topics git-notes" autocomplete="off"></div>
+    <div><label for="notes-topic">Topic</label><select id="notes-topic"><option value="all">All topics + original notes</option><option value="Git">Git</option><option value="Terminal commands">Terminal commands</option><option value="HTML">HTML</option><option value="Modern CSS">Modern CSS</option><option value="JavaScript">JavaScript</option><option value="React">React</option><option value="APIs">APIs</option><option value="Node.js">Node.js</option><option value="SQL">SQL</option><option value="Algorithms">Algorithms</option><option value="Testing">Testing</option><option value="Security">Security</option><option value="Deployment">Deployment</option><option value="legacy">Original course notes</option></select></div>
+    <button id="notes-clear" type="button">Clear search and filters</button>
+  </div>
+  <div class="notes-actions"><button id="notes-expand" type="button">Expand matching notes</button><button id="notes-collapse" type="button">Collapse matching notes</button><a href="#git-notes">Original course notes ↓</a></div>
+  <p id="notes-result-status" role="status" aria-live="polite" aria-atomic="true">26 lessons in 13 topics, plus your original notes.</p>
+  <p id="notes-empty" hidden>No notes match. Try a shorter phrase or clear the filters.</p>
+  <div id="notes-topics" class="notes-topics"><section class="notes-topic-group" data-topic="Git" aria-labelledby="topic-0"><h3 id="topic-0">Git</h3><details class="lesson" id="lesson-0" data-topic="Git"><summary><span>Snapshots: status, stage, commit</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Git records project snapshots. Your working folder holds edits; staging chooses what goes into the next commit. Review the diff before committing. Run these commands inside an existing repository.</p><div class="lesson-code-header"><span>shell</span><button class="notes-copy" type="button" data-copy-target="example-0" aria-label="Copy code: Snapshots: status, stage, commit">Copy code</button></div><pre tabindex="0" aria-label="shell example"><code id="example-0">git status
+git diff
+git add index.html styles.css
+git diff --staged
+git commit -m &quot;Improve notes layout&quot;
+git log --oneline -5</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>git add . can include secrets and unrelated files. Commits stay local until pushed. Write messages that explain the change.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Change a heading in a practice repository. Stage only that file and inspect the staged diff.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Use git add with the exact filename, then git diff --staged. Confirm only your heading edit is present before committing.</p></details></div></div></details><details class="lesson" id="lesson-1" data-topic="Git"><summary><span>Branches, merge, and safe undo</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>A branch names a line of commits. Use feature branches to work independently. Replace main with your actual default branch; this website uses master. Revert creates a new undo commit for shared history.</p><div class="lesson-code-header"><span>shell</span><button class="notes-copy" type="button" data-copy-target="example-1" aria-label="Copy code: Branches, merge, and safe undo">Copy code</button></div><pre tabindex="0" aria-label="shell example"><code id="example-1">git switch -c feature/notes
+# Edit, stage, and commit first.
+git switch main
+git merge feature/notes
+# Inspect a commit before undoing it:
+git show COMMIT_ID
+git revert COMMIT_ID</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>git reset --hard discards tracked local edits. git restore FILE discards unstaged edits; git restore --staged FILE only unstages. Rebase rewrites history: avoid rebasing shared commits. Use --force-with-lease rather than --force only when rewriting your own branch is intentional.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Unstage a file in a disposable practice repository without deleting your edits.</p><details class="practice-answer"><summary>Show practice answer</summary><p>git restore --staged filename unstages it; git status shows modified content still present in your working folder.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Terminal commands" aria-labelledby="topic-1"><h3 id="topic-1">Terminal commands</h3><details class="lesson" id="lesson-2" data-topic="Terminal commands"><summary><span>Navigate with PowerShell</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>A terminal runs commands in a current directory. These are PowerShell examples, matching this project. Quote paths containing spaces and inspect paths before modifying them.</p><div class="lesson-code-header"><span>powershell</span><button class="notes-copy" type="button" data-copy-target="example-2" aria-label="Copy code: Navigate with PowerShell">Copy code</button></div><pre tabindex="0" aria-label="powershell example"><code id="example-2">Get-Location
+Get-ChildItem
+Set-Location -LiteralPath &quot;C:\Projects\my website&quot;
+Get-Content -LiteralPath &quot;index.html&quot; -TotalCount 10
+New-Item -ItemType Directory -Path &quot;practice&quot;</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>PowerShell, Bash, and cmd have different syntax. Bash export NAME=value is not PowerShell syntax. Check targets before pasting deletion commands.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Create a practice directory, enter it, and display your location.</p><details class="practice-answer"><summary>Show practice answer</summary><p>New-Item -ItemType Directory -Path practice; then Set-Location practice and Get-Location. Set-Location .. goes back.</p></details></div></div></details><details class="lesson" id="lesson-3" data-topic="Terminal commands"><summary><span>Pipelines, environment, exit codes</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>PowerShell pipelines pass objects between commands. Environment variables configure the current process and child processes. Native commands report success or failure through $LASTEXITCODE.</p><div class="lesson-code-header"><span>powershell</span><button class="notes-copy" type="button" data-copy-target="example-3" aria-label="Copy code: Pipelines, environment, exit codes">Copy code</button></div><pre tabindex="0" aria-label="powershell example"><code id="example-3">Get-ChildItem -File | Sort-Object Length -Descending | Select-Object -First 5 Name, Length
+$env:PORT = &quot;3000&quot;
+node --check script.js
+if ($LASTEXITCODE -ne 0) { throw &quot;Syntax check failed&quot; }</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Do not print secrets or commit .env files. A later successful command can mask an earlier failure unless you check it. PowerShell object pipelines differ from Bash text pipelines.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>List JavaScript files sorted by filename.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Get-ChildItem -Filter *.js -File | Sort-Object Name | Select-Object Name</p></details></div></div></details></section><section class="notes-topic-group" data-topic="HTML" aria-labelledby="topic-2"><h3 id="topic-2">HTML</h3><details class="lesson" id="lesson-4" data-topic="HTML"><summary><span>Semantic structure and forms</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>HTML describes meaning. Use a descriptive page h1, a main landmark, and real buttons for actions. Every input needs an associated label. Browser validation helps users; the server must still validate submitted data.</p><div class="lesson-code-header"><span>html</span><button class="notes-copy" type="button" data-copy-target="example-4" aria-label="Copy code: Semantic structure and forms">Copy code</button></div><pre tabindex="0" aria-label="html example"><code id="example-4">&lt;main&gt;
+  &lt;h1&gt;Learning notes&lt;/h1&gt;
+  &lt;form action=&quot;/subscribe&quot; method=&quot;post&quot;&gt;
+    &lt;label for=&quot;email&quot;&gt;Email address&lt;/label&gt;
+    &lt;input id=&quot;email&quot; name=&quot;email&quot; type=&quot;email&quot; autocomplete=&quot;email&quot; required&gt;
+    &lt;button type=&quot;submit&quot;&gt;Subscribe&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/main&gt;</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>A placeholder is not a label. Clickable divs do not provide native button keyboard behavior. /subscribe is an example endpoint that needs a server.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Add a labeled name field.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Add &lt;label for=&quot;name&quot;&gt;Name&lt;/label&gt; and &lt;input id=&quot;name&quot; name=&quot;name&quot; autocomplete=&quot;name&quot; required&gt;. for and id must match.</p></details></div></div></details><details class="lesson" id="lesson-5" data-topic="HTML"><summary><span>Links, lists, images, disclosures</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Links navigate; buttons act. Native details and summary create expandable content that works without JavaScript. ul type is obsolete: use list-style-type in CSS. ol type remains valid.</p><div class="lesson-code-header"><span>html</span><button class="notes-copy" type="button" data-copy-target="example-5" aria-label="Copy code: Links, lists, images, disclosures">Copy code</button></div><pre tabindex="0" aria-label="html example"><code id="example-5">&lt;a href=&quot;https://developer.mozilla.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Read MDN&lt;/a&gt;
+&lt;ul class=&quot;topics&quot;&gt;&lt;li&gt;Git&lt;/li&gt;&lt;li&gt;HTML&lt;/li&gt;&lt;/ul&gt;
+&lt;img src=&quot;diagram.png&quot; alt=&quot;Browser requesting API data&quot; width=&quot;640&quot; height=&quot;360&quot; loading=&quot;lazy&quot;&gt;
+&lt;details&gt;
+  &lt;summary&gt;What is semantic HTML?&lt;/summary&gt;
+  &lt;p&gt;Choose elements according to meaning.&lt;/p&gt;
+&lt;/details&gt;</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Ordinary links should not use role=&quot;tab&quot;. Meaningful images need useful alt text; decorative images use alt=&quot;&quot;. diagram.png is an example asset.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Give the unordered list square markers using modern CSS.</p><details class="practice-answer"><summary>Show practice answer</summary><p>.topics { list-style-type: square; } with &lt;ul class=&quot;topics&quot;&gt;.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Modern CSS" aria-labelledby="topic-3"><h3 id="topic-3">Modern CSS</h3><details class="lesson" id="lesson-6" data-topic="Modern CSS"><summary><span>Responsive Grid and Flexbox</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Grid arranges rows and columns; Flexbox distributes items along one main axis. Start with narrow screens. minmax(0, 1fr) and min-width: 0 let long content shrink instead of pushing the page sideways.</p><div class="lesson-code-header"><span>css</span><button class="notes-copy" type="button" data-copy-target="example-6" aria-label="Copy code: Responsive Grid and Flexbox">Copy code</button></div><pre tabindex="0" aria-label="css example"><code id="example-6">:root { --space: 1rem; --accent: #facc15; }
+.cards { display: grid; gap: var(--space); grid-template-columns: 1fr; }
+.card { min-width: 0; overflow-wrap: anywhere; }
+.toolbar { display: flex; flex-wrap: wrap; gap: .75rem; }
+@media (min-width: 48rem) {
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Fixed widths and absolute positioning are fragile for page layout. overflow-x: hidden may hide the problem and content. Test long words and browser zoom.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Use three columns at 72rem and wider.</p><details class="practice-answer"><summary>Show practice answer</summary><p>@media (min-width: 72rem) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }</p></details></div></div></details><details class="lesson" id="lesson-7" data-topic="Modern CSS"><summary><span>Cascade, containers, and motion</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>The cascade considers origin, layers, specificity, and order. Scope component styles instead of relying on !important. Container queries respond to a parent container. Respect reduced-motion preferences and visible keyboard focus.</p><div class="lesson-code-header"><span>css</span><button class="notes-copy" type="button" data-copy-target="example-7" aria-label="Copy code: Cascade, containers, and motion">Copy code</button></div><pre tabindex="0" aria-label="css example"><code id="example-7">.notes-shell { container-type: inline-size; }
+.note-card { padding: 1rem; }
+@container (min-width: 40rem) { .note-card { padding: 1.5rem; } }
+button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .note-card { animation: none; transition: none; }
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>A container cannot use its own size query to restyle itself: target descendants. Never remove focus outlines without a replacement. Test contrast over photos.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Add a hover transition disabled for reduced-motion users.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Set .note-card { transition: border-color .15s ease; }, add a hover border color, and keep the reduced-motion transition: none rule.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="JavaScript" aria-labelledby="topic-4"><h3 id="topic-4">JavaScript</h3><details class="lesson" id="lesson-8" data-topic="JavaScript"><summary><span>Values, functions, arrays</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Use const for bindings you do not reassign and let for bindings you do. const does not freeze objects. Functions return results. map transforms arrays; filter keeps matches.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-8" aria-label="Copy code: Values, functions, arrays">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-8">const tasks = [{ id: 1, done: false }, { id: 2, done: true }];
+const pending = tasks.filter(task =&gt; !task.done);
+const completed = tasks.map(task =&gt;
+  task.id === 1 ? { ...task, done: true } : task
+);
+console.log(pending.length); // 1
+console.log(tasks[0].done); // false</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Use === for comparison without coercion. map needs a return value. Copying an array alone does not copy nested objects.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Double every number without changing the input array.</p><details class="practice-answer"><summary>Show practice answer</summary><p>const doubleAll = numbers =&gt; numbers.map(number =&gt; number * 2); doubleAll([1, 2, 3]) returns [2, 4, 6].</p></details></div></div></details><details class="lesson" id="lesson-9" data-topic="JavaScript"><summary><span>DOM events, promises, errors</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Find elements after the DOM exists, register listeners, and update text safely. Async functions return promises; await pauses that function until a promise settles. Catch failures and restore loading state in finally.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-9" aria-label="Copy code: DOM events, promises, errors">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-9">const button = document.querySelector(&quot;#load-button&quot;);
+const status = document.querySelector(&quot;#load-status&quot;);
+button.addEventListener(&quot;click&quot;, async () =&gt; {
+  button.disabled = true;
+  try {
+    const response = await fetch(&quot;/api/notes&quot;);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const notes = await response.json();
+    status.textContent = `Loaded ${notes.length} notes`;
+  } catch { status.textContent = &quot;Could not load notes. Try again.&quot;; }
+  finally { button.disabled = false; }
+});</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Requires matching button/status elements and an endpoint returning an array. Do not put untrusted input in innerHTML. Syntax success does not mean the network will succeed.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Add a loading message before the request.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Set status.textContent = &quot;Loading notes…&quot; after disabling the button. Keep finally so the button recovers from both success and failure.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="React" aria-labelledby="topic-5"><h3 id="topic-5">React</h3><details class="lesson" id="lesson-10" data-topic="React"><summary><span>Components, props, state</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Components return UI. Props are read-only inputs from a parent; state is memory that triggers renders. Use functional updates when the next value depends on the old value. JSX requires a configured React project.</p><div class="lesson-code-header"><span>jsx</span><button class="notes-copy" type="button" data-copy-target="example-10" aria-label="Copy code: Components, props, state">Copy code</button></div><pre tabindex="0" aria-label="jsx example"><code id="example-10">import { useState } from &quot;react&quot;;
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial);
+  return (
+    &lt;button onClick={() =&gt; setCount(previous =&gt; previous + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Do not mutate state arrays with push; use setItems(previous =&gt; [...previous, newItem]). Use stable data IDs as list keys. Never call Hooks conditionally or in loops.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Add a Reset button returning the counter to initial.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Wrap both buttons in a fragment and add &lt;button onClick={() =&gt; setCount(initial)}&gt;Reset&lt;/button&gt;.</p></details></div></div></details><details class="lesson" id="lesson-11" data-topic="React"><summary><span>Effects and cleanup</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Effects synchronize an external system, such as a timer or subscription. Calculate derived values during rendering instead of storing them in duplicate state. Effects need cleanup. Strict Mode may run an extra setup/cleanup cycle during development.</p><div class="lesson-code-header"><span>jsx</span><button class="notes-copy" type="button" data-copy-target="example-11" aria-label="Copy code: Effects and cleanup">Copy code</button></div><pre tabindex="0" aria-label="jsx example"><code id="example-11">import { useEffect, useState } from &quot;react&quot;;
+export default function Clock() {
+  const [now, setNow] = useState(() =&gt; new Date());
+  useEffect(() =&gt; {
+    const timer = setInterval(() =&gt; setNow(new Date()), 1000);
+    return () =&gt; clearInterval(timer);
+  }, []);
+  return &lt;time dateTime={now.toISOString()}&gt;{now.toLocaleTimeString()}&lt;/time&gt;;
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>An Effect callback must not be async: it must return cleanup or nothing, not a promise. Include reactive dependencies. Prefer framework data-loading facilities when available; manual requests need cancellation and stale-response handling.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Explain the consequence of removing timer cleanup.</p><details class="practice-answer"><summary>Show practice answer</summary><p>The interval can continue running after unmount, wasting work. The cleanup stops it.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="APIs" aria-labelledby="topic-6"><h3 id="topic-6">APIs</h3><details class="lesson" id="lesson-12" data-topic="APIs"><summary><span>HTTP methods, status codes, JSON</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>An API defines a contract between programs. GET reads; POST commonly creates; PUT replaces; PATCH partially updates; DELETE removes. JSON represents data. fetch does not reject only because the server returns 404 or 500: check response.ok.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-12" aria-label="Copy code: HTTP methods, status codes, JSON">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-12">async function getNotes() {
+  const response = await fetch(&quot;/api/notes&quot;, {
+    headers: { Accept: &quot;application/json&quot; }
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+// Call inside an async function:
+// const notes = await getNotes();</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Do not parse 204 No Content as JSON. 401 means authentication is needed; 403 means access is denied. CORS is not authentication. The example requires an API endpoint.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Describe loading, empty, and failure states.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Show progress while loading, a helpful empty state for [], and a retryable error after failure. Restore disabled controls in finally.</p></details></div></div></details><details class="lesson" id="lesson-13" data-topic="APIs"><summary><span>Parameters, cancellation, pagination</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>URLSearchParams encodes query values. AbortController cancels slow or obsolete requests. Paginate large collections. Abort older searches and check response versions so stale results cannot replace new ones.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-13" aria-label="Copy code: Parameters, cancellation, pagination">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-13">async function searchNotes(query) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() =&gt; controller.abort(), 8000);
+  try {
+    const params = new URLSearchParams({ q: query, limit: &quot;20&quot; });
+    const response = await fetch(`/api/notes?${params}`, { signal: controller.signal });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } finally { clearTimeout(timeout); }
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Do not join raw user values into URLs. Handle AbortError separately for expected cancellation. Retrying non-idempotent requests blindly can create duplicates.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Encode React &amp; CSS with limit 10.</p><details class="practice-answer"><summary>Show practice answer</summary><p>new URLSearchParams({ q: &quot;React &amp; CSS&quot;, limit: &quot;10&quot; }).toString() returns q=React+%26+CSS&amp;limit=10.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Node.js" aria-labelledby="topic-7"><h3 id="topic-7">Node.js</h3><details class="lesson" id="lesson-14" data-topic="Node.js"><summary><span>Modules, files, configuration</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Node runs JavaScript outside the browser. Use built-in modules through node: imports. Save this as read-note.mjs to run as an ES module. Asynchronous file operations allow other work to continue.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-14" aria-label="Copy code: Modules, files, configuration">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-14">import { readFile } from &quot;node:fs/promises&quot;;
+const filename = new URL(&quot;./README.md&quot;, import.meta.url);
+try {
+  const content = await readFile(filename, &quot;utf8&quot;);
+  console.log(content);
+} catch (error) {
+  console.error(&quot;Could not read README:&quot;, error.code);
+  process.exitCode = 1;
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Node has no document or window. Relative filesystem paths normally resolve from the working directory; import.meta.url resolves from the module location. README.md must exist beside the example.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Read PORT from environment with 3000 as default.</p><details class="practice-answer"><summary>Show practice answer</summary><p>const port = Number(process.env.PORT ?? 3000); validate that it is an integer between 1 and 65535.</p></details></div></div></details><details class="lesson" id="lesson-15" data-topic="Node.js"><summary><span>A small HTTP JSON server</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>A server receives requests and sends responses. Check routes and methods; use explicit status codes and content types. This development example binds to loopback, making it accessible only on your computer.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-15" aria-label="Copy code: A small HTTP JSON server">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-15">import { createServer } from &quot;node:http&quot;;
+const server = createServer((request, response) =&gt; {
+  const url = new URL(request.url, &quot;http://localhost&quot;);
+  if (request.method === &quot;GET&quot; &amp;&amp; url.pathname === &quot;/api/health&quot;) {
+    response.writeHead(200, { &quot;Content-Type&quot;: &quot;application/json; charset=utf-8&quot; });
+    response.end(JSON.stringify({ ok: true }));
+    return;
+  }
+  response.writeHead(404, { &quot;Content-Type&quot;: &quot;application/json&quot; });
+  response.end(JSON.stringify({ error: &quot;Not found&quot; }));
+});
+server.listen(3000, &quot;127.0.0.1&quot;);</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Save as server.mjs and run node server.mjs. Production needs input validation, body-size limits, timeouts, logging, appropriate authentication, and HTTPS. Never expose arbitrary filesystem paths as routes.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Add GET /api/notes returning an empty array.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Before the 404 response, check GET and /api/notes; send status 200, JSON content type, JSON.stringify([]), then return.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="SQL" aria-labelledby="topic-8"><h3 id="topic-8">SQL</h3><details class="lesson" id="lesson-16" data-topic="SQL"><summary><span>Tables, joins, aggregation</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>SQL queries relational tables. Primary keys identify rows; foreign keys link tables. WHERE filters rows; GROUP BY aggregates; ORDER BY makes ordering explicit. This schema uses integer IDs supplied by the application.</p><div class="lesson-code-header"><span>sql</span><button class="notes-copy" type="button" data-copy-target="example-16" aria-label="Copy code: Tables, joins, aggregation">Copy code</button></div><pre tabindex="0" aria-label="sql example"><code id="example-16">CREATE TABLE topics (id INTEGER PRIMARY KEY, name VARCHAR(100) NOT NULL);
+CREATE TABLE notes (id INTEGER PRIMARY KEY, topic_id INTEGER REFERENCES topics(id), title VARCHAR(200) NOT NULL);
+INSERT INTO topics (id, name) VALUES (1, &#x27;Git&#x27;);
+INSERT INTO notes (id, topic_id, title) VALUES (1, 1, &#x27;Branches&#x27;);
+SELECT topics.name, COUNT(notes.id) AS note_count
+FROM topics LEFT JOIN notes ON notes.topic_id = topics.id
+GROUP BY topics.id, topics.name
+ORDER BY topics.name;</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Use IS NULL, not = NULL. LEFT JOIN keeps topics without notes; COUNT(notes.id) returns zero for them. SQL dialects differ in generated IDs and pagination.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Select titles containing Git.</p><details class="practice-answer"><summary>Show practice answer</summary><p>SELECT id, title FROM notes WHERE title LIKE &#x27;%Git%&#x27; ORDER BY title; Case sensitivity depends on database and collation.</p></details></div></div></details><details class="lesson" id="lesson-17" data-topic="SQL"><summary><span>Parameters, indexes, transactions</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Bind user values as query parameters, not SQL text. Transactions make related changes succeed or fail together. Indexes can speed lookups but cost storage and work on writes. This JavaScript example uses PostgreSQL pg and a previously connected client.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-17" aria-label="Copy code: Parameters, indexes, transactions">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-17">const result = await client.query(
+  &quot;SELECT id, title FROM notes WHERE topic_id = $1 ORDER BY id LIMIT $2&quot;,
+  [topicId, 20]
+);
+await client.query(&quot;BEGIN&quot;);
+try {
+  await client.query(&quot;UPDATE notes SET title = $1 WHERE id = $2&quot;, [title, noteId]);
+  await client.query(&quot;COMMIT&quot;);
+} catch (error) {
+  await client.query(&quot;ROLLBACK&quot;);
+  throw error;
+}</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Use the same connection throughout a transaction. Parameters bind values, not identifiers; allowlist dynamic table names. Check WHERE before UPDATE or DELETE.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Create an index for topic_id lookups.</p><details class="practice-answer"><summary>Show practice answer</summary><p>CREATE INDEX notes_topic_id_idx ON notes(topic_id); Inspect query plans with EXPLAIN before assuming an index helps.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Algorithms" aria-labelledby="topic-9"><h3 id="topic-9">Algorithms</h3><details class="lesson" id="lesson-18" data-topic="Algorithms"><summary><span>Big O and binary search</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Big O describes how resource use grows with input size. Linear scans are O(n). Binary search halves a range each step: O(log n) time, but it requires sorted input. This iterative version uses O(1) auxiliary space.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-18" aria-label="Copy code: Big O and binary search">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-18">function binarySearch(sorted, target) {
+  let low = 0, high = sorted.length - 1;
+  while (low &lt;= high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (sorted[middle] === target) return middle;
+    if (sorted[middle] &lt; target) low = middle + 1;
+    else high = middle - 1;
+  }
+  return -1;
+}
+console.log(binarySearch([2, 4, 7, 9], 7)); // 2</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Unsorted input produces incorrect results. low = middle can cause an infinite loop; advance to middle + 1. Sorting first costs time, so binary search is not automatically best for one lookup.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Test empty input, missing targets, and first/last items.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Expect -1 for [] and a missing target; expect 0 for 2 and 3 for 9 in [2, 4, 7, 9].</p></details></div></div></details><details class="lesson" id="lesson-19" data-topic="Algorithms"><summary><span>Sets, maps, problem solving</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Sets store unique values; Maps associate keys with values. Begin with a correct simple solution, identify repeated work, then choose a data structure. Explain time and space costs and test boundaries.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-19" aria-label="Copy code: Sets, maps, problem solving">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-19">function countWords(text) {
+  const counts = new Map();
+  const words = text.toLowerCase().match(/[a-z]+/g) ?? [];
+  for (const word of words) counts.set(word, (counts.get(word) ?? 0) + 1);
+  return counts;
+}
+console.log(countWords(&quot;Git git CSS&quot;).get(&quot;git&quot;)); // 2
+const unique = [...new Set([1, 1, 2, 3])]; // [1, 2, 3]</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>The regex handles English ASCII words, not all languages. Maps compare object keys by identity. Lookup is efficient in typical implementations; do not promise constant-time guarantees for every engine.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Test punctuation-only text and an empty string.</p><details class="practice-answer"><summary>Show practice answer</summary><p>countWords(&quot;!!!&quot;).size and countWords(&quot;&quot;).size should both be 0 because ?? [] handles no matches.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Testing" aria-labelledby="topic-10"><h3 id="topic-10">Testing</h3><details class="lesson" id="lesson-20" data-topic="Testing"><summary><span>Node unit tests</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Unit tests check behavior with controlled inputs. Test boundaries and failures, not only success. The built-in Node runner needs no extra framework. Save this as sum.test.mjs and run node --test.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-20" aria-label="Copy code: Node unit tests">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-20">import test from &quot;node:test&quot;;
+import assert from &quot;node:assert/strict&quot;;
+function sum(values) { return values.reduce((total, value) =&gt; total + value, 0); }
+test(&quot;sums positive and negative values&quot;, () =&gt; {
+  assert.equal(sum([3, -2, 4]), 5);
+});
+test(&quot;empty input returns zero&quot;, () =&gt; {
+  assert.equal(sum([]), 0);
+});</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Passing tests prove only the checked behaviors. Avoid copying implementation logic into tests. Control time, storage, and networks to keep tests deterministic.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Test one element and two zeros.</p><details class="practice-answer"><summary>Show practice answer</summary><p>assert.equal(sum([7]), 7); assert.equal(sum([0, 0]), 0); use descriptive test names.</p></details></div></div></details><details class="lesson" id="lesson-21" data-topic="Testing"><summary><span>Integration, UI, accessibility</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Integration checks parts working together; UI checks user actions. Prefer role/name selectors. DOM tests do not prove visual layout, native keyboard behavior, clipboard permissions, or real media playback: also test in a browser.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-21" aria-label="Copy code: Integration, UI, accessibility">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-21">// Playwright example in a configured browser test project:
+import { test, expect } from &quot;@playwright/test&quot;;
+test(&quot;search finds React lessons&quot;, async ({ page }) =&gt; {
+  await page.goto(&quot;http://127.0.0.1:5502/index.html&quot;);
+  await page.getByRole(&quot;searchbox&quot;, { name: &quot;Search all engineering notes&quot; }).fill(&quot;React&quot;);
+  await expect(page.locator(&quot;.lesson:not([hidden])&quot;)).not.toHaveCount(0);
+  await page.getByRole(&quot;button&quot;, { name: &quot;Clear search and filters&quot; }).click();
+});</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Do not rely on arbitrary sleeps. Check keyboard navigation, touch targets, 200% zoom, empty states, storage failures, and reduced motion.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Describe copy-button behavior when clipboard permission is denied.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Open a selectable manual-copy field, announce the fallback, close with Escape, and restore focus to the original button.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Security" aria-labelledby="topic-11"><h3 id="topic-11">Security</h3><details class="lesson" id="lesson-22" data-topic="Security"><summary><span>Untrusted text and script injection</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Treat user input and third-party API fields as untrusted. Insert text with textContent rather than innerHTML. Intentional rich HTML needs a maintained sanitizer with a restrictive policy. Content Security Policy adds protection but does not replace safe rendering.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-22" aria-label="Copy code: Untrusted text and script injection">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-22">const name = &#x27;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;&#x27;;
+const output = document.createElement(&quot;p&quot;);
+output.textContent = name;
+document.querySelector(&quot;#results&quot;).append(output);
+// Markup is displayed as text, not executed.</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>A few regex replacements are not an HTML sanitizer. Validate URL protocols. Client validation does not replace server validation and authorization.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Render a title containing &lt;script&gt; as plain text.</p><details class="practice-answer"><summary>Show practice answer</summary><p>Create an element, assign title to textContent, and append it. Never pass the title to an HTML parser.</p></details></div></div></details><details class="lesson" id="lesson-23" data-topic="Security"><summary><span>Authentication, permissions, secrets</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Authentication identifies users; authorization checks what they may do. Enforce both on the server for each protected resource. Keep secrets out of browser bundles and Git. Passwords require vetted password-hashing libraries, such as Argon2id implementations, not plain SHA hashing or reversible encryption.</p><div class="lesson-code-header"><span>javascript</span><button class="notes-copy" type="button" data-copy-target="example-23" aria-label="Copy code: Authentication, permissions, secrets">Copy code</button></div><pre tabindex="0" aria-label="javascript example"><code id="example-23">// Connected PostgreSQL client on the server:
+async function loadOwnedNote(client, authenticatedUserId, noteId) {
+  const result = await client.query(
+    &quot;SELECT id, title FROM notes WHERE id = $1 AND owner_id = $2&quot;,
+    [noteId, authenticatedUserId]
+  );
+  return result.rows[0] ?? null;
+}
+// authenticatedUserId comes from a verified server session.</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Assumes notes has owner_id. Never trust browser-supplied user IDs as identity proof. Restrict public API keys by origin/API; they remain visible. Use HTTPS and secure session cookies; cookie-authenticated mutations also need CSRF protection.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>Why does hiding an Edit button not secure an endpoint?</p><details class="practice-answer"><summary>Show practice answer</summary><p>Users can call the endpoint directly. The server must verify the session and check permissions before every read or update.</p></details></div></div></details></section><section class="notes-topic-group" data-topic="Deployment" aria-labelledby="topic-12"><h3 id="topic-12">Deployment</h3><details class="lesson" id="lesson-24" data-topic="Deployment"><summary><span>Static hosting versus servers</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>This site is static HTML, CSS, and JavaScript. Static hosts serve files, not Node servers or databases. Dynamic features call external APIs. Test nested paths because relative asset URLs resolve from each page location.</p><div class="lesson-code-header"><span>shell</span><button class="notes-copy" type="button" data-copy-target="example-24" aria-label="Copy code: Static hosting versus servers">Copy code</button></div><pre tabindex="0" aria-label="shell example"><code id="example-24"># Run from this project directory:
+node --check script.js
+node --check notes.js
+node audit_checks.cjs
+npm test
+# Preview with the local development server.
+# Publish only after diff review and approval.</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Local success does not prove production DNS, headers, HTTPS, or redirects. Never publish backups or .env files. Do not embed server credentials in browser code.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>List assets for the copied updates/index.html page.</p><details class="practice-answer"><summary>Show practice answer</summary><p>style.css, java.js, notes.js, and shared certificate images through ../../images/. Check each path resolves.</p></details></div></div></details><details class="lesson" id="lesson-25" data-topic="Deployment"><summary><span>Release checks and rollback</span><span class="lesson-label">Guide + practice</span></summary><div class="lesson-body"><p>Reliable releases run repeatable checks and deploy a reviewed revision. Rollback restores a known working release. Keep configuration separate from code and check logs and the live site after release. This workflow validates this project and does not publish.</p><div class="lesson-code-header"><span>yaml</span><button class="notes-copy" type="button" data-copy-target="example-25" aria-label="Copy code: Release checks and rollback">Copy code</button></div><pre tabindex="0" aria-label="yaml example"><code id="example-25">name: Validate website
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test</code></pre><div class="lesson-mistake"><h4>Common mistakes</h4><p>Requires package.json and package-lock.json. Deployments need separate hosting setup and approval. Check mobile, keyboard, assets, caching, access controls, and rollback readiness.</p></div><div class="lesson-practice"><h4>Try it yourself</h4><p>What should you verify immediately after publishing?</p><details class="practice-answer"><summary>Show practice answer</summary><p>Confirm revision, search/copy/expand behavior, nested assets, HTTPS, console errors, and authentication boundaries. Restore the last working revision if critical checks fail.</p></details></div></div></details></section></div><div class="notes-references"><h3>Official references</h3><p>Check official documentation when syntax or behavior is unfamiliar.</p><a href="https://git-scm.com/docs/git-restore" target="_blank" rel="noopener">Git restore</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul" target="_blank" rel="noopener">Modern HTML lists</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank" rel="noopener">Fetch API</a> · <a href="https://react.dev/learn" target="_blank" rel="noopener">React Learn</a> · <a href="https://nodejs.org/api/test.html" target="_blank" rel="noopener">Node test runner</a> · <a href="https://cheatsheetseries.owasp.org/" target="_blank" rel="noopener">OWASP security guidance</a></div>
+  <p id="notes-copy-status" role="status" aria-live="polite"></p>
+</section>
+<div id="notes-copy-dialog" class="notes-copy-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="notes-copy-title"><div class="notes-copy-dialog-inner"><h2 id="notes-copy-title">Copy this example</h2><p>Clipboard access is unavailable. Select the text below and use Ctrl+C or Command+C.</p><label for="notes-copy-text">Code to copy</label><textarea id="notes-copy-text" readonly spellcheck="false"></textarea><button id="notes-copy-close" type="button">Close copy dialog</button></div></div>
+<!-- ENGINEERING LIBRARY END -->
   <div class="git-notes-section" id="git-notes">
   <div class="git-notes-header">
     <h2 class="git-notes-tab">Git Notes</h2>
@@ -500,6 +702,7 @@
       <button class="cert-thumb-btn" type="button" data-full-src="../images/git-certificate-2.png" data-full-alt="Git certificate 2" aria-label="View Git certificate 2"><img src="../images/git-certificate-2.png" alt="Git certificate 2" loading="lazy" width="120" height="80"></button>
     </div>
   </div>
+<aside class="legacy-corrections" aria-labelledby="legacy-corrections-title"><h3 id="legacy-corrections-title">Current guidance for the original notes</h3><ul><li>Use the actual default branch (master in this repository); new projects may use main. A branch name is not a filename.</li><li>Use git switch for branch changes. git restore --staged unstages without losing edits; git restore FILE discards unstaged edits. git reset --hard can discard work. Prefer git revert to undo shared commits.</li><li>Rebase rewrites history; it is not equivalent to merge. Avoid rebasing shared commits. --force-with-lease is safer than --force when rewriting your own branch is intentional.</li><li>The type attribute on ul is obsolete. Use list-style-type in CSS. The ol type attribute remains valid.</li><li>Examples omitting angle brackets are historical shorthand. Copy complete syntax from the new lessons. Keep credentials out of Git and browser code.</li></ul></aside>
   <div class="git-content">
   <div class="sidebar-left">
   <h3 class="left-block">Covered Material</h3>
@@ -768,7 +971,7 @@ Visual Studio Code, GitHub, and team projects.
   </pre>
   </div>
 
-  <h3>To add website address or link to open in the page or new tabs</h3>
+  <h3 data-lock-heading data-lock-legacy>To add website address or link to open in the page or new tabs</h3>
 <ol>
   <li><code>&lt;a href="web address"&gt;name of file&lt;/a&gt;</code> (LINK TO OPEN IN THE SAME TAB)</li>
   <li><code>&lt;a href="web address" target="_blank"&gt;name of file&lt;/a&gt;</code> (TO OPEN IN A NEW TAB)</li>
@@ -1042,7 +1245,7 @@ Under "API restrictions," choose "Restrict key," then check "YouTube Data API v3
     <li><code>git push origin &lt;branch-name&gt;</code></li>
     <li><code>git add .</code></li>
     <li><code>git commit -m "add &lt;file name&gt;"</code></li>
-    <li><code>git push -u origin &lt;file name&gt;</code></li>
+    <li><code>git push -u origin &lt;branch-name&gt;</code></li>
   </ol>
   <h3>Merge Branches to the Master</h3>
   <ol>
@@ -2426,6 +2629,9 @@ my radio<br>
        SECTION: SCRIPTS
        ============================================================ -->
   <script src="script.js"></script>
+<dialog id="section-lock-dialog" aria-labelledby="section-lock-title"><form id="section-lock-form"><h2 id="section-lock-title">Unlock section</h2><p id="section-lock-description"></p><label for="section-lock-code">Enter lock code</label><input id="section-lock-code" type="password" inputmode="numeric" autocomplete="off" required aria-describedby="section-lock-error"><p id="section-lock-error" role="alert"></p><div class="lock-dialog-actions"><button type="submit">Unlock</button><button type="button" id="section-lock-cancel">Cancel</button></div></form></dialog>
+  <script src="section-locks.js"></script>
+  <script src="notes.js"></script>
 
 </body>
 </html>
