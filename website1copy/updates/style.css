@@ -2037,3 +2037,41 @@ button { touch-action: manipulation; }
 .study-focus-mode #main-content > :not(#study-toolbar):not(#study-tools):not(#engineering-notes) { display: none !important; }
 .study-focus-mode #main-content { max-width: 1050px; margin: 0 auto; }
 @media(max-width:760px) { .study-grid { grid-template-columns: 1fr; } .study-row button { flex: 1 1 auto; } #playground-output { height: 320px; } }
+
+/* Additional study tools and accessible reading/printing controls. */
+#study-more { border-top: 1px solid #526658; margin-top: 30px; padding-top: 8px; }
+#extras-tabs button[aria-selected="true"] { background: #facc15; color: #102319; }
+#study-more .extras-entry { padding: 16px 0; border-bottom: 1px solid #526658; }
+#study-more .extras-entry:last-child { border-bottom: 0; }
+#study-more h5 { color: #f0fdf4; font-size: 18px; }
+#study-more .extras-entry p { white-space: pre-wrap; overflow-wrap: anywhere; }
+#study-more code { display: block; background: #12251a; color: #86efac; padding: 12px; overflow-wrap: anywhere; }
+#study-more .extras-check { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+#study-more .extras-check input { width: 20px; min-height: 20px; height: 20px; flex-shrink: 0; accent-color: #facc15; }
+#checklist-meter { width: 100%; height: 16px; accent-color: #facc15; }
+#glossary-list dt { color: #facc15; font-weight: bold; margin-top: 16px; }
+#glossary-list dd { margin: 6px 0 18px; }
+#study-more details > summary { min-height: 44px; padding: 10px 0; cursor: pointer; color: #93c5fd; }
+#study-more .extras-url { color: #b5cabd; overflow-wrap: anywhere; }
+#checklist-new-form input { flex: 1 1 250px; width: auto; }
+#checklist-new-form label { width: 100%; }
+.notes-library .lesson-body p, .notes-library .lesson-body li, .notes-library .lesson > summary, #study-more p, #glossary-list dd { font-size: var(--study-text-size,16px); line-height: var(--study-line-spacing,1.7); }
+.study-high-contrast { background: #06100a !important; }
+.study-high-contrast :is(.notes-library,.study-hub,.lesson,.study-project) { background: #06100a !important; color: #fff !important; border-color: #fff; }
+.study-high-contrast :is(.study-muted,.lesson-label,#notes-result-status) { color: #fff !important; }
+.study-high-contrast :is(.notes-library,.study-hub) a { text-decoration: underline; }
+@media print {
+  html { background: #fff !important; }
+  body.study-printing { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+  .study-printing > :not(#main-content), .study-printing #main-content > :not(#engineering-notes), .study-printing .study-progress, .study-printing .notes-controls, .study-printing .notes-actions, .study-printing #notes-result-status, .study-printing #notes-empty, .study-printing .notes-references, .study-printing .notes-copy, .study-printing .study-lesson-actions, .study-printing .lesson-label { display: none !important; }
+  .study-printing #engineering-notes { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; border: 0; }
+  .study-printing #engineering-notes, .study-printing #engineering-notes :is(h2,h3,h4,p,summary,pre,code,.lesson-body,.lesson) { background: #fff !important; color: #000 !important; box-shadow: none !important; }
+  .study-printing #engineering-notes * { color: #000 !important; text-shadow: none !important; box-shadow: none !important; }
+  .study-printing .notes-topic-group:not(.study-print-group), .study-printing .lesson:not(.study-print-target) { display: none !important; }
+  .study-printing .study-print-group, .study-printing .study-print-target { display: block !important; }
+  .study-printing .lesson { border: 1px solid #aaa; overflow: visible; margin: 16px 0; }
+  .study-printing .lesson > summary { break-after: avoid; border-left: 0; }
+  .study-printing pre { white-space: pre-wrap !important; overflow-wrap: anywhere; overflow: visible; font-size: 11pt !important; }
+  .study-printing .lesson-body p { font-size: 11pt !important; line-height: 1.5 !important; }
+  .study-printing .lesson-mistake, .study-printing .lesson-practice { border-color: #555; }
+}

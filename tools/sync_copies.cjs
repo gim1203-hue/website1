@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '..');
-const assets = ['styles.css', 'script.js', 'notes.js', 'section-locks.js', 'study-tools.js'];
+const assets = ['styles.css', 'script.js', 'notes.js', 'section-locks.js', 'study-tools.js', 'learning-extras.js'];
 let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8').replace(/^\uFEFF/, '');
 for (const asset of assets) {
   const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, asset))).digest('hex').slice(0, 12);

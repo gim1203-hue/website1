@@ -4,7 +4,7 @@
     "private":  true,
     "scripts":  {
                     "test":  "node audit_checks.cjs \u0026\u0026 node --test tests/*.test.cjs",
-                    "check":  "node --check script.js \u0026\u0026 node --check notes.js \u0026\u0026 node --check section-locks.js \u0026\u0026 node --check study-tools.js",
+                    "check":  "node --check script.js \u0026\u0026 node --check notes.js \u0026\u0026 node --check section-locks.js \u0026\u0026 node --check study-tools.js \u0026\u0026 node --check learning-extras.js",
                     "sync":  "node tools/sync_copies.cjs"
                 },
     "devDependencies":  {

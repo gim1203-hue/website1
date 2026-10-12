@@ -115,6 +115,10 @@
   const normalize = value => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
   const records = lessons.map(lesson => ({title:lesson.querySelector('summary > span').textContent, text:normalize(lesson.dataset.topic + ' ' + lesson.textContent), kind:'Lesson', element:lesson}));
   const addRecord = (title, kind, element) => { if (element) records.push({title, kind, element, text:normalize(title + ' ' + kind)}); };
+  document.addEventListener('study-search-register', event => {
+    const record = event.detail;
+    if (record && typeof record.title === 'string' && typeof record.kind === 'string' && record.element instanceof HTMLElement && document.contains(record.element)) addRecord(record.title, record.kind, record.element);
+  });
   for (const [title, id] of [['Weather', 'weather-widget'], ['Notes & To-Do', 'todo-widget'], ['Calendar', 'cal-widget'], ['Practice quizzes', 'study-quiz'], ['Projects gallery', 'study-projects'], ['HTML CSS JavaScript code playground', 'study-playground'], ['Software Engineering Hub project', 'study-projects'], ['Original Git course notes', 'git-notes']]) addRecord(title, 'Tool or section', byId(id));
   document.querySelectorAll('[data-lock-heading]').forEach(heading => addRecord(heading.textContent.replace(/[🔒🔓?]/gu, '').trim(), 'Locked resources', heading));
   document.querySelectorAll('.media-card').forEach(card => { const heading = card.querySelector('h2,h3,h4'); if (heading) addRecord(heading.textContent, 'Media tool', card); });
@@ -133,6 +137,7 @@
     matches.slice(0, 25).forEach(record => {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = `${record.kind} · ${record.title}`;
       button.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('study-search-open', {detail:{element:record.element}}));
         if (state.focus && !record.element.closest('#engineering-notes, #study-tools, #study-toolbar')) { state.focus = false; save(); renderFocus(); }
         if (record.kind === 'Lesson') {
           byId('notes-search').value = ''; byId('notes-topic').value = 'all'; byId('notes-bookmarks-only').checked = false;
@@ -181,6 +186,7 @@
       const button = document.createElement('button'); button.type = 'button'; button.textContent = answer;
       button.addEventListener('click', () => {
         if (answered) return; answered = true; const correct = index === question[2]; if (correct) score++;
+        document.dispatchEvent(new CustomEvent('study-quiz-answer', {detail:{id:`${quizTopic.value}:${quizIndex}`,topic:quizTopic.value,question:question[0],chosen:question[1][index],answer:question[1][question[2]],explanation:question[3],correct}}));
         byId('quiz-feedback').textContent = `${correct ? 'Correct!' : 'The correct answer is ' + question[1][question[2]] + '.'} ${question[3]}`;
         byId('quiz-answers').querySelectorAll('button').forEach((choice, i) => { choice.disabled = true; choice.classList.toggle('study-correct', i === question[2]); });
         byId('quiz-next').disabled = false;
