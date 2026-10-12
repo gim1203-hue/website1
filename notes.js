@@ -31,7 +31,8 @@
   function filterNotes() {
     const tokens = normalize(search.value).split(' ').filter(Boolean);
     const selected = topic.value;
-    const filtering = tokens.length > 0 || selected !== 'all';
+    const bookmarksOnly = document.getElementById('notes-bookmarks-only')?.checked === true;
+    const filtering = tokens.length > 0 || selected !== 'all' || bookmarksOnly;
     if (filtering && !savedState) savedState = {
       lessons: lessons.map(record => record.element.open),
       legacy: oldNotes.map(record => record.element.getAttribute('aria-expanded') === 'true')
@@ -39,7 +40,7 @@
     const matches = text => tokens.every(token => text.includes(token));
     let count = 0;
     lessons.forEach(record => {
-      const match = (selected === 'all' || selected === record.element.dataset.topic) && matches(record.text);
+      const match = (!bookmarksOnly || record.element.dataset.bookmarked === 'true') && (selected === 'all' || selected === record.element.dataset.topic) && matches(record.text);
       record.element.hidden = !match;
       if (match) { count++; if (tokens.length) record.element.open = true; }
     });
@@ -48,12 +49,12 @@
     });
     let oldCount = 0;
     oldNotes.forEach(record => {
-      const match = (selected === 'all' || selected === 'legacy') && matches(record.text);
+      const match = !bookmarksOnly && (selected === 'all' || selected === 'legacy') && matches(record.text);
       record.element.hidden = !match;
       record.panel.classList.toggle('notes-filter-hidden', !match);
       if (match) { oldCount++; if (tokens.length) setOldOpen(record, true); }
     });
-    sidebar.hidden = !((selected === 'all' || selected === 'legacy') && matches(sidebarText));
+    sidebar.hidden = bookmarksOnly || !((selected === 'all' || selected === 'legacy') && matches(sidebarText));
     legacy.hidden = oldCount === 0 && sidebar.hidden;
     if (!filtering && savedState) {
       lessons.forEach((record, index) => { record.element.open = savedState.lessons[index]; });
@@ -66,8 +67,11 @@
     document.getElementById('notes-collapse').disabled = count + oldCount === 0;
   }
   search.addEventListener('input', filterNotes);
+  document.addEventListener('study-progress-change', filterNotes);
   topic.addEventListener('change', filterNotes);
   document.getElementById('notes-clear').addEventListener('click', () => {
+    const bookmarks = document.getElementById('notes-bookmarks-only');
+    if (bookmarks) bookmarks.checked = false;
     search.value = ''; topic.value = 'all'; filterNotes(); search.focus();
   });
   search.addEventListener('keydown', event => {

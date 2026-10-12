@@ -4,7 +4,7 @@ import re
 root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text(encoding='utf-8-sig')
 # Refresh asset URLs whenever their contents change on a cached live site.
-for asset in ('styles.css', 'script.js', 'notes.js', 'section-locks.js'):
+for asset in ('styles.css', 'script.js', 'notes.js', 'section-locks.js', 'study-tools.js'):
     version = hashlib.sha256((root / asset).read_bytes()).hexdigest()[:12]
     html = re.sub(
         r'((?:href|src)=")' + re.escape(asset) + r'(?:\?[^"\s]*)?"',
@@ -19,7 +19,8 @@ for directory, page, style, script, prefix in [
     target = root / directory
     content = html.replace('href="styles.css?', f'href="{style}?').replace('src="script.js?', f'src="{script}?')
     content = content.replace('data-full-src="images/', f'data-full-src="{prefix}').replace('<img src="images/', f'<img src="{prefix}')
+    content = content.replace('src="website-preview.png"', f'src="{prefix[:-7]}website-preview.png"')
     (target / page).write_text(content, encoding='utf-8')
-    for source, destination in [('styles.css', style), ('script.js', script), ('notes.js', 'notes.js'), ('section-locks.js', 'section-locks.js')]:
+    for source, destination in [('styles.css', style), ('script.js', script), ('notes.js', 'notes.js'), ('section-locks.js', 'section-locks.js'), ('study-tools.js', 'study-tools.js')]:
         (target / destination).write_bytes((root / source).read_bytes())
     print(f'Updated {directory}/{page}')

@@ -1,1 +1,13 @@
-﻿{"name":"imran-engineering-notes","version":"1.0.0","private":true,"scripts":{"test":"node audit_checks.cjs && node --test tests/notes.test.cjs","check":"node --check script.js && node --check notes.js"},"devDependencies":{"jsdom":"26.1.0"}}
+{
+    "name":  "imran-engineering-notes",
+    "version":  "1.0.0",
+    "private":  true,
+    "scripts":  {
+                    "test":  "node audit_checks.cjs \u0026\u0026 node --test tests/*.test.cjs",
+                    "check":  "node --check script.js \u0026\u0026 node --check notes.js \u0026\u0026 node --check section-locks.js \u0026\u0026 node --check study-tools.js",
+                    "sync":  "node tools/sync_copies.cjs"
+                },
+    "devDependencies":  {
+                            "jsdom":  "26.1.0"
+                        }
+}

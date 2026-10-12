@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imran Khan's first website</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="styles.css?v=916f2c061362">
+  <link rel="stylesheet" href="styles.css?v=1eeff0321392">
   <meta name="description" content="Imran Khan’s software engineering course hub, projects, learning resources, weather, notes, Quran, radio, and video tools.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
@@ -107,6 +107,13 @@
 </div>
 </header>
 <main id="main-content">
+<section id="study-toolbar" class="study-hub" aria-labelledby="study-toolbar-title">
+  <div class="study-row"><h2 id="study-toolbar-title">Your learning hub</h2><button id="study-focus" type="button" aria-pressed="false">Focus mode</button></div>
+  <label for="site-search">Search notes, projects, tools, and resources</label>
+  <input id="site-search" type="search" placeholder="Try Git, JavaScript, weather, or projects…" autocomplete="off" aria-controls="site-search-results">
+  <p id="site-search-status" class="study-muted" role="status"></p><div id="site-search-results" hidden></div>
+  <nav class="study-row" aria-label="Learning tools"><a href="#engineering-notes">Notes &amp; progress</a><a href="#study-quiz">Practice quizzes</a><a href="#study-projects">Projects</a><a href="#study-playground">Code playground</a></nav>
+</section>
   <!-- ============================================================
        SECTION: GOOGLE SEARCH FORM
        ============================================================ -->
@@ -486,6 +493,27 @@
        SECTION: GIT NOTES (course reference material)
        ============================================================ -->
   <p class="left-block"><a href="#engineering-notes">Explore all engineering notes ↓</a> · <a href="#git-notes">Jump to Git notes ↓</a></p>
+<section id="study-tools" class="study-hub" aria-labelledby="study-tools-title">
+  <p class="notes-eyebrow">LEARN · BUILD · PRACTICE</p><h2 id="study-tools-title">Practice &amp; projects</h2>
+  <section id="study-quiz" aria-labelledby="study-quiz-title">
+    <h3 id="study-quiz-title">Practice quizzes</h3><label for="quiz-topic">Choose a topic</label><select id="quiz-topic"><option>Git</option><option>HTML</option><option>CSS</option><option>JavaScript</option></select>
+    <p id="quiz-position" class="study-muted"></p><h4 id="quiz-question"></h4><div id="quiz-answers" class="study-row"></div><p id="quiz-feedback" role="status"></p><div class="study-row"><button id="quiz-next" type="button" disabled>Next question</button><button id="quiz-restart" type="button">Restart quiz</button></div>
+  </section>
+  <section id="study-projects" aria-labelledby="study-projects-title">
+    <h3 id="study-projects-title">Projects gallery</h3><div class="study-grid">
+      <article class="study-project"><img src="../website-preview.png" alt="Preview of Imran Khan's course website" loading="lazy" width="960" height="540"><h4>Software Engineering Hub</h4><p>HTML · CSS · JavaScript</p><p>What I learned: responsive layouts, interactive notes, and working with APIs.</p><div class="study-row"><a href="https://imrankhan.nyc/" target="_blank" rel="noopener">Live website ↗</a><a href="https://github.com/gim1203-hue/website1" target="_blank" rel="noopener">View source ↗</a></div></article>
+      <article class="study-project study-project-next"><h4>Your next project</h4><p>Build a task tracker or another course project, then add its screenshot, what you learned, and links here.</p><a href="#study-playground">Try an idea in the playground ↓</a></article>
+    </div>
+  </section>
+  <section id="study-playground" aria-labelledby="study-playground-title">
+    <h3 id="study-playground-title">Code playground</h3><p>Edit HTML, CSS, and JavaScript, then run your example.</p>
+    <div class="study-grid"><div><label for="playground-html">HTML</label><textarea id="playground-html" spellcheck="false">&lt;h1&gt;Hello, Imran!&lt;/h1&gt;
+&lt;button id="greet"&gt;Click me&lt;/button&gt;</textarea><label for="playground-css">CSS</label><textarea id="playground-css" spellcheck="false">body { font-family: Arial; padding: 24px; background: #edf5ee; }
+button { background: #16492a; color: white; padding: 12px; border: 0; border-radius: 8px; }</textarea><label for="playground-js">JavaScript</label><textarea id="playground-js" spellcheck="false">document.getElementById('greet').onclick = function () {
+  this.textContent = 'You did it!';
+};</textarea><div class="study-row"><button id="playground-run" type="button">Run code</button><button id="playground-reset" type="button">Reset example</button></div></div><div><h4>Live result</h4><iframe id="playground-output" title="Your code playground result" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe><p id="playground-status" class="study-muted" role="status"></p></div></div>
+  </section>
+</section>
 <!-- ENGINEERING LIBRARY START -->
 <section id="engineering-notes" class="notes-library" aria-labelledby="notes-library-title">
   <div class="notes-library-heading"><p class="notes-eyebrow">LEARN · BUILD · PRACTICE</p><h2 id="notes-library-title">Software Engineering Notes</h2><p>A practical reference from your first commit to a production release. Your original course notes are preserved below.</p></div>
@@ -2631,7 +2659,8 @@ my radio<br>
   <script src="script.js?v=52b41c7cf60d"></script>
 <dialog id="section-lock-dialog" aria-labelledby="section-lock-title"><form id="section-lock-form"><h2 id="section-lock-title">Unlock section</h2><p id="section-lock-description"></p><label for="section-lock-code">Enter lock code</label><input id="section-lock-code" type="password" inputmode="numeric" autocomplete="off" required aria-describedby="section-lock-error"><p id="section-lock-error" role="alert"></p><div class="lock-dialog-actions"><button type="submit">Unlock</button><button type="button" id="section-lock-cancel">Cancel</button></div></form></dialog>
   <script src="section-locks.js?v=f61de0b3864b"></script>
-  <script src="notes.js?v=04cdd0d30772"></script>
+  <script src="notes.js?v=6b02d203531d"></script>
 
+  <script src="study-tools.js?v=dbf11263d3a9"></script>
 </body>
 </html>
