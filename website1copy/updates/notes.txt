@@ -1,0 +1,189 @@
+WEBSITE AND CONNECTED SERVICES
+Checked: October 14, 2026
+Project: C:\Users\muham\OneDrive\Desktop\software engineering course\website1\website1copy\updates
+Status: Static website entry and referenced scripts/styles present
+Verification: entry files and local script/style references checked; this is not a guarantee that every feature, login, payment, API or backend works.
+
+Open website: double-click "website view.cmd". Starts a read-only local preview and opens your default browser. Requires the existing Node.js installation. The preview stops after 8 hours.
+
+GITHUB AND REPOSITORIES
+GitHub remote: not found in this project. This does not prove it is absent from GitHub.
+GitHub references in project files (may be third-party libraries or outbound links):
+https://github.com/expo/expo — index.html, index.html
+https://github.com/Sandpack — index.html, index.html
+https://github.com/ — index.html, index.html
+https://github.com/gim1203-hue/website1 — index.html
+
+HOSTED WEBSITE / DOMAIN LINKS
+No explicit primary hosted URL verified.
+
+SERVICES REFERENCED / CONFIGURED
+These are local evidence, not proof of an active paid account or an active integration. References may be supporting resources or outbound links.
+Vercel — evidence: index.html
+Render — evidence: index.html
+Cloudflare — evidence: index.html
+GitHub Pages — evidence: index.html
+Firebase — evidence: index.html
+Supabase — evidence: index.html
+MongoDB — evidence: index.html
+PostgreSQL — evidence: index.html
+Stripe — evidence: index.html
+Resend — evidence: index.html
+Google Fonts — evidence: index.html
+Cloudinary — evidence: index.html
+YouTube — evidence: java.js
+Open-Meteo — evidence: java.js
+Unsplash — evidence: style.css
+
+URLS / DOMAINS REFERENCED IN PROJECT
+Listed with source file. This includes API/CDN/hosting links and ordinary outbound references; it does not mean each domain hosts this website. URL queries and credentials are omitted.
+https://www.w3schools.com/w3css/4/w3.css — index.html
+http://www.w3.org/2000/svg — index.html, style.css
+https://www.google.com/search — index.html
+https://www.yahoo.com/ — index.html
+https://www.google.com/ — index.html
+https://www.facebook.com/ — index.html
+https://www.tiktok.com/ — index.html
+https://devdocs.io/html — index.html, index.html
+https://devdocs.io/javascript — index.html, index.html
+https://devdocs.io/css — index.html, index.html
+https://developer.mozilla.org/en-US — index.html, index.html
+https://pythontutor.com/ — index.html, index.html
+https://compat-table.github.io/compat-table/es6/ — index.html, index.html
+https://codesandbox.io/dashboard/recent — index.html, index.html
+https://codesandbox.io/docs/learn — index.html, index.html
+https://codesandbox.io/docs/sdk — index.html, index.html, index.html
+https://validator.w3.org/ — index.html, index.html
+https://htmlcheatsheet.com/ — index.html, index.html, index.html
+https://www.w3schools.com/ — index.html, index.html
+https://vscode.dev/ — index.html, index.html
+https://nodejs.org/en — index.html, index.html
+https://flutter.dev/ — index.html, index.html
+https://reactnative.dev/ — index.html, index.html
+https://expo.dev/ — index.html, index.html
+https://docs.expo.dev/ — index.html, index.html
+https://github.com/expo/expo — index.html, index.html
+https://expo.dev/services — index.html, index.html
+https://www.figma.com/ — index.html, index.html
+https://www.canva.com/ — index.html, index.html
+https://www.eclipse.org/downloads — index.html, index.html
+https://www.istockphoto.com/ — index.html, index.html
+https://app.diagrams.net/ — index.html, index.html
+https://dillinger.io/ — index.html, index.html, index.html
+https://github.com/Sandpack — index.html, index.html
+https://adoptium.net/installation/archives — index.html, index.html
+https://codepen.io/zsolt555/pen/PoaEYpL — index.html, index.html
+https://codepen.io/zsolt555/pen/OJLajgG — index.html, index.html
+https://codepen.io/zsolt555/pen/orePqg — index.html, index.html
+https://www.tabnine.com/ — index.html, index.html
+https://nodejs.org/en/download — index.html, index.html
+https://www.microsoft.com/en-us — index.html, index.html
+https://hofstra.quickstart.com/my-dashboard/ — index.html, index.html
+https://github.com/ — index.html, index.html
+https://www.themoviedb.org/login/username — index.html, index.html
+https://me.developers.google.com/ — index.html, index.html
+https://console.cloud.google.com/apis/credentials — index.html, index.html, index.html
+https://platform.openai.com/home — index.html, index.html
+https://dash.cloudflare.com/ — index.html, index.html
+https://ap.www.namecheap.com/ — index.html, index.html
+https://dashboard.render.com/ — index.html, index.html
+https://developers.giphy.com/dashboard/ — index.html, index.html
+https://vercel.com/usman-f5ed — index.html, index.html
+https://platform.liner.com/playground — index.html, index.html
+https://aistudio.google.com/ — index.html, index.html, index.html
+https://programmablesearchengine.google.com/ — index.html, index.html
+https://serpapi.com/ — index.html, index.html
+https://console.cloud.google.com/apis/library/customsearch.googleapis.com — index.html, index.html
+https://console.firebase.google.com/ — index.html, index.html
+https://cloudinary.com/ — index.html, index.html
+https://supabase.com/dashboard — index.html, index.html
+https://console.apify.com/ — index.html, index.html
+https://serpapi.com/dashboard — index.html, index.html
+https://dashboard.stripe.com/ — index.html, index.html
+https://developers.openai.com/ — index.html, index.html
+https://us2.make.com/ — index.html, index.html
+https://app.netlify.com/drop — index.html
+https://resend.com/emails — index.html
+https://app.base44.com/ — index.html
+https://tidbcloud.com/ — index.html
+https://entra.microsoft.com/ — index.html
+https://www.homedepo.tech/ — index.html, index.html
+http://myallhub.com/ — index.html, index.html
+https://gim1203-hue.github.io/mysitecopy/ — index.html, index.html
+https://www.i-remembe.app/ — index.html, index.html
+https://www.allofmywork.com/ — index.html, index.html
+https://gim1203-hue.github.io/my-ai-gif/ — index.html, index.html
+https://newprimeconstruction.com/ — index.html, index.html
+https://worldwave-react-beta.vercel.app/ — index.html, index.html
+https://chatpilot-ruddy.vercel.app/ — index.html, index.html
+https://gim1203-hue.github.io/Memory-Search/ — index.html, index.html
+https://askkhan.vercel.app/ — index.html, index.html
+https://gim1203-hue.github.io/LearnFlow/ — index.html, index.html
+https://gim1203-hue.github.io/fitforge/ — index.html, index.html
+https://gim1203-hue.github.io/complete-web-app-guide/ — index.html, index.html
+https://gim1203-hue.github.io/Scripture-Explorer-Free/ — index.html, index.html
+https://aihelpall.com/ — index.html, index.html
+https://khantech.khantech.workers.dev/ — index.html, index.html
+https://mira-private-companion.imran-4151.chatgpt.site/ — index.html, index.html
+https://gim1203-hue.github.io/liverepo/ — index.html, index.html, index.html
+https://app.toonbee.ai/projects — index.html, index.html
+https://gim1203-hue.github.io/my-radio/ — index.html, index.html
+https://gim1203-hue.github.io/my-weather/ — index.html, index.html
+https://gim1203-hue.github.io/my-calendar/ — index.html, index.html
+https://gim1203-hue-mrusmanupdate-tau.vercel.app/ — index.html, index.html
+https://ready-neighbor.onrender.com/ — index.html, index.html
+https://gim1203-hue.github.io/skill-spring/ — index.html, index.html
+https://gim1203-hue.github.io/circle-spark/ — index.html, index.html
+https://pocketpantry.imran-4151.chatgpt.site/ — index.html, index.html
+https://launchlane-planner.imran-4151.chatgpt.site/ — index.html, index.html, index.html
+https://archive.org/download/national-anthem-of-pakistan/NATIONAL%20ANTHEM%20OF%20PAKISTAN%20%5Bvocal%5D.mp3 — index.html
+https://developers.google.com/youtube/v3 — index.html
+https://imrankhan.nyc/ — index.html
+https://github.com/gim1203-hue/website1 — index.html
+https://developer.mozilla.org/&quot — index.html
+http://localhost&quot/ — index.html
+http://127.0.0.1:5502/index.html&quot — index.html
+https://git-scm.com/docs/git-restore — index.html
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul — index.html
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch — index.html
+https://react.dev/learn — index.html
+https://nodejs.org/api/test.html — index.html
+https://cheatsheetseries.owasp.org/ — index.html
+https://www.example.com/ — index.html
+https://gim1203-hue.github.io/liverepo/script.js — index.html
+https://gim1203-hue.github.io/liverepo/style.css — index.html
+https://fonts.googleapis.com/ — index.html
+https://fonts.googleapis.com/css2 — index.html
+https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css — index.html
+http://127.0.0.1:5502/course-files/doc2/index.html — index.html
+http://127.0.0.1:57413/course-files/doc2/style.css.preview — index.html
+http://127.0.0.1:5501/index2.html — index.html, index.html
+http://127.0.0.1:5501/index.html — index.html, index.html
+https://validator.w3.org/nu/ — index.html, index.html
+https://www.w3schools.com/html/html_intro.asp — index.html, index.html
+https://codesandbox.io/p/sandbox/fervent-fog-lzgpj4 — index.html, index.html
+https://devdocs.io/html/ — index.html, index.html
+https://www.w3schools.com/html/tryit.asp — index.html, index.html
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements — index.html, index.html
+http://127.0.0.1:5502/course-files/doc6/index6.html — index.html
+http://127.0.0.1:5502/course-files/doc6/style.css.preview — index.html
+http://127.0.0.1:5502/course-files/doc8/index8.html — index.html
+http://127.0.0.1:5502/course-files/doc8/style8.css.preview — index.html
+https://api.alquran.cloud/v1/surah/$%7Bnumber — java.js, java.js
+https://api.alquran.cloud/v1/surah — java.js
+https://ipapi.co/json/ — java.js
+https://ipwho.is/ — java.js
+https://geocoding-api.open-meteo.com/v1/reverse — java.js
+https://geocoding-api.open-meteo.com/v1/search — java.js
+https://api.open-meteo.com/v1/forecast — java.js
+https://de1.api.radio-browser.info/ — java.js
+https://de2.api.radio-browser.info/ — java.js
+https://at1.api.radio-browser.info/ — java.js
+https://nl1.api.radio-browser.info/ — java.js
+https://www.youtube.com/embed/$%7BvideoId — java.js, java.js
+https://www.googleapis.com/youtube/v3/videos — java.js, java.js
+https://www.googleapis.com/youtube/v3/search — java.js, java.js, java.js
+https://images.unsplash.com/photo-1501854140801-50d01698950b — style.css
+
+LIMITS
+Checked existing readable text source, documentation, configuration, shortcuts and local Git configuration. Secrets are not included. Archived ZIPs, account dashboards, DNS ownership, service billing and unpublished account connections were not inspected. No files were installed, built, edited, moved or deleted in the project.
